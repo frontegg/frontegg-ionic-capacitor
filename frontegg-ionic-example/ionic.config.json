@@ -1,0 +1,7 @@
+{
+  "name": "FronteggIonicExample",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
