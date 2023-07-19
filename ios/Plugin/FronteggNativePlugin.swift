@@ -30,25 +30,11 @@ public class FronteggNativePlugin: CAPPlugin {
         }
         
         anyChange.sink(receiveValue: { () in
-            print("fronteggAuth changes")
             
-            var jsonUser: [String: Any]? = nil
-            if let userData = try? JSONEncoder().encode(auth.user) {
-                jsonUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any]
-            }
-            
-            let body: [String: Any?] = [
-                "accessToken": auth.accessToken,
-                "refreshToken": auth.refreshToken,
-                "user": jsonUser,
-                "isAuthenticated": auth.isAuthenticated,
-                "isLoading": auth.isLoading,
-                "initializing": auth.initializing,
-                "showLoader": auth.showLoader,
-                "appLink": auth.appLink
-            ]
-            self.notifyListeners("onFronteggAuthEvent", data: body as [String : Any])
+            self.sendEvent()
         }).store(in: &cancellables)
+        
+        self.sendEvent()
     }
     
     deinit {
@@ -56,6 +42,34 @@ public class FronteggNativePlugin: CAPPlugin {
         cancellables.forEach { ca in
             ca.cancel()
         }
+    }
+    
+    
+    override public func addEventListener(_ eventName: String, listener: CAPPluginCall) {
+        super.addEventListener(eventName, listener: listener)
+        
+        sendEvent()
+    }
+    func sendEvent() {
+        let auth = fronteggApp.auth
+        
+        var jsonUser: [String: Any]? = nil
+        if let userData = try? JSONEncoder().encode(auth.user) {
+            jsonUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any]
+        }
+        
+        let body: [String: Any?] = [
+            "accessToken": auth.accessToken,
+            "refreshToken": auth.refreshToken,
+            "user": jsonUser,
+            "isAuthenticated": auth.isAuthenticated,
+            "isLoading": auth.isLoading,
+            "initializing": auth.initializing,
+            "showLoader": auth.showLoader,
+            "appLink": auth.appLink
+        ]
+        
+        self.notifyListeners("onFronteggAuthEvent", data: body as [String : Any])
     }
     
     @objc func getConstants(_ call: CAPPluginCall) {

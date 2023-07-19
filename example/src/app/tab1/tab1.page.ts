@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FronteggNative } from '@frontegg/ionic-capacitor'
 import { FronteggState } from '../../../../src';
 
@@ -9,12 +9,23 @@ import { FronteggState } from '../../../../src';
 })
 export class Tab1Page implements OnInit {
 
-  constructor() {
+
+  state: Partial<FronteggState> = {
+    showLoader: true,
+    isAuthenticated: false,
+    isLoading: true,
+    initializing: true,
+  }
+
+  constructor(private ngZone: NgZone, private ref: ChangeDetectorRef) {
   }
 
   ngOnInit() {
-    FronteggNative.addListener('onFronteggAuthListener', (data: FronteggState) => {
-      console.log("test", data)
+    console.log('start listening')
+    FronteggNative.addListener('onFronteggAuthEvent', (data: FronteggState) => {
+      this.ngZone.run(() => {
+        this.state = data
+      })
     })
 
   }
