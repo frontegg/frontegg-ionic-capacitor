@@ -6,13 +6,16 @@ export interface FronteggState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
   user: IUserProfile | null;
-  initializing: boolean;
   showLoader: boolean;
-  logout: () => void;
-  login: () => void;
 }
+
+
+export type SubscribeFunc<T, K extends keyof T> = (value: T[K]) => void
+export type SubscribeMap<T> = {
+  [K in keyof T]: Set<SubscribeFunc<T, K>>
+}
+
 
 export interface FronteggNativePlugin {
   login(): void;
@@ -22,5 +25,7 @@ export interface FronteggNativePlugin {
   addListener(eventName: string, listenerFunc: ListenerCallback): Promise<PluginListenerHandle> & PluginListenerHandle
 
   getConstants(): Promise<Record<string, string>>;
+
+  getAuthState(): Promise<FronteggState>;
 
 }

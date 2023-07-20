@@ -15,5 +15,7 @@ Pod::Spec.new do |s|
   s.dependency 'Capacitor'
   s.dependency "FronteggSwift", "1.0.4"
   s.swift_version = '5.1'
-  s.pod_target_xcconfig = { 'CODE_SIGNING_ALLOWED' => 'YES' }
+  s.pod_target_xcconfig = {
+    'CODE_SIGNING_ALLOWED' => 'YES'
+  }
 end

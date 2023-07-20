@@ -1,25 +1,24 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { FronteggNativePlugin } from './definitions';
+import type { FronteggNativePlugin, FronteggState } from './definitions';
 
 export class FronteggNativeWeb
   extends WebPlugin
   implements FronteggNativePlugin {
 
   async login(): Promise<void> {
-    console.log('login');
+    throw Error('FronteggNative.login not implemented in web')
   }
 
   async logout(): Promise<void> {
-    console.log('logout');
+    throw Error('FronteggNative.logout not implemented in web')
   }
 
-  // async subscribe(callback: (state: FronteggState) => void): Promise<PluginListenerHandle> {
-  //   return super.addListener('onFronteggAuthListener', callback);
-  // }
-
   async getConstants(): Promise<Record<string, string>> {
-    console.log('getConstants');
-    return { value: 'value' };
+    throw Error('FronteggNative.getConstants not implemented in web')
+  }
+
+  async getAuthState(): Promise<FronteggState> {
+    throw Error('FronteggNative.getAuthState not implemented in web')
   }
 }

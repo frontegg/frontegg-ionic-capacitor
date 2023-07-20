@@ -17,7 +17,7 @@ export class Tab1Page implements OnInit {
     initializing: true,
   }
 
-  constructor(private ngZone: NgZone, private ref: ChangeDetectorRef) {
+  constructor(private ngZone: NgZone) {
   }
 
   ngOnInit() {

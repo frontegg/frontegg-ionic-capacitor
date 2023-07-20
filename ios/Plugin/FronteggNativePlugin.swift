@@ -11,9 +11,9 @@ import Capacitor
 public class FronteggNativePlugin: CAPPlugin {
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
-    
+
     override public func load() {
-        
+
         let auth = fronteggApp.auth
         var anyChange: AnyPublisher<Void, Never> {
             return Publishers.Merge8 (
@@ -28,36 +28,34 @@ public class FronteggNativePlugin: CAPPlugin {
             )
             .eraseToAnyPublisher()
         }
-        
+
         anyChange.sink(receiveValue: { () in
-            
+
             self.sendEvent()
         }).store(in: &cancellables)
-        
+
         self.sendEvent()
     }
-    
+
     deinit {
-        
         cancellables.forEach { ca in
             ca.cancel()
         }
     }
-    
-    
+
+
     override public func addEventListener(_ eventName: String, listener: CAPPluginCall) {
         super.addEventListener(eventName, listener: listener)
-        
         sendEvent()
     }
     func sendEvent() {
         let auth = fronteggApp.auth
-        
+
         var jsonUser: [String: Any]? = nil
         if let userData = try? JSONEncoder().encode(auth.user) {
             jsonUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any]
         }
-        
+
         let body: [String: Any?] = [
             "accessToken": auth.accessToken,
             "refreshToken": auth.refreshToken,
@@ -68,10 +66,10 @@ public class FronteggNativePlugin: CAPPlugin {
             "showLoader": auth.showLoader,
             "appLink": auth.appLink
         ]
-        
+
         self.notifyListeners("onFronteggAuthEvent", data: body as [String : Any])
     }
-    
+
     @objc func getConstants(_ call: CAPPluginCall) {
         call.resolve([
             "baseUrl": fronteggApp.baseUrl,
@@ -79,22 +77,35 @@ public class FronteggNativePlugin: CAPPlugin {
             "bundleId": Bundle.main.bundleIdentifier!
         ])
     }
-    
+
     @objc func login(_ call: CAPPluginCall) {
         fronteggApp.auth.login()
         call.resolve()
     }
-    
+
     @objc func logout(_ call: CAPPluginCall) {
         fronteggApp.auth.logout()
         call.resolve()
     }
-    
-    
-    @objc func subscribe(_ call: CAPPluginCall) {
-        //      fronteggApp.auth.logout()
-        
-        print("Subscribing to events")
-        call.resolve()
+
+    @objc func getAuthState(_ call: CAPPluginCall) {
+        let auth = fronteggApp.auth
+        var jsonUser: [String: Any]? = nil
+        if let userData = try? JSONEncoder().encode(auth.user) {
+            jsonUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any]
+        }
+
+        let body: [String: Any?] = [
+            "accessToken": auth.accessToken,
+            "refreshToken": auth.refreshToken,
+            "user": jsonUser,
+            "isAuthenticated": auth.isAuthenticated,
+            "isLoading": auth.isLoading,
+            "initializing": auth.initializing,
+            "showLoader": auth.showLoader,
+            "appLink": auth.appLink
+        ]
+        call.resolve(body as? [String: Any] ?? [:])
     }
+
 }
