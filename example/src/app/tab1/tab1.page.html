@@ -13,25 +13,22 @@
         </ion-toolbar>
     </ion-header>
 
-    <ion-text>showLoader: {{state.showLoader ? 'true' : 'false'}}</ion-text>
     <br/>
-    <ion-text>initializing: {{state.initializing ? 'true' : 'false'}}</ion-text>
+    <ion-text>isLoading: {{user ? user.email : 'Not Logged In' }}</ion-text>
     <br/>
-    <ion-text>isLoading: {{state.isLoading ? 'true' : 'false'}}</ion-text>
+    <ion-text>isLoading: {{isLoading ? 'true' : 'false'}}</ion-text>
     <br/>
-    <ion-text>isAuthenticated: {{state.isAuthenticated ? 'true' : 'false'}}</ion-text>
-    <br/>
-    <ion-text>refreshToken: {{state.refreshToken}}</ion-text>
+    <ion-text>isAuthenticated: {{isAuthenticated ? 'true' : 'false'}}</ion-text>
     <br/>
     <ion-text>
         accessToken:{{' '}}
-        {{state.accessToken ? state.accessToken.substring(state.accessToken.length - 40) : ''}}
+        {{accessToken ? accessToken.substring(accessToken.length - 40) : ''}}
     </ion-text>
     <br/>
     <br/>
 
 
-    <ion-button *ngIf="!state.isAuthenticated" (click)="login()">Login</ion-button>
-    <ion-button *ngIf="state.isAuthenticated" (click)="logout()">Logout</ion-button>
+    <ion-button *ngIf="!isAuthenticated" (click)="login()">Login</ion-button>
+    <ion-button *ngIf="isAuthenticated" (click)="logout()">Logout</ion-button>
 
 </ion-content>

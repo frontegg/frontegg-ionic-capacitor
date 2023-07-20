@@ -1,6 +1,5 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
-import { FronteggNative } from '@frontegg/ionic-capacitor'
-import { FronteggState } from '../../../../src';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { Frontegg, FronteggState } from '@frontegg/ionic-capacitor'
 
 @Component({
   selector: 'app-tab1',
@@ -9,36 +8,32 @@ import { FronteggState } from '../../../../src';
 })
 export class Tab1Page implements OnInit {
 
-
-  state: Partial<FronteggState> = {
-    showLoader: true,
-    isAuthenticated: false,
-    isLoading: true,
-    initializing: true,
-  }
-
   constructor(private ngZone: NgZone) {
   }
 
+  user: FronteggState['user'] = null
+  isLoading: boolean = true
+  isAuthenticated: boolean = false
+  accessToken: string | null = null
+
+
   ngOnInit() {
     console.log('start listening')
-    FronteggNative.addListener('onFronteggAuthEvent', (data: FronteggState) => {
-      this.ngZone.run(() => {
-        this.state = data
-      })
-    })
-
+    Frontegg.$user.subscribe((user) => this.ngZone.run(() => this.user = user))
+    Frontegg.$isLoading.subscribe((isLoading) => this.ngZone.run(() => this.isLoading = isLoading))
+    Frontegg.$isAuthenticated.subscribe((isAuthenticated) => this.ngZone.run(() => this.isAuthenticated = isAuthenticated))
+    Frontegg.$accessToken.subscribe((accessToken) => this.ngZone.run(() => this.accessToken = accessToken))
   }
 
 
   login() {
     console.log('login()');
 
-    FronteggNative.login();
+    Frontegg.login()
   }
 
   logout() {
     console.log('logout()');
-    FronteggNative.logout()
+    Frontegg.logout()
   }
 }

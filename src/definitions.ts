@@ -2,11 +2,12 @@ import type { ListenerCallback, PluginListenerHandle } from '@capacitor/core';
 import type { IUserProfile } from '@frontegg/rest-api';
 
 
+export type User = IUserProfile
 export interface FronteggState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  user: IUserProfile | null;
+  user: User | null;
   showLoader: boolean;
 }
 

@@ -8,4 +8,8 @@ const FronteggNative = registerPlugin<FronteggNativePlugin>('FronteggNative', {
 
 export { FronteggState } from './definitions';
 
-export const Frontegg = new FronteggService(FronteggNative)
+const Frontegg = new FronteggService(FronteggNative)
+
+export {
+  Frontegg, FronteggNative
+}

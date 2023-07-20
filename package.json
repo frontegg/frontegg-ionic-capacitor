@@ -43,12 +43,10 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
     "prepack": "npm run build",
-    "postpack": "node ./scripts/postpack.js && cd example && ionic capacitor copy ios && ionic capacitor update"
+    "postpack": "node ./scripts/postpack.js && cd example && ionic capacitor copy ios && ionic capacitor copy android && ionic capacitor update"
   },
   "dependencies": {
-    "@frontegg/rest-api": "^3.1.5",
-    "rxjs": "^7.8.1",
-    "@angular/core": ">=14.0.0"
+    "@frontegg/rest-api": "^3.1.5"
   },
   "devDependencies": {
     "@angular/core": ">=14.0.0",
@@ -68,7 +66,6 @@
     "typescript": "~4.1.5"
   },
   "peerDependencies": {
-    "@angular/core": ">=14.0.0",
     "@capacitor/core": "^5.0.0"
   },
   "prettier": "@ionic/prettier-config",
