@@ -37,17 +37,6 @@ public class FronteggNativePlugin: CAPPlugin {
         self.sendEvent()
     }
 
-    deinit {
-        cancellables.forEach { ca in
-            ca.cancel()
-        }
-    }
-
-
-    override public func addEventListener(_ eventName: String, listener: CAPPluginCall) {
-        super.addEventListener(eventName, listener: listener)
-        sendEvent()
-    }
     func sendEvent() {
         let auth = fronteggApp.auth
 

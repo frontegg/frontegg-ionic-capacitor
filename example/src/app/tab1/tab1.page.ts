@@ -1,5 +1,5 @@
-import { Component, NgZone, OnInit } from '@angular/core';
-import { Frontegg, FronteggState } from '@frontegg/ionic-capacitor'
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
+import { FronteggService, FronteggState } from '@frontegg/ionic-capacitor'
 
 @Component({
   selector: 'app-tab1',
@@ -8,7 +8,7 @@ import { Frontegg, FronteggState } from '@frontegg/ionic-capacitor'
 })
 export class Tab1Page implements OnInit {
 
-  constructor(private ngZone: NgZone) {
+  constructor(private ngZone: NgZone, @Inject('Frontegg') private fronteggService: FronteggService) {
   }
 
   user: FronteggState['user'] = null
@@ -19,21 +19,39 @@ export class Tab1Page implements OnInit {
 
   ngOnInit() {
     console.log('start listening')
-    Frontegg.$user.subscribe((user) => this.ngZone.run(() => this.user = user))
-    Frontegg.$isLoading.subscribe((isLoading) => this.ngZone.run(() => this.isLoading = isLoading))
-    Frontegg.$isAuthenticated.subscribe((isAuthenticated) => this.ngZone.run(() => this.isAuthenticated = isAuthenticated))
-    Frontegg.$accessToken.subscribe((accessToken) => this.ngZone.run(() => this.accessToken = accessToken))
+
+    const { user, isAuthenticated, accessToken, showLoader } = this.fronteggService.getState();
+    this.user = user;
+    this.isAuthenticated = isAuthenticated;
+    this.accessToken = accessToken;
+    this.isLoading = showLoader;
+
+    this.fronteggService.$user.subscribe((user) => {
+      console.log('change user', user)
+      this.ngZone.run(() => this.user = user)
+    })
+    this.fronteggService.$isLoading.subscribe((isLoading) => {
+      console.log('change isLoading', isLoading)
+      this.ngZone.run(() => this.isLoading = isLoading)
+    })
+    this.fronteggService.$isAuthenticated.subscribe((isAuthenticated) => {
+      console.log('change isAuthenticated', isAuthenticated)
+      this.ngZone.run(() => this.isAuthenticated = isAuthenticated)
+    })
+    this.fronteggService.$accessToken.subscribe((accessToken) => {
+      console.log('change accessToken', accessToken)
+      this.ngZone.run(() => this.accessToken = accessToken)
+    })
   }
 
 
   login() {
     console.log('login()');
-
-    Frontegg.login()
+    this.fronteggService.login()
   }
 
   logout() {
     console.log('logout()');
-    Frontegg.logout()
+    this.fronteggService.logout()
   }
 }

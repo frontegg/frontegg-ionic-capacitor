@@ -2,19 +2,27 @@ package com.frontegg.ionic;
 
 
 import com.frontegg.android.FronteggApp;
+import com.frontegg.android.FronteggAuth;
+import com.frontegg.android.models.User;
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
+
+import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+
 @CapacitorPlugin(name = "FronteggNative")
 public class FronteggNativePlugin extends Plugin {
-
+    private Disposable disposable = null;
 
     @Override
     public void load() {
@@ -25,7 +33,56 @@ public class FronteggNativePlugin extends Plugin {
             Objects.requireNonNull(constants.get("clientId")),
             this.getContext()
         );
+
+
+        FronteggAuth auth = FronteggAuth.Companion.getInstance();
+
+        if (this.disposable != null) {
+            this.disposable.dispose();
+        }
+        this.disposable = Observable.mergeArray(
+            auth.getAccessToken().getObservable(),
+            auth.getRefreshToken().getObservable(),
+            auth.getUser().getObservable(),
+            auth.isAuthenticated().getObservable(),
+            auth.isLoading().getObservable(),
+            auth.getInitializing().getObservable(),
+            auth.getShowLoader().getObservable()
+        ).subscribe(nullableObject -> {
+            sendEvent();
+        });
     }
+
+    private void sendEvent() {
+        JSObject data = getData();
+        notifyListeners("onFronteggAuthEvent", data);
+    }
+
+    private JSObject getData() {
+        FronteggAuth auth = FronteggAuth.Companion.getInstance();
+        String accessToken = auth.getAccessToken().getValue();
+        String refreshToken = auth.getRefreshToken().getValue();
+        User user = auth.getUser().getValue();
+        boolean isAuthenticated = auth.isAuthenticated().getValue();
+        boolean isLoading = auth.isLoading().getValue();
+        boolean initializing = auth.getInitializing().getValue();
+        boolean showLoader = auth.getShowLoader().getValue();
+
+        JSObject data = new JSObject();
+
+        data.put("accessToken", accessToken);
+        data.put("refreshToken", refreshToken);
+        if (user != null) {
+            data.put("user", Parser.userToJSONObject(user));
+        }
+        data.put("isAuthenticated", isAuthenticated);
+        data.put("isLoading", isLoading);
+        data.put("initializing", initializing);
+        data.put("showLoader", showLoader);
+
+        return data;
+    }
+
 
     @PluginMethod
     public void login(PluginCall call) {
@@ -39,6 +96,11 @@ public class FronteggNativePlugin extends Plugin {
             call.resolve();
             return null;
         });
+    }
+
+    @PluginMethod
+    public void getAuthState(PluginCall call) {
+        call.resolve(getData());
     }
 
 

@@ -6,11 +6,19 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { FronteggService } from '@frontegg/ionic-capacitor';
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent],
+  declarations: [ AppComponent ],
+  imports: [ BrowserModule, IonicModule.forRoot(), AppRoutingModule ],
+  providers: [ {
+    provide: 'Frontegg',
+    useValue: new FronteggService(),
+  }, {
+    provide: RouteReuseStrategy,
+    useClass: IonicRouteStrategy
+  } ],
+  bootstrap: [ AppComponent ],
 })
-export class AppModule {}
+export class AppModule {
+}
