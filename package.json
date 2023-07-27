@@ -42,8 +42,7 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "prepack": "npm run build",
-    "postpack": "node ./scripts/postpack.js && cd example && ionic capacitor copy && ionic capacitor update"
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@frontegg/rest-api": "^3.1.5"
