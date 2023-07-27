@@ -27,7 +27,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Authenticate with Registry
         run: |
-          npm logout
           echo "init-author-name=Frontegg LTD" > .npmrc
           echo "init-author-email=hello@frontegg.com" >> .npmrc
           echo "init-author-url=https://frontegg.com" >> .npmrc
