@@ -45,14 +45,23 @@ npm install @frontegg/ionic-capacitor
 
 # Add iOS and Android packages
 
+Add the iOS and Android projects to your ionic app by running the following commands:
+
+**NOTE: skip the command if you already have the project added.**
+
 ```bash
 ionic capacitor add android
 ionic capacitor add ios
 ```
 
-# Setup Android Project
+### Setup Android Project
 
-1. Open Android Studio and open the android folder created by the capacitor command.
+1. Open Android Studio and open the android folder created by the capacitor command:
+   ```bash
+      ionic capacitor open android
+   ```
+   or open the android studio manually.
+2. 
 2. Open the `app/build.gradle` file and add the following line to the before `android` section:
    ```groovy
    def fronteggDomain = "frontegg-domain-without-https-protocal"
@@ -102,6 +111,58 @@ ionic capacitor add ios
    ```
 
 
-# Setup iOS Project
+### Setup iOS Project
+
+Frontegg iOS SDK requires `CODE_SIGNING_ALLOWED=YES` to be set in the project settings.
+Every time you run `ionic capacitor copy ios` the `CODE_SIGNING_ALLOWED` will be set to `NO` and you will need to set it back to `YES` manually.
+
+1. Open Android Studio and open the android folder created by the capacitor command:
+   ```bash
+      ionic capacitor open ios
+   ```
+   or open the xcode manually.
+
+2. Create new `Frontegg.plist` with the following xml:
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+   <plist version="1.0">
+     <dict>
+       <key>baseUrl</key>
+       <string>YOUR_FRONTEGG_DOMAIN</string>
+       <key>clientId</key>
+       <string>YOUR_FRONTEGG_CLIENT_ID</string>
+     </dict>
+   </plist>
+
+   ```
+
+3. Enable `CODE_SIGNING_ALLOWED` in the Podfile under `/ios/App` folder.
+
+
+
+
+## Usage
+
+### Initialize Frontegg
+
+### Ionic with Angular:
+
+1. Open the `src/app/app.module.ts` file and add the following line to the before `@NgModule` section:
+   ```typescript
+   import { FronteggService } from '@frontegg/ionic-capacitor';
+  
+   @NgModule({ 
+     // ...
+     providers: [ {
+       provide: 'Frontegg',
+       useValue: new FronteggService(),
+     }]
+     // ...
+   })
+   ```
+2. Find full example under `example/src/app/tab1/tab1.page.ts` file.
+
+
 
 
