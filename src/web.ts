@@ -14,6 +14,10 @@ export class FronteggNativeWeb
     throw Error('FronteggNative.logout not implemented in web')
   }
 
+  async switchTenant(payload: { tenantId: string }): Promise<void> {
+    throw Error(`FronteggNative.switchTenant ${payload} not implemented in web, `)
+  }
+
   async getConstants(): Promise<Record<string, string>> {
     throw Error('FronteggNative.getConstants not implemented in web')
   }

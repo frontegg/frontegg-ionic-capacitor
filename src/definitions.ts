@@ -1,8 +1,11 @@
 import type { ListenerCallback, PluginListenerHandle } from '@capacitor/core';
-import type { IUserProfile } from '@frontegg/rest-api';
+import type { ITenantsResponse, IUserProfile } from '@frontegg/rest-api';
 
+export type User = IUserProfile & {
+  tenants: ITenantsResponse[];
+  activeTenant: ITenantsResponse
+}
 
-export type User = IUserProfile
 export interface FronteggState {
   accessToken: string | null;
   refreshToken: string | null;
@@ -22,6 +25,8 @@ export interface FronteggNativePlugin {
   login(): void;
 
   logout(): void;
+
+  switchTenant(payload:{tenantId: string}): Promise<void>;
 
   addListener(eventName: string, listenerFunc: ListenerCallback): Promise<PluginListenerHandle> & PluginListenerHandle
 
