@@ -77,6 +77,17 @@ public class FronteggNativePlugin: CAPPlugin {
         call.resolve()
     }
 
+    @objc func switchTenant(_ call: CAPPluginCall) {
+        guard let tenantId = call.options["tenantId"] as? String else {
+            call.reject("No tenantId provided")
+            return
+        }
+
+        fronteggApp.auth.switchTenant(tenantId: tenantId) { _ in
+            call.resolve()
+        }
+    }
+
     @objc func getAuthState(_ call: CAPPluginCall) {
         let auth = fronteggApp.auth
         var jsonUser: [String: Any]? = nil

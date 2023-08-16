@@ -1,6 +1,6 @@
 {
   "name": "@frontegg/ionic-capacitor",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Frontegg Ionic Capacitor SDK",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -42,7 +42,11 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "postpack": "node scripts/postpack.js",
+    "sync": "npm run verify && npm pack && cd example && ionic capacitor sync",
+    "start:android": "cd example && ionic capacitor run android --livereload --external",
+    "start:ios": "cd example && ionic capacitor run ios --livereload --external"
   },
   "dependencies": {
     "@frontegg/rest-api": "^3.1.5"

@@ -84,4 +84,9 @@ export class FronteggService {
   public logout(): void {
     FronteggNative.logout();
   }
+
+  public switchTenant(tenantId: string): Promise<void> {
+    console.log("test")
+    return FronteggNative.switchTenant({ tenantId })
+  }
 }

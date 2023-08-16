@@ -99,6 +99,19 @@ public class FronteggNativePlugin extends Plugin {
     }
 
     @PluginMethod
+    public void switchTenant(PluginCall call) {
+        String tenantId = call.getString("tenantId");
+        if (tenantId == null) {
+            call.reject("No tenantId provided");
+            return;
+        }
+        FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, () -> {
+            call.resolve();
+            return null;
+        });
+    }
+
+    @PluginMethod
     public void getAuthState(PluginCall call) {
         call.resolve(getData());
     }

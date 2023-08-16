@@ -20,6 +20,8 @@
     <br/>
     <ion-text>isAuthenticated: {{isAuthenticated ? 'true' : 'false'}}</ion-text>
     <br/>
+    <ion-text>Active Tenant: {{user?.activeTenant?.name}}</ion-text>
+    <br/>
     <ion-text>
         accessToken:{{' '}}
         {{accessToken ? accessToken.substring(accessToken.length - 40) : ''}}
