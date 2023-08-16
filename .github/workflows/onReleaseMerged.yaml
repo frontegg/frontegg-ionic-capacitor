@@ -88,7 +88,7 @@ jobs:
 #          draft: false
 #          prerelease: false
 
-      - name: Publish @frontegg/react-native version to NPM
+      - name: Publish @frontegg/ionic-capacitor version to NPM
         run: npm publish --tag latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
