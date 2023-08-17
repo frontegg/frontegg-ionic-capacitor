@@ -43,8 +43,7 @@
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
     "prepack": "npm run build",
-    "postpack": "node scripts/postpack.js",
-    "sync": "npm run verify && npm pack && cd example && ionic capacitor sync",
+    "sync": "npm run verify && npm pack && node scripts/postpack.js && cd example && ionic capacitor sync",
     "start:android": "cd example && ionic capacitor run android --livereload --external",
     "start:ios": "cd example && ionic capacitor run ios --livereload --external"
   },
