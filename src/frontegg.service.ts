@@ -99,7 +99,6 @@ export class FronteggService {
   }
 
   public switchTenant(tenantId: string): Promise<void> {
-    console.log('test')
     return FronteggNative.switchTenant({ tenantId })
   }
 }
