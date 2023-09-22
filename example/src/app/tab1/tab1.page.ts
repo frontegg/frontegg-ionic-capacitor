@@ -27,7 +27,7 @@ export class Tab1Page implements OnInit {
     this.isLoading = showLoader;
 
     this.fronteggService.$user.subscribe((user) => {
-      console.log('change user', user)
+      console.log(`change user ${user}`)
       this.ngZone.run(() => this.user = user)
     })
     this.fronteggService.$isLoading.subscribe((isLoading) => {
@@ -39,7 +39,7 @@ export class Tab1Page implements OnInit {
       this.ngZone.run(() => this.isAuthenticated = isAuthenticated)
     })
     this.fronteggService.$accessToken.subscribe((accessToken) => {
-      console.log('change accessToken', accessToken)
+      console.log(`change accessToken ${accessToken && accessToken.length > 50 ? accessToken.substring(0, 50) : accessToken}`)
       this.ngZone.run(() => this.accessToken = accessToken)
     })
   }

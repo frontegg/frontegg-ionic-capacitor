@@ -12,6 +12,18 @@ public class FronteggNativePlugin: CAPPlugin {
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
 
+    private var workItem: DispatchWorkItem?
+    private let delay: TimeInterval = 0.2  // 200ms delay
+
+
+    func debounce(_ action: @escaping () -> Void) {
+        workItem?.cancel()
+        let newWorkItem = DispatchWorkItem(block: action)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
+        workItem = newWorkItem
+    }
+
+
     override public func load() {
 
         let auth = fronteggApp.auth
@@ -31,7 +43,9 @@ public class FronteggNativePlugin: CAPPlugin {
 
         anyChange.sink(receiveValue: { () in
 
-            self.sendEvent()
+            self.debounce() {
+                self.sendEvent()
+            }
         }).store(in: &cancellables)
 
         self.sendEvent()
@@ -55,6 +69,7 @@ public class FronteggNativePlugin: CAPPlugin {
             "showLoader": auth.showLoader,
             "appLink": auth.appLink
         ]
+
 
         self.notifyListeners("onFronteggAuthEvent", data: body as [String : Any])
     }

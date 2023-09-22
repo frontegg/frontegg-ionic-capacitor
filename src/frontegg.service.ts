@@ -10,6 +10,13 @@ const FronteggNative = registerPlugin<FronteggNativePlugin>('FronteggNative', {
 export class FronteggService {
   private state: FronteggState;
   private mapListeners: SubscribeMap<FronteggState>;
+  private readonly orderedListenerKeys: (keyof FronteggState)[] = [
+    'refreshToken',
+    'accessToken',
+    'user',
+    'isAuthenticated',
+    'showLoader',
+  ]
 
   constructor() {
     this.state = {
@@ -19,6 +26,7 @@ export class FronteggService {
       accessToken: null,
       refreshToken: null,
     }
+
     this.mapListeners = {
       'isAuthenticated': new Set(),
       'showLoader': new Set(),
@@ -27,16 +35,21 @@ export class FronteggService {
       'refreshToken': new Set(),
     }
     FronteggNative.addListener('onFronteggAuthEvent', (state: FronteggState) => {
-      console.log('onFronteggAuthEvent', state)
+      console.log('onFronteggAuthEvent', {
+        isAuthenticated: state.isAuthenticated,
+        showLoader: state.showLoader,
+        user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
+        accessToken: state.accessToken && state.accessToken.length > 50 ? `${state.accessToken.slice(0, 50)}...` : state.accessToken,
+        refreshToken: state.refreshToken,
+      })
 
-      const keys = Object.keys(this.mapListeners)
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i] as keyof FronteggState
+      const keys = this.orderedListenerKeys;
+      keys.forEach(key => {
         if (this.state[key] !== state[key]) {
-          console.log('onFronteggAuthEvent key: ', key, 'from:', this.state[key], 'to:', state[key])
+          console.log('onFronteggAuthEvent key: ', key)
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
         }
-      }
+      });
       this.state = state;
     })
 
@@ -86,7 +99,7 @@ export class FronteggService {
   }
 
   public switchTenant(tenantId: string): Promise<void> {
-    console.log("test")
+    console.log('test')
     return FronteggNative.switchTenant({ tenantId })
   }
 }
