@@ -54,4 +54,9 @@ export class Tab1Page implements OnInit {
     console.log('logout()');
     this.fronteggService.logout()
   }
+
+  refreshToken() {
+    console.log('refreshToken()');
+    this.fronteggService.refreshToken()
+  }
 }

@@ -68,12 +68,16 @@ public class FronteggNativePlugin: CAPPlugin {
     }
 
     @objc func login(_ call: CAPPluginCall) {
-        fronteggApp.auth.login()
+        DispatchQueue.main.sync {
+            fronteggApp.auth.login()
+        }
         call.resolve()
     }
 
     @objc func logout(_ call: CAPPluginCall) {
-        fronteggApp.auth.logout()
+        DispatchQueue.main.sync {
+            fronteggApp.auth.logout()
+        }
         call.resolve()
     }
 
@@ -85,6 +89,16 @@ public class FronteggNativePlugin: CAPPlugin {
 
         fronteggApp.auth.switchTenant(tenantId: tenantId) { _ in
             call.resolve()
+        }
+    }
+
+    @objc func refreshToken(_ call: CAPPluginCall) {
+
+        DispatchQueue.global(qos: .background).async {
+            Task {
+                await self.fronteggApp.auth.refreshTokenIfNeeded()
+                call.resolve()
+            }
         }
     }
 
