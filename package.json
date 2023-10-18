@@ -1,6 +1,6 @@
 {
   "name": "@frontegg/ionic-capacitor",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Frontegg Ionic Capacitor SDK",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

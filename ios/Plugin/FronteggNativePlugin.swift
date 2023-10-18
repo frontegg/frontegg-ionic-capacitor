@@ -13,7 +13,7 @@ public class FronteggNativePlugin: CAPPlugin {
     var cancellables = Set<AnyCancellable>()
 
     private var workItem: DispatchWorkItem?
-    private let delay: TimeInterval = 0.2  // 200ms delay
+    private let delay: TimeInterval = 0.05  // 200ms delay
 
     func debounce(_ action: @escaping () -> Void) {
         workItem?.cancel()

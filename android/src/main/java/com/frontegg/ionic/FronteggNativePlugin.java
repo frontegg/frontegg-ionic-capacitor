@@ -26,7 +26,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 @CapacitorPlugin(name = "FronteggNative")
 public class FronteggNativePlugin extends Plugin {
     private Disposable disposable = null;
-    private Debouncer debouncer = new Debouncer(200);  // 200ms delay
+    private Debouncer debouncer = new Debouncer(50);  // 200ms delay
 
     @Override
     public void load() {
