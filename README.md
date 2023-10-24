@@ -356,6 +356,17 @@ import { FronteggService } from '@frontegg/ionic-capacitor';
         this.fronteggService.$isAuthenticated.subscribe(async () => {
           window.location.reload()
         });
+   
+       /**
+         * Listens to application visibility changes
+         * Reload the page to trigger canActivate
+         * when application returns from login page without authentication
+         */
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible' && !this.fronteggService.getState().isAuthenticated) {
+            window.location.reload()
+          }
+        });
       }
     
       /**
