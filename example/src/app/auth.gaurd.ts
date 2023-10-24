@@ -17,6 +17,12 @@ export class AuthGuard {
     this.fronteggService.$isAuthenticated.subscribe(async () => {
       window.location.reload()
     });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && !this.fronteggService.getState().isAuthenticated) {
+        window.location.reload()
+      }
+    });
   }
 
   /**
