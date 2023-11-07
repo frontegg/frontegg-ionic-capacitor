@@ -12,6 +12,16 @@ public class FronteggNativePlugin: CAPPlugin {
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
 
+    private var workItem: DispatchWorkItem?
+    private let delay: TimeInterval = 0.05  // 200ms delay
+
+    func debounce(_ action: @escaping () -> Void) {
+        workItem?.cancel()
+        let newWorkItem = DispatchWorkItem(block: action)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
+        workItem = newWorkItem
+    }
+
     override public func load() {
 
         let auth = fronteggApp.auth
@@ -30,8 +40,9 @@ public class FronteggNativePlugin: CAPPlugin {
         }
 
         anyChange.sink(receiveValue: { () in
-
-            self.sendEvent()
+            self.debounce() {
+                self.sendEvent()
+            }
         }).store(in: &cancellables)
 
         self.sendEvent()
@@ -68,12 +79,16 @@ public class FronteggNativePlugin: CAPPlugin {
     }
 
     @objc func login(_ call: CAPPluginCall) {
-        fronteggApp.auth.login()
+        DispatchQueue.main.sync {
+            fronteggApp.auth.login()
+        }
         call.resolve()
     }
 
     @objc func logout(_ call: CAPPluginCall) {
-        fronteggApp.auth.logout()
+        DispatchQueue.main.sync {
+            fronteggApp.auth.logout()
+        }
         call.resolve()
     }
 
@@ -85,6 +100,16 @@ public class FronteggNativePlugin: CAPPlugin {
 
         fronteggApp.auth.switchTenant(tenantId: tenantId) { _ in
             call.resolve()
+        }
+    }
+
+    @objc func refreshToken(_ call: CAPPluginCall) {
+
+        DispatchQueue.global(qos: .background).async {
+            Task {
+                await self.fronteggApp.auth.refreshTokenIfNeeded()
+                call.resolve()
+            }
         }
     }
 

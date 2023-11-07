@@ -33,4 +33,7 @@
     <ion-button *ngIf="!isAuthenticated" (click)="login()">Login</ion-button>
     <ion-button *ngIf="isAuthenticated" (click)="logout()">Logout</ion-button>
 
+    <br/>
+    <br/>
+    <ion-button *ngIf="isAuthenticated" (click)="refreshToken()">Refresh Token</ion-button>
 </ion-content>

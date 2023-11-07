@@ -1,6 +1,8 @@
-import { FronteggNativePlugin, FronteggState, SubscribeMap } from './definitions';
-import { createObservable } from './observables';
 import { registerPlugin } from '@capacitor/core';
+
+import type { FronteggNativePlugin, FronteggState, SubscribeMap } from './definitions';
+import { createObservable } from './observables';
+
 
 const FronteggNative = registerPlugin<FronteggNativePlugin>('FronteggNative', {
   web: () => import('./web').then(m => new m.FronteggNativeWeb()),
@@ -10,6 +12,13 @@ const FronteggNative = registerPlugin<FronteggNativePlugin>('FronteggNative', {
 export class FronteggService {
   private state: FronteggState;
   private mapListeners: SubscribeMap<FronteggState>;
+  private readonly orderedListenerKeys: (keyof FronteggState)[] = [
+    'refreshToken',
+    'accessToken',
+    'user',
+    'isAuthenticated',
+    'showLoader',
+  ]
 
   constructor() {
     this.state = {
@@ -19,6 +28,7 @@ export class FronteggService {
       accessToken: null,
       refreshToken: null,
     }
+
     this.mapListeners = {
       'isAuthenticated': new Set(),
       'showLoader': new Set(),
@@ -27,16 +37,22 @@ export class FronteggService {
       'refreshToken': new Set(),
     }
     FronteggNative.addListener('onFronteggAuthEvent', (state: FronteggState) => {
-      console.log('onFronteggAuthEvent', state)
+      console.log('onFronteggAuthEvent', {
+        isAuthenticated: state.isAuthenticated,
+        showLoader: state.showLoader,
+        user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
+        accessToken: state.accessToken && state.accessToken.length > 50 ? `${state.accessToken.slice(0, 50)}...` : state.accessToken,
+        refreshToken: state.refreshToken,
+      })
 
-      const keys = Object.keys(this.mapListeners)
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i] as keyof FronteggState
+      const keys = this.orderedListenerKeys;
+      keys.forEach(key => {
         if (this.state[key] !== state[key]) {
-          console.log('onFronteggAuthEvent key: ', key, 'from:', this.state[key], 'to:', state[key])
+          console.log('onFronteggAuthEvent key: ', key);
+          (this.state as any)[key] = state[key];
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
         }
-      }
+      });
       this.state = state;
     })
 
@@ -44,13 +60,13 @@ export class FronteggService {
       console.log('getAuthState()', state)
 
       const keys = Object.keys(this.mapListeners)
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i] as keyof FronteggState
+      for (const item of keys) {
+        const key = item as keyof FronteggState
         if (this.state[key] !== state[key]) {
+          (this.state as any)[key] = state[key]
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
         }
       }
-      this.state = state
     })
   }
 
@@ -77,8 +93,8 @@ export class FronteggService {
   /**
    * Call frontegg native login method
    */
-  public login(): void {
-    FronteggNative.login();
+  public login(): Promise<void> {
+    return FronteggNative.login();
   }
 
   public logout(): void {
@@ -86,7 +102,11 @@ export class FronteggService {
   }
 
   public switchTenant(tenantId: string): Promise<void> {
-    console.log("test")
     return FronteggNative.switchTenant({ tenantId })
+  }
+
+
+  public refreshToken(): Promise<void> {
+    return FronteggNative.refreshToken()
   }
 }

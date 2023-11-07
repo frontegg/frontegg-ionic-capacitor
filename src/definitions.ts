@@ -22,16 +22,18 @@ export type SubscribeMap<T> = {
 
 
 export interface FronteggNativePlugin {
-  login(): void;
-
-  logout(): void;
-
-  switchTenant(payload:{tenantId: string}): Promise<void>;
-
   addListener(eventName: string, listenerFunc: ListenerCallback): Promise<PluginListenerHandle> & PluginListenerHandle
 
   getConstants(): Promise<Record<string, string>>;
 
   getAuthState(): Promise<FronteggState>;
+
+  login(): Promise<void>;
+
+  logout(): void;
+
+  switchTenant(payload:{tenantId: string}): Promise<void>;
+
+  refreshToken(): Promise<void>;
 
 }

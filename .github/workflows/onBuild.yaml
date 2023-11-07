@@ -1,0 +1,51 @@
+name: Build Merge Workflow
+on:
+  push:
+    branches:
+      - FR-13828-embedded-mode
+env:
+  CI: true
+jobs:
+  publish:
+    name: 'Install | Build | Test'
+    runs-on: macos-12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+          cache: npm
+          cache-dependency-path: '**/package.json'
+      - name: Git Identity
+        run: |
+          git config --global user.name 'frontegg'
+          git config --global user.email 'frontegg@users.noreply.github.com'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Authenticate with Registry
+        run: |
+          echo "init-author-name=Frontegg LTD" > .npmrc
+          echo "init-author-email=hello@frontegg.com" >> .npmrc
+          echo "init-author-url=https://frontegg.com" >> .npmrc
+          echo "init-license=MIT" >> .npmrc
+          echo "always-auth=true" >> .npmrc
+          echo "registry=https://registry.npmjs.org" >> .npmrc
+          echo "@frontegg:registry=https://registry.npmjs.org" >> .npmrc
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
+          npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      - name: Install Package
+        run: |
+          npm i
+      - name: Build Package
+        run: |
+          npm run build
+
+#      - name: Publish @frontegg/ionic-capacitor version to NPM
+#        run: npm publish --tag alpha
+#        env:
+#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}

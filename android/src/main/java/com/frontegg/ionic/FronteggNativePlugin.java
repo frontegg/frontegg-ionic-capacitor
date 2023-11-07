@@ -1,6 +1,9 @@
 package com.frontegg.ionic;
 
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
@@ -10,12 +13,12 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-import org.json.JSONObject;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -23,6 +26,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 @CapacitorPlugin(name = "FronteggNative")
 public class FronteggNativePlugin extends Plugin {
     private Disposable disposable = null;
+    private Debouncer debouncer = new Debouncer(50);  // 200ms delay
 
     @Override
     public void load() {
@@ -49,8 +53,10 @@ public class FronteggNativePlugin extends Plugin {
             auth.getInitializing().getObservable(),
             auth.getShowLoader().getObservable()
         ).subscribe(nullableObject -> {
-            sendEvent();
+            debouncer.debounce(this::sendEvent);
         });
+
+        sendEvent();
     }
 
     private void sendEvent() {
@@ -108,6 +114,16 @@ public class FronteggNativePlugin extends Plugin {
         FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, () -> {
             call.resolve();
             return null;
+        });
+    }
+
+    @PluginMethod
+    public void refreshToken(PluginCall call) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            FronteggApp.Companion.getInstance().getAuth().refreshTokenIfNeeded();
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(call::resolve);
         });
     }
 

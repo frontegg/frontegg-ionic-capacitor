@@ -1,4 +1,4 @@
-import { FronteggState, SubscribeFunc, SubscribeMap } from './definitions';
+import type { FronteggState, SubscribeFunc, SubscribeMap } from './definitions';
 
 
 export const createObservable = <T extends keyof FronteggState>(map: SubscribeMap<FronteggState>, state: FronteggState, key: T) => {
