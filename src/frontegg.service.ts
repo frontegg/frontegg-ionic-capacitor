@@ -1,6 +1,6 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { FronteggNativePlugin, FronteggState, SubscribeMap } from './definitions';
+import type { FronteggConstants, FronteggNativePlugin, FronteggState, SubscribeMap } from './definitions';
 import { createObservable } from './observables';
 
 
@@ -17,6 +17,7 @@ export class FronteggService {
     'accessToken',
     'user',
     'isAuthenticated',
+    'selectedRegion',
     'showLoader',
   ]
 
@@ -27,6 +28,7 @@ export class FronteggService {
       user: null,
       accessToken: null,
       refreshToken: null,
+      selectedRegion: null,
     }
 
     this.mapListeners = {
@@ -35,6 +37,7 @@ export class FronteggService {
       'user': new Set(),
       'accessToken': new Set(),
       'refreshToken': new Set(),
+      'selectedRegion': new Set(),
     }
     FronteggNative.addListener('onFronteggAuthEvent', (state: FronteggState) => {
       console.log('onFronteggAuthEvent', {
@@ -74,6 +77,10 @@ export class FronteggService {
     return this.state;
   }
 
+  public getNativeState(): Promise<FronteggState> {
+    return FronteggNative.getAuthState();
+  }
+
   public get $isLoading() {
     return createObservable(this.mapListeners, this.state, 'showLoader')
   }
@@ -90,6 +97,10 @@ export class FronteggService {
     return createObservable(this.mapListeners, this.state, 'accessToken')
   }
 
+  public get $selectedRegion() {
+    return createObservable(this.mapListeners, this.state, 'selectedRegion')
+  }
+
   /**
    * Call frontegg native login method
    */
@@ -101,10 +112,23 @@ export class FronteggService {
     FronteggNative.logout();
   }
 
+  public getConstants(): Promise<FronteggConstants> {
+    return FronteggNative.getConstants();
+  }
+
   public switchTenant(tenantId: string): Promise<void> {
     return FronteggNative.switchTenant({ tenantId })
   }
 
+  /**
+   * used to initialize the plugin with multiple regions
+   * for more information see:
+   * iOS: https://github.com/frontegg/frontegg-ios-swift#multi-region-support
+   * Android: https://github.com/frontegg/frontegg-android-kotlin#multi-region-support
+   */
+  public initWithRegion(regionKey: string): Promise<void> {
+    return FronteggNative.initWithRegion({ regionKey })
+  }
 
   public refreshToken(): Promise<void> {
     return FronteggNative.refreshToken()

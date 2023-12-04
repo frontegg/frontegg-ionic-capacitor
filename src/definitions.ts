@@ -12,6 +12,7 @@ export interface FronteggState {
   isAuthenticated: boolean;
   user: User | null;
   showLoader: boolean;
+  selectedRegion: string | null;
 }
 
 
@@ -21,10 +22,18 @@ export type SubscribeMap<T> = {
 }
 
 
+export interface FronteggConstants {
+  baseUrl: string;
+  clientId: string;
+  bundleId: string;
+  isRegional: boolean;
+  regionData?: { key: string, baseUrl: string, clientId: string }[]
+}
+
 export interface FronteggNativePlugin {
   addListener(eventName: string, listenerFunc: ListenerCallback): Promise<PluginListenerHandle> & PluginListenerHandle
 
-  getConstants(): Promise<Record<string, string>>;
+  getConstants(): Promise<FronteggConstants>;
 
   getAuthState(): Promise<FronteggState>;
 
@@ -32,7 +41,15 @@ export interface FronteggNativePlugin {
 
   logout(): void;
 
-  switchTenant(payload:{tenantId: string}): Promise<void>;
+  switchTenant(payload: { tenantId: string }): Promise<void>;
+
+  /**
+   * used to initialize the plugin with multiple regions
+   * for more information see:
+   * iOS: https://github.com/frontegg/frontegg-ios-swift#multi-region-support
+   * Android: https://github.com/frontegg/frontegg-android-kotlin#multi-region-support
+   */
+  initWithRegion(payload: { regionKey: string }): Promise<void>;
 
   refreshToken(): Promise<void>;
 

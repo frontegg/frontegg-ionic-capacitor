@@ -34,7 +34,7 @@ public class FronteggNativePlugin: CAPPlugin {
                 auth.$isLoading.map {_ in },
                 auth.$initializing.map {_ in },
                 auth.$showLoader.map {_ in },
-                auth.$appLink.map {_ in }
+                auth.$selectedRegion.map{_ in}
             )
             .eraseToAnyPublisher()
         }
@@ -47,6 +47,8 @@ public class FronteggNativePlugin: CAPPlugin {
 
         self.sendEvent()
     }
+
+
 
     func sendEvent() {
         let auth = fronteggApp.auth
@@ -64,17 +66,44 @@ public class FronteggNativePlugin: CAPPlugin {
             "isLoading": auth.isLoading,
             "initializing": auth.initializing,
             "showLoader": auth.showLoader,
-            "appLink": auth.appLink
+            "selectedRegion": regionToJson(auth.selectedRegion)
         ]
 
         self.notifyListeners("onFronteggAuthEvent", data: body as [String : Any])
+    }
+
+
+    func regionToJson(_ region: RegionConfig?) -> [String:String]? {
+
+        if let reg = region {
+            return [
+                "baseUrl": reg.baseUrl,
+                "clientId": reg.clientId,
+                "key": reg.key
+            ]
+        }else {
+            return nil
+        }
+    }
+    func regionsToJson(_ regions: [RegionConfig]) -> [[String:String]] {
+
+        var regionData: [[String:String]] = []
+        regions.forEach { reg in
+            if let region = regionToJson(reg) {
+                regionData.append(region)
+            }
+        }
+
+        return regionData
     }
 
     @objc func getConstants(_ call: CAPPluginCall) {
         call.resolve([
             "baseUrl": fronteggApp.baseUrl,
             "clientId": fronteggApp.clientId,
-            "bundleId": Bundle.main.bundleIdentifier!
+            "bundleId": Bundle.main.bundleIdentifier!,
+            "isRegional": fronteggApp.auth.isRegional,
+            "regionData": regionsToJson(fronteggApp.auth.regionData)
         ])
     }
 
@@ -103,6 +132,15 @@ public class FronteggNativePlugin: CAPPlugin {
         }
     }
 
+    @objc func initWithRegion(_ call: CAPPluginCall) {
+        guard let regionKey = call.options["regionKey"] as? String else {
+            call.reject("No regionKey provided")
+            return
+        }
+
+        fronteggApp.initWithRegion(regionKey: regionKey)
+    }
+
     @objc func refreshToken(_ call: CAPPluginCall) {
 
         DispatchQueue.global(qos: .background).async {
@@ -128,9 +166,9 @@ public class FronteggNativePlugin: CAPPlugin {
             "isLoading": auth.isLoading,
             "initializing": auth.initializing,
             "showLoader": auth.showLoader,
-            "appLink": auth.appLink
+            "selectedRegion": regionToJson(auth.selectedRegion)
         ]
-        call.resolve(body as? [String: Any] ?? [:])
+        call.resolve(body as [String: Any] )
     }
 
 }
