@@ -429,7 +429,7 @@ import { FronteggService } from '@frontegg/ionic-capacitor';
 2. Open the `src/app-routing.module.ts` file and add wrap the app routes with loadChildren and apply CanActivate guard:
 
 ```typescript
-import { AuthGuard } from './auth.gaurd';
+import { AuthGuard } from './auth.guard';
 
 const routes: Routes = [
   {

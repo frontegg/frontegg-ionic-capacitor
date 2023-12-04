@@ -7,10 +7,11 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FronteggService } from '@frontegg/ionic-capacitor';
+import { SelectRegionModule } from './select-region/select-region.module';
 
 @NgModule({
   declarations: [ AppComponent ],
-  imports: [ BrowserModule, IonicModule.forRoot(), AppRoutingModule ],
+  imports: [ BrowserModule, IonicModule.forRoot(), AppRoutingModule, SelectRegionModule ],
   providers: [ {
     provide: 'Frontegg',
     useValue: new FronteggService(),
