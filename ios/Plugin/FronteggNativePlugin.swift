@@ -11,19 +11,62 @@ import Capacitor
 public class FronteggNativePlugin: CAPPlugin {
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
-
+    
     private var workItem: DispatchWorkItem?
     private let delay: TimeInterval = 0.05  // 200ms delay
-
+    
     func debounce(_ action: @escaping () -> Void) {
         workItem?.cancel()
         let newWorkItem = DispatchWorkItem(block: action)
         DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: newWorkItem)
         workItem = newWorkItem
     }
-
+    
     override public func load() {
-
+        
+        let config = self.getConfig()
+        
+        let handleLoginWithSocialLogin = config.getBoolean("handleLoginWithSocialLogin", true)
+        let handleLoginWithSSO = config.getBoolean("handleLoginWithSSO", false)
+        
+        if let array = config.getArray("regions"),
+        array.count > 0 {
+            print("region initialization")
+            var regions:[RegionConfig] = []
+            
+            array.forEach {item in
+                if let dict = item as? [String:String]  {
+                    regions.append(RegionConfig(
+                        key: dict["key"]!,
+                        baseUrl: dict["baseUrl"]!,
+                        clientId: dict["clientId"]!
+                    ))
+                }
+            }
+            
+            if(regions.isEmpty){
+                print("Frontegg Error: Missing regions configurations")
+                exit(1)
+            }
+            fronteggApp.manualInitRegions(regions: regions,
+                                          handleLoginWithSocialLogin: handleLoginWithSocialLogin,
+                                          handleLoginWithSSO: handleLoginWithSSO)
+        } else {
+            print("standard initialization")
+            if let baseUrl = config.getString("baseUrl"),
+               let clientId = config.getString("clientId") {
+                fronteggApp.manualInit(baseUrl: baseUrl,
+                                       cliendId: clientId,
+                                       handleLoginWithSocialLogin: handleLoginWithSocialLogin,
+                                       handleLoginWithSSO: handleLoginWithSSO)
+            }else {
+                print("Frontegg Error: Missing baseUrl or clientId in project configurations")
+                exit(1)
+            }
+        }
+        
+        
+        
         let auth = fronteggApp.auth
         var anyChange: AnyPublisher<Void, Never> {
             return Publishers.Merge8 (
@@ -38,26 +81,26 @@ public class FronteggNativePlugin: CAPPlugin {
             )
             .eraseToAnyPublisher()
         }
-
+        
         anyChange.sink(receiveValue: { () in
             self.debounce() {
                 self.sendEvent()
             }
         }).store(in: &cancellables)
-
+        
         self.sendEvent()
     }
-
-
-
+    
+    
+    
     func sendEvent() {
         let auth = fronteggApp.auth
-
+        
         var jsonUser: [String: Any]? = nil
         if let userData = try? JSONEncoder().encode(auth.user) {
             jsonUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any]
         }
-
+        
         let body: [String: Any?] = [
             "accessToken": auth.accessToken,
             "refreshToken": auth.refreshToken,
@@ -68,13 +111,13 @@ public class FronteggNativePlugin: CAPPlugin {
             "showLoader": auth.showLoader,
             "selectedRegion": regionToJson(auth.selectedRegion)
         ]
-
+        
         self.notifyListeners("onFronteggAuthEvent", data: body as [String : Any])
     }
-
-
+    
+    
     func regionToJson(_ region: RegionConfig?) -> [String:String]? {
-
+        
         if let reg = region {
             return [
                 "baseUrl": reg.baseUrl,
@@ -86,17 +129,17 @@ public class FronteggNativePlugin: CAPPlugin {
         }
     }
     func regionsToJson(_ regions: [RegionConfig]) -> [[String:String]] {
-
+        
         var regionData: [[String:String]] = []
         regions.forEach { reg in
             if let region = regionToJson(reg) {
                 regionData.append(region)
             }
         }
-
+        
         return regionData
     }
-
+    
     @objc func getConstants(_ call: CAPPluginCall) {
         call.resolve([
             "baseUrl": fronteggApp.baseUrl,
@@ -106,43 +149,43 @@ public class FronteggNativePlugin: CAPPlugin {
             "regionData": regionsToJson(fronteggApp.auth.regionData)
         ])
     }
-
+    
     @objc func login(_ call: CAPPluginCall) {
         DispatchQueue.main.sync {
             fronteggApp.auth.login()
         }
         call.resolve()
     }
-
+    
     @objc func logout(_ call: CAPPluginCall) {
         DispatchQueue.main.sync {
             fronteggApp.auth.logout()
         }
         call.resolve()
     }
-
+    
     @objc func switchTenant(_ call: CAPPluginCall) {
         guard let tenantId = call.options["tenantId"] as? String else {
             call.reject("No tenantId provided")
             return
         }
-
+        
         fronteggApp.auth.switchTenant(tenantId: tenantId) { _ in
             call.resolve()
         }
     }
-
+    
     @objc func initWithRegion(_ call: CAPPluginCall) {
         guard let regionKey = call.options["regionKey"] as? String else {
             call.reject("No regionKey provided")
             return
         }
-
+        
         fronteggApp.initWithRegion(regionKey: regionKey)
     }
-
+    
     @objc func refreshToken(_ call: CAPPluginCall) {
-
+        
         DispatchQueue.global(qos: .background).async {
             Task {
                 await self.fronteggApp.auth.refreshTokenIfNeeded()
@@ -150,14 +193,14 @@ public class FronteggNativePlugin: CAPPlugin {
             }
         }
     }
-
+    
     @objc func getAuthState(_ call: CAPPluginCall) {
         let auth = fronteggApp.auth
         var jsonUser: [String: Any]? = nil
         if let userData = try? JSONEncoder().encode(auth.user) {
             jsonUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any]
         }
-
+        
         let body: [String: Any?] = [
             "accessToken": auth.accessToken,
             "refreshToken": auth.refreshToken,
@@ -170,5 +213,5 @@ public class FronteggNativePlugin: CAPPlugin {
         ]
         call.resolve(body as [String: Any] )
     }
-
+    
 }

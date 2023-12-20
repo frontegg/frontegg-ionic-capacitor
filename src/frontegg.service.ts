@@ -46,11 +46,12 @@ export class FronteggService {
         user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
         accessToken: state.accessToken && state.accessToken.length > 50 ? `${state.accessToken.slice(0, 50)}...` : state.accessToken,
         refreshToken: state.refreshToken,
+        selectedRegion: state.selectedRegion,
       })
 
       const keys = this.orderedListenerKeys;
       keys.forEach(key => {
-        if (this.state[key] !== state[key]) {
+        if (this.isChanged(this.state[key], state[key])) {
           console.log('onFronteggAuthEvent key: ', key);
           (this.state as any)[key] = state[key];
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
@@ -65,12 +66,20 @@ export class FronteggService {
       const keys = Object.keys(this.mapListeners)
       for (const item of keys) {
         const key = item as keyof FronteggState
-        if (this.state[key] !== state[key]) {
+        if (this.isChanged(this.state[key], state[key])) {
           (this.state as any)[key] = state[key]
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
         }
       }
     })
+  }
+
+  private isChanged(value1: any, value2: any): boolean {
+    if (value1 == value2) {
+      return false;
+    }
+    return JSON.stringify(value1) != JSON.stringify(value2);
+
   }
 
   public getState() {

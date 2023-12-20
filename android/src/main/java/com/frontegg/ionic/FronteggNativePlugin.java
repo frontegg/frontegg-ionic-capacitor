@@ -7,14 +7,21 @@ import android.os.Looper;
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
+import com.frontegg.android.regions.RegionConfig;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginConfig;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-import java.lang.reflect.Field;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -26,18 +33,46 @@ import io.reactivex.rxjava3.disposables.Disposable;
 @CapacitorPlugin(name = "FronteggNative")
 public class FronteggNativePlugin extends Plugin {
     private Disposable disposable = null;
-    private Debouncer debouncer = new Debouncer(50);  // 200ms delay
+    private final Debouncer debouncer = new Debouncer(50);  // 200ms delay
 
     @Override
     public void load() {
-        Map<String, String> constants = this.getConstants();
 
-        FronteggApp.Companion.init(
-            Objects.requireNonNull(constants.get("baseUrl")),
-            Objects.requireNonNull(constants.get("clientId")),
-            this.getContext()
-        );
+        // for regions initialization
+        List<RegionConfig> regions = new ArrayList<>();
+        JSONArray array;
+        try {
+            array = this.getConfig().getConfigJSON().getJSONArray("regions");
 
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject regionJson = (JSONObject) array.get(i);
+                regions.add(new RegionConfig(
+                    regionJson.getString("key"),
+                    regionJson.getString("baseUrl"),
+                    regionJson.getString("clientId")
+                ));
+            }
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(regions.size() == 0) {
+            PluginConfig config = this.getConfig();
+            String baseUrl = config.getString("baseUrl");
+            String clientId = config.getString("clientId");
+            String regionKey = config.getString("regionKey");
+            if (baseUrl == null || clientId == null || regionKey == null) {
+                throw new RuntimeException("Missing required config parameters: baseUrl, clientId, regionKey");
+            }
+            FronteggApp.Companion.init(
+                baseUrl,
+                clientId,
+                this.getContext()
+            );
+        }else {
+            FronteggApp.Companion.initWithRegions(regions, this.getContext());
+        }
 
         FronteggAuth auth = FronteggAuth.Companion.getInstance();
 
@@ -73,6 +108,7 @@ public class FronteggNativePlugin extends Plugin {
         boolean isLoading = auth.isLoading().getValue();
         boolean initializing = auth.getInitializing().getValue();
         boolean showLoader = auth.getShowLoader().getValue();
+        RegionConfig selectedRegion = auth.getSelectedRegion();
 
         JSObject data = new JSObject();
 
@@ -85,6 +121,7 @@ public class FronteggNativePlugin extends Plugin {
         data.put("isLoading", isLoading);
         data.put("initializing", initializing);
         data.put("showLoader", showLoader);
+        data.put("selectedRegion", Parser.regionToJSONObject(selectedRegion));
 
         return data;
     }
@@ -117,6 +154,22 @@ public class FronteggNativePlugin extends Plugin {
         });
     }
 
+
+    @PluginMethod
+    public void initWithRegion(PluginCall call) {
+      String regionKey = call.getString("regionKey");
+      if (regionKey == null) {
+        call.reject("No regionKey provided");
+        return;
+      }
+      ExecutorService executor = Executors.newSingleThreadExecutor();
+      executor.submit(() -> {
+        FronteggApp.Companion.getInstance().initWithRegion(regionKey);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(call::resolve);
+      });
+    }
+
     @PluginMethod
     public void refreshToken(PluginCall call) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -133,43 +186,23 @@ public class FronteggNativePlugin extends Plugin {
     }
 
 
-    public Map<String, String> getConstants() {
+    @PluginMethod
+    public void getConstants(PluginCall call) {
+
+        String baseUrl = FronteggAuth.Companion.getInstance().getBaseUrl();
+        String clientId = FronteggAuth.Companion.getInstance().getBaseUrl();
         String packageName = getContext().getPackageName();
-        String className = packageName + ".BuildConfig";
 
-        try {
-            Class<?> buildConfigClass = Class.forName(className);
+        List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getRegions();
 
-            // Get the field from BuildConfig class
-            Field baseUrlField = buildConfigClass.getField("FRONTEGG_DOMAIN");
-            Field clientIdField = buildConfigClass.getField("FRONTEGG_CLIENT_ID");
-            String baseUrl = (String) baseUrlField.get(null); // Assuming it's a String
-            String clientId = (String) clientIdField.get(null); // Assuming it's a String
+        JSObject resultMap = new JSObject();
+        resultMap.put("baseUrl", baseUrl);
+        resultMap.put("clientId", clientId);
+        resultMap.put("bundleId", packageName);
+        resultMap.put("isRegional", regionsData.size() > 0);
+        resultMap.put("regionData", Parser.regionsToJSONObject(regionsData));
 
-            Map<String, String> resultMap = new HashMap<>();
-            resultMap.put("baseUrl", baseUrl);
-            resultMap.put("clientId", clientId);
-            resultMap.put("bundleId", packageName);
-
-            return resultMap;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Class not found: " + className);
-            throw new RuntimeException(e);
-        } catch (NoSuchFieldException e) {
-            System.out.println(
-                "Field not found in BuildConfig: " +
-                    "buildConfigField \"String\", 'FRONTEGG_DOMAIN', \"\\\"$fronteggDomain\\\"\"\n" +
-                    "buildConfigField \"String\", 'FRONTEGG_CLIENT_ID', \"\\\"$fronteggClientId\\\"\""
-            );
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            System.out.println(
-                "Access problem with field in BuildConfig: " +
-                    "buildConfigField \"String\", 'FRONTEGG_DOMAIN', \"\\\"$fronteggDomain\\\"\"\n" +
-                    "buildConfigField \"String\", 'FRONTEGG_CLIENT_ID', \"\\\"$fronteggClientId\\\"\""
-            );
-            throw new RuntimeException(e);
-        }
+        call.resolve(resultMap);
     }
 
 }

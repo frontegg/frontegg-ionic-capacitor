@@ -1,3 +1,4 @@
+
 import type { ListenerCallback, PluginListenerHandle } from '@capacitor/core';
 import type { ITenantsResponse, IUserProfile } from '@frontegg/rest-api';
 
@@ -53,4 +54,43 @@ export interface FronteggNativePlugin {
 
   refreshToken(): Promise<void>;
 
+}
+
+
+
+export type RegionConfig = {
+  key: string;
+  baseUrl: string;
+  clientId: string;
+};
+
+
+
+type FronteggNativeStandardOptions = {
+  baseUrl: string;
+  clientId: string;
+
+}
+type FronteggNativeRegionOptions = {
+  /**
+   * This is an array of regions to be used as frontegg app.
+   *
+   * @since 1.0.0
+   * @example [{key: "us", baseUrl: "https://us-api.frontegg.com", clientId: "us-client-id"}]
+   */
+  regions?: RegionConfig[];
+}
+type FronteggNativeOptions = (FronteggNativeStandardOptions | FronteggNativeRegionOptions) & {
+  handleLoginWithSocialLogin?: boolean;
+  handleLoginWithSSO?: boolean;
+}
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+declare module "@capacitor/cli" {
+  export interface PluginsConfig {
+    /**
+     * You can configure the way the push notifications are displayed when the app is in foreground.
+     */
+    FronteggNative?: FronteggNativeOptions;
+  }
 }

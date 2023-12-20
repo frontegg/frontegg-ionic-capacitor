@@ -14,6 +14,7 @@ export class RegionGuard {
      * Reload the page to trigger canActivate function again
      */
     this.fronteggService.$selectedRegion.subscribe(async () => {
+
       window.location.reload()
     });
   }
