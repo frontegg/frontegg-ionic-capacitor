@@ -1,6 +1,6 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { FronteggNativePlugin, FronteggState, SubscribeMap } from './definitions';
+import type { FronteggConstants, FronteggNativePlugin, FronteggState, SubscribeMap } from './definitions';
 import { createObservable } from './observables';
 
 
@@ -17,6 +17,7 @@ export class FronteggService {
     'accessToken',
     'user',
     'isAuthenticated',
+    'selectedRegion',
     'showLoader',
   ]
 
@@ -27,6 +28,7 @@ export class FronteggService {
       user: null,
       accessToken: null,
       refreshToken: null,
+      selectedRegion: null,
     }
 
     this.mapListeners = {
@@ -35,6 +37,7 @@ export class FronteggService {
       'user': new Set(),
       'accessToken': new Set(),
       'refreshToken': new Set(),
+      'selectedRegion': new Set(),
     }
     FronteggNative.addListener('onFronteggAuthEvent', (state: FronteggState) => {
       console.log('onFronteggAuthEvent', {
@@ -43,11 +46,12 @@ export class FronteggService {
         user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
         accessToken: state.accessToken && state.accessToken.length > 50 ? `${state.accessToken.slice(0, 50)}...` : state.accessToken,
         refreshToken: state.refreshToken,
+        selectedRegion: state.selectedRegion,
       })
 
       const keys = this.orderedListenerKeys;
       keys.forEach(key => {
-        if (this.state[key] !== state[key]) {
+        if (this.isChanged(this.state[key], state[key])) {
           console.log('onFronteggAuthEvent key: ', key);
           (this.state as any)[key] = state[key];
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
@@ -62,7 +66,7 @@ export class FronteggService {
       const keys = Object.keys(this.mapListeners)
       for (const item of keys) {
         const key = item as keyof FronteggState
-        if (this.state[key] !== state[key]) {
+        if (this.isChanged(this.state[key], state[key])) {
           (this.state as any)[key] = state[key]
           this.mapListeners[key].forEach((listener: any) => listener(state[key]))
         }
@@ -70,8 +74,20 @@ export class FronteggService {
     })
   }
 
+  private isChanged(value1: any, value2: any): boolean {
+    if (value1 == value2) {
+      return false;
+    }
+    return JSON.stringify(value1) != JSON.stringify(value2);
+
+  }
+
   public getState() {
     return this.state;
+  }
+
+  public getNativeState(): Promise<FronteggState> {
+    return FronteggNative.getAuthState();
   }
 
   public get $isLoading() {
@@ -90,6 +106,10 @@ export class FronteggService {
     return createObservable(this.mapListeners, this.state, 'accessToken')
   }
 
+  public get $selectedRegion() {
+    return createObservable(this.mapListeners, this.state, 'selectedRegion')
+  }
+
   /**
    * Call frontegg native login method
    */
@@ -101,10 +121,23 @@ export class FronteggService {
     FronteggNative.logout();
   }
 
+  public getConstants(): Promise<FronteggConstants> {
+    return FronteggNative.getConstants();
+  }
+
   public switchTenant(tenantId: string): Promise<void> {
     return FronteggNative.switchTenant({ tenantId })
   }
 
+  /**
+   * used to initialize the plugin with multiple regions
+   * for more information see:
+   * iOS: https://github.com/frontegg/frontegg-ios-swift#multi-region-support
+   * Android: https://github.com/frontegg/frontegg-android-kotlin#multi-region-support
+   */
+  public initWithRegion(regionKey: string): Promise<void> {
+    return FronteggNative.initWithRegion({ regionKey })
+  }
 
   public refreshToken(): Promise<void> {
     return FronteggNative.refreshToken()

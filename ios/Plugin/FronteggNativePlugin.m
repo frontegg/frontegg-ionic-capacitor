@@ -10,6 +10,7 @@ CAP_PLUGIN(FronteggNativePlugin, "FronteggNative",
            CAP_PLUGIN_METHOD(logout, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(switchTenant, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(refreshToken, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(initWithRegion, CAPPluginReturnPromise);
 )
 
 

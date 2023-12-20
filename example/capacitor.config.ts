@@ -6,6 +6,19 @@ const config: CapacitorConfig = {
   webDir: 'www',
   server: {
     androidScheme: 'https'
+  },
+  plugins:{
+    FronteggNative:{
+      regions:[{
+        key: 'eu',
+        baseUrl: 'https://auth.davidantoon.me',
+        clientId: 'b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca'
+      }, {
+        key: 'us',
+        baseUrl: 'https://davidprod.frontegg.com',
+        clientId: 'd7d07347-2c57-4450-8418-0ec7ee6e096b'
+      }]
+    }
   }
 };
 
