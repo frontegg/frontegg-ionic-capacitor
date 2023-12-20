@@ -7,25 +7,29 @@ features for the product-led era.
 
 - [Project Requirements](#project-requirements)
 - [Getting Started](#getting-started)
-    - [Prepare Frontegg workspace](#prepare-frontegg-workspace)
-    - [Setup Hosted Login](#setup-hosted-login)
-    - [Add frontegg package to the project](#add-frontegg-package-to-the-project)
-    - [Configure your application](#configure-your-application)
+  - [Prepare Frontegg workspace](#prepare-frontegg-workspace)
+  - [Setup Hosted Login](#setup-hosted-login)
+  - [Add frontegg package to the project](#add-frontegg-package-to-the-project)
+  - [Configure your application](#configure-your-application)
 - [Setup iOS Project](#setup-ios-project)
-    - [Create Frontegg plist file](#create-frontegg-plist-file)
-    - [Config iOS associated domain](#config-ios-associated-domain)
+  - [Create Frontegg plist file](#create-frontegg-plist-file)
+  - [Config iOS associated domain](#config-ios-associated-domain)
 - [Setup Android Project](#setup-android-project)
-    - [Set minimum SDK version](#set-minimum-sdk-version)
-    - [Configure build config fields](#configure-build-config-fields)
-    - [Config Android AssetLinks](#config-ios-associated-domain)
+  - [Set minimum SDK version](#set-minimum-sdk-version)
+  - [Configure build config fields](#configure-build-config-fields)
+  - [Config Android AssetLinks](#config-ios-associated-domain)
 - [Angular Usages](#angular-usages)
-    - [Integrate Frontegg](#integrate-frontegg)
-    - [Protect Routes](#protect-routes)
-    - [Get Logged In User](#get-logged-in-user)
-    - [Switch Tenant](#switch-tenant)
+  - [Integrate Frontegg](#integrate-frontegg)
+  - [Protect Routes](#protect-routes)
+  - [Get Logged In User](#get-logged-in-user)
+  - [Switch Tenant](#switch-tenant)
 - [Embedded Webview vs Hosted](#embedded-webview-vs-hosted)
-    - [Enable hosted webview in iOS Platform](#enable-hosted-webview-in-ios-platform)
-    - [Enable hosted webview in Android Platform](#enable-hosted-webview-in-android-platform)
+  - [Enable hosted webview in iOS Platform](#enable-hosted-webview-in-ios-platform)
+  - [Enable hosted webview in Android Platform](#enable-hosted-webview-in-android-platform)
+- [Multi-Region Support](#multi-region-support)
+  - [Step 1: Add regions to your Frontegg configuration](#step-1-add-regions-to-your-frontegg-configuration)
+  - [Setup multi-region support for iOS Platform](#setup-multi-region-support-for-ios-platform)
+  - [Setup multi-region support for Android Platform](#setup-multi-region-support-for-android-platform)
 
 ## Project Requirements
 
@@ -94,6 +98,13 @@ yarn add @frontegg/react-native
         android: {
           path: 'android',
         },
+   
+        plugins: {
+          FronteggNative:{
+            baseUrl: 'https://{FRONTEGG_DOMAIN_HOST.com}',
+            clientId: '{FRONTEGG_CLIENT_ID}',
+          }
+        }
       };
       
       export default config;
@@ -127,10 +138,8 @@ To setup your SwiftUI application to communicate with Frontegg.
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
     <plist version="1.0">
     <dict>
-        <key>baseUrl</key>
-        <string>https://[DOMAIN_HOST_FROM_PREVIOUS_STEP]</string>
-        <key>clientId</key>
-        <string>[CLIENT_ID_FROM_PREVIOUS_STEP]</string>
+        <key>lateInit</key>
+        <true/>
     </dict>
     </plist>
     ```
@@ -234,9 +243,6 @@ android {
                 "frontegg_domain" : fronteggDomain,
                 "frontegg_client_id": fronteggClientId
         ]
-
-        buildConfigField "String", 'FRONTEGG_DOMAIN', "\"$fronteggDomain\""
-        buildConfigField "String", 'FRONTEGG_CLIENT_ID', "\"$fronteggClientId\""
     }
     
     
@@ -516,8 +522,8 @@ Frontegg SDK supports two authentication methods:
 
 - Embedded Webview
 - Hosted Webview
-    - `iOS`: ASWebAuthenticationSession
-    - `Android`: Custom Chrome Tab
+  - `iOS`: ASWebAuthenticationSession
+  - `Android`: Custom Chrome Tab
 
 By default, Frontegg SDK will use Embedded Webview.
 
@@ -530,14 +536,11 @@ To use ASWebAuthenticationSession you have to set `embeddedMode` to `NO` in `Fro
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN">
 <plist version="1.0">
     <dict>
-        <key>baseUrl</key>
-        <string>https://[DOMAIN_HOST_FROM_PREVIOUS_STEP]</string>
-        <key>clientId</key>
-        <string>[CLIENT_ID_FROM_PREVIOUS_STEP]</string>
-
+        <key>lateInit</key>
+        <true/>
         <!-- START -->
         <key>embeddedMode</key>
-        <true/>
+        <false/>
         <!-- END -->
     </dict>
 </plist>
@@ -563,4 +566,214 @@ the application manifest:
         <!-- ... -->
     </application>
 </manifest>
+```
+
+## Multi-Region Support
+
+This guide outlines the steps to configure your Ionic application to support multiple regions.
+
+### Step 1: Add regions to your Frontegg configuration
+
+Add `region` to your Frontegg configuration in `capacitor.config.ts` file:
+
+Find example code in [example/capacitor.config.ts](example/capacitor.config.ts) file.
+
+```typescript
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  /*...*/
+  plugins: {
+
+    /*...*/
+
+    FronteggNative: {
+      
+      /** Remove baseUrl and clientId from here */
+      // baseUrl: 'https://{FRONTEGG_DOMAIN_HOST.com}',
+      // clientId: '{FRONTEGG_CLIENT_ID}',
+      
+      regions: [ {
+        key: 'REGION_1_KEY',
+        baseUrl: 'https://region1.forntegg.com',
+        clientId: 'REGION_1_CLIEND_ID',
+      }, {
+        key: 'REGION_2_KEY',
+        baseUrl: 'https://region2.forntegg.com',
+        clientId: 'REGION_2_CLIEND_ID',
+      } ]
+    }
+  }
+};
+
+export default config;
+
+```
+
+### Step 2: Create region guard service
+
+Create region guard service, this guard will prevent application init if region not selected,
+and checks if specific region selected by getting the native state from the Frontegg SDK.
+If the region not exists, the guard will redirect to region selector page.
+
+Find example code in [example/src/app/region.guard.ts](example/src/app/region.guard.ts) file.
+
+```typescript
+import { CanActivateFn, Router } from '@angular/router';
+import { Inject, Injectable } from '@angular/core';
+import { FronteggService } from '@frontegg/ionic-capacitor';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class RegionGuard {
+  constructor(@Inject('Frontegg') private fronteggService: FronteggService, private router: Router) {
+    /**
+     * Listens to $isAuthenticated changes
+     * Reload the page to trigger canActivate function again
+     */
+    this.fronteggService.$selectedRegion.subscribe(async () => {
+      window.location.reload()
+    });
+  }
+
+  canActivate: CanActivateFn = async () => {
+    const { isRegional } = await this.fronteggService.getConstants();
+    const nativeState = await this.fronteggService.getNativeState()
+
+    if (!isRegional || nativeState.selectedRegion != null) {
+      /**
+       * region already selected, activate navigation
+       */
+      return true
+    }
+
+    /**
+     * region not selected, redirect to region selector page
+     */
+    return this.router.navigate([ '/select-region' ])
+  }
+}
+```
+
+### Step 3: Add region guard to application router
+
+Find example code in [example/src/app/app-routing.module.ts](example/src/app/app-routing.module.ts) file.
+
+```typescript
+const routes: Routes = [
+  {
+    path: '',
+    canActivate: [ RegionGuard ],
+    children: [
+      /**
+       * Wrap all routes with region guard
+       * to redirect to region selector page
+       * if region not exists
+       */
+      {
+        path: '',
+        canActivate: [ AuthGuard ],
+        loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+      },
+    ]
+  }, {
+    /**
+     * Add region selector page
+     * to select region if not exists
+     */
+    path: 'select-region',
+    component: SelectRegionComponent
+  }
+];
+```
+
+### Step 4: Setup multi-region support for iOS Platform
+ 
+Following guide outlines the steps to configure iOS application to support multiple regions.
+
+**First, Adjust Your Frontegg.plist File for Multiple Regions:**
+  - Remove the existing `baseUrl` and `clientId` keys.
+  - Add a new boolean property, `lateInit`, and set it to `true`.
+    
+    Example Frontegg.plist Structure:
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>  
+      <key>lateInit</key>
+      <true/>
+    </dict>
+    </plist>
+    ```
+**Secondly, Add Associated Domains for Each Region:**
+
+Configure the associated domains for each region in your application's settings. This step is crucial for correct API routing and authentication.
+Follow the guide [Config iOS Associated Domain](#config-ios-associated-domain) to add your iOS associated domain to your Frontegg application.
+
+
+### Step 5: Setup multi-region support for Android Platform
+
+Following guide outlines the steps to configure Android application to support multiple regions.
+
+**First, Modify the Build.gradle file**
+  - remove buildConfigFields from your build.gradle file: `legacy`
+
+  ```groovy
+  
+  android {
+    //  remove this lines:
+    //  buildConfigField "String", 'FRONTEGG_DOMAIN', "\"$fronteggDomain\""
+    //  buildConfigField "String", 'FRONTEGG_CLIENT_ID', "\"$fronteggClientId\""
+  }
+  ```
+
+**Secondly, Add AssetLinks for Each Region:**
+
+For each region, configuring your Android `AssetLinks`. This is vital for proper API routing and authentication.
+Follow [Config Android AssetLinks](#config-android-assetlinks) to add your Android domains to your Frontegg application.
+
+**Lastly, Add Intent-Filter in Manifest.xml:**
+
+The first domain will be placed automatically in the `AndroidManifest.xml` file. For each additional region, you will
+need to add an `intent-filter`.
+
+NOTE: if you are using `Custom Chrome Tab` you have to use `android:name` `com.frontegg.android.HostedAuthActivity` instead of `com.frontegg.android.EmbeddedAuthActivity`
+
+```xml
+
+<application>
+    <activity android:exported="true" android:name="com.frontegg.android.EmbeddedAuthActivity"
+        tools:node="merge">
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data android:scheme="https" />
+            <!--  Modify second domain -->
+            <data android:host="{{FRONTEGG_DOMAIN_2}}" />
+            <data android:pathPrefix="/oauth/account/activate" />
+            <data android:pathPrefix="/oauth/account/invitation/accept" />
+            <data android:pathPrefix="/oauth/account/reset-password" />
+            <data android:pathPrefix="/oauth/account/social/success" />
+            <data android:pathPrefix="/oauth/account/login/magic-link" />
+        </intent-filter>
+    </activity>
+
+    <activity android:exported="true" android:name="com.frontegg.android.AuthenticationActivity"
+        tools:node="merge">
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <!--  Modify second domain -->
+            <data android:host="{{FRONTEGG_DOMAIN_2}}" android:scheme="${package_name}" />
+        </intent-filter>
+    </activity>
+</application>
 ```
