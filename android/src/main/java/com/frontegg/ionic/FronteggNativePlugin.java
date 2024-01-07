@@ -42,8 +42,11 @@ public class FronteggNativePlugin extends Plugin {
         List<RegionConfig> regions = new ArrayList<>();
         JSONArray array;
         try {
-            array = this.getConfig().getConfigJSON().getJSONArray("regions");
+            array = this.getConfig().getConfigJSON().optJSONArray("regions");
 
+            if (array == null) {
+                array = new JSONArray();
+            }
             for (int i = 0; i < array.length(); i++) {
                 JSONObject regionJson = (JSONObject) array.get(i);
                 regions.add(new RegionConfig(
@@ -61,9 +64,8 @@ public class FronteggNativePlugin extends Plugin {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
-            String regionKey = config.getString("regionKey");
-            if (baseUrl == null || clientId == null || regionKey == null) {
-                throw new RuntimeException("Missing required config parameters: baseUrl, clientId, regionKey");
+            if (baseUrl == null || clientId == null) {
+                throw new RuntimeException("Missing required config parameters: baseUrl, clientId");
             }
             FronteggApp.Companion.init(
                 baseUrl,
