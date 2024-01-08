@@ -1,2 +1,9 @@
 build
 dist
+
+.*
+
+example
+
+android
+ios

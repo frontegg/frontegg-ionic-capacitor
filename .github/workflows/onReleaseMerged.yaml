@@ -1,24 +1,23 @@
 name: Release Merge Workflow
 on:
-  push:
+  pull_request:
     branches:
       - master
+    types: [ closed ]
 env:
   CI: true
 jobs:
   publish:
-    name: 'Install | Build | Test'
+    if: "contains(join(github.event.pull_request.labels.*.name, ','), 'Release') && github.event.pull_request.merged == true"
+    name: 'Build | Publish'
     runs-on: macos-12
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-          cache: npm
-          cache-dependency-path: '**/package.json'
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: Git Identity
         run: |
           git config --global user.name 'frontegg'
@@ -39,9 +38,10 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
-      - name: Install Package
+      - name: Build Packages
         run: |
-          npm i
+          npm run build
+
       - name: Set Current Version
         id: set_current_version
         if: startsWith(github.event.pull_request.title, 'v')
@@ -63,47 +63,44 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: Create Git Tag
-#        if: steps.tag_check.outputs.exists_tag == 'false'
-#        uses: azu/action-package-version-to-git-tag@v1
-#        with:
-#          version: ${{ steps.set_current_version.outputs.CURRENT_VERSION }}
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          github_repo: ${{ github.repository }}
-#          git_commit_sha: ${{ github.sha }}
-#          git_tag_prefix: "v"
-
-#      - name: Create Release
-#        id: create_release
-#        if: steps.tag_check.outputs.exists_tag == 'false'
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: v${{ steps.set_current_version.outputs.CURRENT_VERSION }}
-#          release_name: ${{ github.event.pull_request.title }}
-#          body: |
-#            ${{ github.event.pull_request.body }}
-#          draft: false
-#          prerelease: false
-
-      - name: Publish @frontegg/ionic-capacitor version to NPM
+      - name: Create Git Tag
+        if: steps.tag_check.outputs.exists_tag == 'false'
+        uses: azu/action-package-version-to-git-tag@v1
+        with:
+          version: ${{ steps.set_current_version.outputs.CURRENT_VERSION }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repo: ${{ github.repository }}
+          git_commit_sha: ${{ github.sha }}
+          git_tag_prefix: "v"
+      - name: Create Release
+        id: create_release
+        if: steps.tag_check.outputs.exists_tag == 'false'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.set_current_version.outputs.CURRENT_VERSION }}
+          release_name: ${{ github.event.pull_request.title }}
+          body: |
+            ${{ github.event.pull_request.body }}
+          draft: false
+          prerelease: false
+      - name: Publish @frontegg/react-native version to NPM
         run: npm publish --tag latest
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-#      - name: Notify Slack on deployment
-#        uses: rtCamp/action-slack-notify@v2
-#        env:
-#          SLACK_CHANNEL: Production
-#          SLACK_COLOR: ${{ job.status }}
-#          SLACK_ICON: https://avatars.githubusercontent.com/u/67857107?s=40&v=4
-#          SLACK_MESSAGE: '${{ github.actor }} has deployed @frontegg/react-native version: ${{ steps.set_current_version.outputs.CURRENT_VERSION }} :rocket:'
-#          SLACK_TITLE: '@frontegg/react-native version: ${{ steps.set_current_version.outputs.CURRENT_VERSION }} has been successfully published'
-#          SLACK_USERNAME: ${{ github.actor }}
-#          SLACK_WEBHOOK:  ${{ secrets.SLACK_PRODUCTION_TOKEN }}
-#          MSG_MINIMAL: Commit,actions url
+      - name: Notify Slack on deployment
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: Production
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://avatars.githubusercontent.com/u/67857107?s=40&v=4
+          SLACK_MESSAGE: '${{ github.actor }} has deployed @frontegg/react-native version: ${{ steps.set_current_version.outputs.CURRENT_VERSION }} :rocket:'
+          SLACK_TITLE: '@frontegg/react-native version: ${{ steps.set_current_version.outputs.CURRENT_VERSION }} has been successfully published'
+          SLACK_USERNAME: ${{ github.actor }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_PRODUCTION_TOKEN }}
+          MSG_MINIMAL: Commit,actions url
       - uses: actions/github-script@0.8.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
