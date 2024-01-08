@@ -78,7 +78,7 @@ type FronteggNativeRegionOptions = {
    * @since 1.0.0
    * @example [{key: "us", baseUrl: "https://us-api.frontegg.com", clientId: "us-client-id"}]
    */
-  regions?: RegionConfig[];
+  regions: RegionConfig[];
 }
 type FronteggNativeOptions = (FronteggNativeStandardOptions | FronteggNativeRegionOptions) & {
   handleLoginWithSocialLogin?: boolean;

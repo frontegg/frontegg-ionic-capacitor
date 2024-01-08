@@ -14,6 +14,7 @@ export class SelectRegionComponent implements OnInit {
   regions: { key: string, baseUrl: string, clientId: string }[] = []
 
   async ngOnInit() {
+
     console.log('onInit() select region ')
 
     const { selectedRegion } = await this.fronteggService.getNativeState()
