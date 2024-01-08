@@ -1,9 +1,9 @@
 name: Release Merge Workflow
 on:
   pull_request:
-
     branches:
       - master
+    types: [ closed ]
 env:
   CI: true
 jobs:
@@ -14,12 +14,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-          cache: npm
-          cache-dependency-path: '**/package.json'
+      - name: Setup
+        uses: ./.github/actions/setup
+
       - name: Git Identity
         run: |
           git config --global user.name 'frontegg'

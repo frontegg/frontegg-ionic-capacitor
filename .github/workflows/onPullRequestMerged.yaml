@@ -9,8 +9,8 @@ env:
 jobs:
   lint:
     if: "!contains(join(github.event.pull_request.labels.*.name, ','), 'Release') && github.event.pull_request.merged == true"
-    name: 'Lint and Typecheck'
-    runs-on: ubuntu-latest
+    name: 'Lint | Typecheck'
+    runs-on: macos-12
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,16 +19,14 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Lint files
-        run: yarn lint
-
-      - name: Typecheck files
-        run: yarn typecheck
+        run: npm run lint
 
       - name: Check licenses
         id: check_licenses
         run: |
           npm install -g license-checker
           license-checker --failOn "AGPL-1.0-only;AGPL-1.0-or-later;AGPL-3.0-only;AGPL-3.0-or-later;GPL-1.0-only;GPL-1.0-or-later;GPL-2.0-only;GPL-2.0-or-later;GPL-3.0-only;GPL-3.0-or-later;LGPL-2.0-only;LGPL-2.0-or-later;LGPL-2.1-only;LGPL-2.1-or-later;LGPL-3.0-only;LGPL-3.0-or-later;LGPLLR;MPL-1.1"
+
   createReleasePullRequest:
     if: "!contains(join(github.event.pull_request.labels.*.name, ','), 'Release') && github.event.pull_request.merged == true"
     name: 'Create Release Pull Request'
@@ -63,10 +61,8 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
       - name: Commit Version UP
         run: |
-          yarn version --patch --no-git-tag-version --no-commit-hooks
-      - name: Pack Package
-        run: |
-          yarn pack
+          npm version --patch --no-git-tag-version --no-commit-hooks
+
       - name: "Set incremented version"
         uses: actions/github-script@v6
         id: 'incremented-version'
@@ -80,6 +76,7 @@ jobs:
         shell: bash -ex {0}
         run: |
           git add . && git commit -m "chore(release): publish ${{ steps.incremented-version.outputs.result }}"
+
       - name: Create Release Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v3.5.1
@@ -106,7 +103,7 @@ jobs:
           git add .
           git commit -m "chore: prelrease version"
           
-          yarn pack
+          npm run build
           npm publish --tag next
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
