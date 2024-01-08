@@ -1,6 +1,7 @@
 name: Release Merge Workflow
 on:
-  push:
+  pull_request:
+
     branches:
       - master
 env:

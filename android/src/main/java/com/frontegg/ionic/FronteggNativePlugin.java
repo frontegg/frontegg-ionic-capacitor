@@ -40,6 +40,7 @@ public class FronteggNativePlugin extends Plugin {
 
         // for regions initialization
         List<RegionConfig> regions = new ArrayList<>();
+        boolean useAssetLinks = this.getConfig().getBoolean("useAssetsLinks", true);
         JSONArray array;
         try {
             array = this.getConfig().getConfigJSON().optJSONArray("regions");
@@ -74,10 +75,11 @@ public class FronteggNativePlugin extends Plugin {
             FronteggApp.Companion.init(
                 baseUrl,
                 clientId,
-                this.getContext()
+                this.getContext(),
+                useAssetLinks
             );
         }else {
-            FronteggApp.Companion.initWithRegions(regions, this.getContext());
+            FronteggApp.Companion.initWithRegions(regions, this.getContext(), useAssetLinks);
         }
 
         FronteggAuth auth = FronteggAuth.Companion.getInstance();

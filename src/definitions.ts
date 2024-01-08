@@ -1,4 +1,3 @@
-
 import type { ListenerCallback, PluginListenerHandle } from '@capacitor/core';
 import type { ITenantsResponse, IUserProfile } from '@frontegg/rest-api';
 
@@ -57,13 +56,11 @@ export interface FronteggNativePlugin {
 }
 
 
-
 export type RegionConfig = {
   key: string;
   baseUrl: string;
   clientId: string;
 };
-
 
 
 type FronteggNativeStandardOptions = {
@@ -81,12 +78,35 @@ type FronteggNativeRegionOptions = {
   regions: RegionConfig[];
 }
 type FronteggNativeOptions = (FronteggNativeStandardOptions | FronteggNativeRegionOptions) & {
+
+  /**
+   * Weather to handle login with social login in external browser.
+   * If set to false, the plugin will navigate to the social login page with application webview.
+   *
+   * NOTE: some of the social login providers prevent login from embedded webview.
+   *
+   *  @default true
+   */
   handleLoginWithSocialLogin?: boolean;
+  /**
+   *  Weather to handle login with SSO in external browser.
+   *  If set to false, the plugin will navigate to the sso page with application webview.
+   *
+   *  @default false
+   */
   handleLoginWithSSO?: boolean;
+  /**
+   * Weather to use the assetlinks to for oauth/callback, this is the default behavior.
+   * disabling this will cause the plugin to use custom url scheme for oauth/callback.
+   *
+   * NOTE: custom url scheme require user interaction to return to the app.
+   * @default true
+   */
+  useAssetLinks?: boolean;
 }
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-declare module "@capacitor/cli" {
+declare module '@capacitor/cli' {
   export interface PluginsConfig {
     /**
      * You can configure the way the push notifications are displayed when the app is in foreground.
