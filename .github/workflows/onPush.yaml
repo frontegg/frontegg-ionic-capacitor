@@ -8,8 +8,8 @@ on:
 env:
   CI: true
 jobs:
-  lint:
-    name: 'Build | Lint'
+  lint-build:
+    name: 'Lint | Build'
     runs-on: macos-12
     steps:
       - name: Checkout

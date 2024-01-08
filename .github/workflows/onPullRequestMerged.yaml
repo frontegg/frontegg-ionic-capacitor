@@ -7,9 +7,8 @@ on:
 env:
   CI: true
 jobs:
-  lint:
-    if: "!contains(join(github.event.pull_request.labels.*.name, ','), 'Release') && github.event.pull_request.merged == true"
-    name: 'Lint | Typecheck'
+  lint-build:
+    name: 'Lint | Build'
     runs-on: macos-12
     steps:
       - name: Checkout
@@ -26,6 +25,9 @@ jobs:
         run: |
           npm install -g license-checker
           license-checker --failOn "AGPL-1.0-only;AGPL-1.0-or-later;AGPL-3.0-only;AGPL-3.0-or-later;GPL-1.0-only;GPL-1.0-or-later;GPL-2.0-only;GPL-2.0-or-later;GPL-3.0-only;GPL-3.0-or-later;LGPL-2.0-only;LGPL-2.0-or-later;LGPL-2.1-only;LGPL-2.1-or-later;LGPL-3.0-only;LGPL-3.0-or-later;LGPLLR;MPL-1.1"
+      - name: Build Package
+        run: |
+          npm run build
 
   createReleasePullRequest:
     if: "!contains(join(github.event.pull_request.labels.*.name, ','), 'Release') && github.event.pull_request.merged == true"
@@ -46,7 +48,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Authenticate with Registry
         run: |
-          yarn logout
           echo "init-author-name=Frontegg LTD" > .npmrc
           echo "init-author-email=hello@frontegg.com" >> .npmrc
           echo "init-author-url=https://frontegg.com" >> .npmrc
@@ -72,6 +73,7 @@ jobs:
             const {default: fs} = await import('fs');
             const {version} = JSON.parse(fs.readFileSync('./package.json', {encoding: "utf-8"}));
             return version;
+
       - name: Commit changes
         shell: bash -ex {0}
         run: |
@@ -109,14 +111,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
-      - name : Notify Slack on alpha version deployment
-        uses : rtCamp/action-slack-notify@v2
-        env :
-          SLACK_CHANNEL : frontegg-alpha-versions
-          SLACK_COLOR : ${{ job.status }}
-          SLACK_ICON : https://avatars.githubusercontent.com/u/67857107?s=40&v=4
-          SLACK_MESSAGE : '${{ steps.publish_pre_release_version.outputs.LIB_VERSION }}-alpha.${{ github.run_id }} has been released :rocket:'
-          SLACK_TITLE : 'A new @frontegg/react alpha version!'
-          SLACK_USERNAME : ${{ github.actor }}
-          SLACK_WEBHOOK : ${{ secrets.ROTEM_SLACK_WEBHOOK }}
-          MSG_MINIMAL : true
+#      - name : Notify Slack on alpha version deployment
+#        uses : rtCamp/action-slack-notify@v2
+#        env :
+#          SLACK_CHANNEL : frontegg-alpha-versions
+#          SLACK_COLOR : ${{ job.status }}
+#          SLACK_ICON : https://avatars.githubusercontent.com/u/67857107?s=40&v=4
+#          SLACK_MESSAGE : '${{ steps.publish_pre_release_version.outputs.LIB_VERSION }}-alpha.${{ github.run_id }} has been released :rocket:'
+#          SLACK_TITLE : 'A new @frontegg/ionic-capacitor alpha version!'
+#          SLACK_USERNAME : ${{ github.actor }}
+#          SLACK_WEBHOOK : ${{ secrets.ROTEM_SLACK_WEBHOOK }}
+#          MSG_MINIMAL : true
