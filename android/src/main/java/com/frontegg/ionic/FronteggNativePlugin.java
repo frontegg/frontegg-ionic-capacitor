@@ -64,8 +64,12 @@ public class FronteggNativePlugin extends Plugin {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
+
             if (baseUrl == null || clientId == null) {
                 throw new RuntimeException("Missing required config parameters: baseUrl, clientId");
+            }
+            if(baseUrl.startsWith("https://")) {
+                baseUrl = baseUrl.substring(baseUrl.indexOf("://") + 3);
             }
             FronteggApp.Companion.init(
                 baseUrl,
