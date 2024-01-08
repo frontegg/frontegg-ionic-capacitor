@@ -24,6 +24,7 @@ jobs:
           git config --global user.email 'frontegg@users.noreply.github.com'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Authenticate with Registry
         run: |
           echo "init-author-name=Frontegg LTD" > .npmrc
