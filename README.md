@@ -48,9 +48,11 @@ from [Frontegg Portal Domain](https://portal.frontegg.com/development/settings/d
 ### Setup Hosted Login
 
 - Navigate to [Login Method Settings](https://portal.frontegg.com/development/authentication/hosted)
-- Toggle Hosted login method
-- Add `{{IOS_BUNDLE_IDENTIFIER}}://{{FRONTEGG_BASE_URL}}/ios/oauth/callback`
-- Add `{{ANDROID_PACKAGE_NAME}}://{{FRONTEGG_BASE_URL}}/android/oauth/callback`
+- Toggle Hosted login method for iOS:
+  - Add `{{IOS_BUNDLE_IDENTIFIER}}://{{FRONTEGG_BASE_URL}}/ios/oauth/callback`
+- Toggle Hosted login method for Android:
+  - Add `{{ANDROID_PACKAGE_NAME}}://{{FRONTEGG_BASE_URL}}/android/oauth/callback` **(without assetlinks)**
+  - Add `https://{{FRONTEGG_BASE_URL}}/{{ANDROID_PACKAGE_NAME}}/android/oauth/callback` **(required for assetlinks)**
 - Replace `IOS_BUNDLE_IDENTIFIER` with your application identifier
 - Replace `FRONTEGG_BASE_URL` with your frontegg base url
 - Replace `ANDROID_PACKAGE_NAME` with your android package name
@@ -738,6 +740,7 @@ Follow [Config Android AssetLinks](#config-android-assetlinks) to add your Andro
 
 The first domain will be placed automatically in the `AndroidManifest.xml` file. For each additional region, you will
 need to add an `intent-filter`.
+Replace `${FRONTEGG_DOMAIN_2}` with the second domain from the previous step.
 
 NOTE: if you are using `Custom Chrome Tab` you have to use `android:name` `com.frontegg.android.HostedAuthActivity` instead of `com.frontegg.android.EmbeddedAuthActivity`
 
@@ -745,7 +748,7 @@ NOTE: if you are using `Custom Chrome Tab` you have to use `android:name` `com.f
 
 <application>
     <activity android:exported="true" android:name="com.frontegg.android.EmbeddedAuthActivity"
-        tools:node="merge">
+              tools:node="merge">
         <intent-filter android:autoVerify="true">
             <action android:name="android.intent.action.VIEW" />
 
@@ -753,26 +756,31 @@ NOTE: if you are using `Custom Chrome Tab` you have to use `android:name` `com.f
             <category android:name="android.intent.category.BROWSABLE" />
 
             <data android:scheme="https" />
-            <!--  Modify second domain -->
-            <data android:host="{{FRONTEGG_DOMAIN_2}}" />
-            <data android:pathPrefix="/oauth/account/activate" />
-            <data android:pathPrefix="/oauth/account/invitation/accept" />
-            <data android:pathPrefix="/oauth/account/reset-password" />
-            <data android:pathPrefix="/oauth/account/social/success" />
-            <data android:pathPrefix="/oauth/account/login/magic-link" />
+            <!-- DO NOT COMBINE THE FOLLOWING LINES INTO ONE LINE OR SPLIT TO MULTIPLE -->
+            <data android:host="${FRONTEGG_DOMAIN_2}"
+                  android:pathPrefix="/oauth/account/activate" />
+            <data android:host="${FRONTEGG_DOMAIN_2}"
+                  android:pathPrefix="/oauth/account/invitation/accept" />
+            <data android:host="${FRONTEGG_DOMAIN_2}"
+                  android:pathPrefix="/oauth/account/reset-password" />
+            <data android:host="${FRONTEGG_DOMAIN_2}"
+                  android:pathPrefix="/oauth/account/login/magic-link" />
         </intent-filter>
     </activity>
 
     <activity android:exported="true" android:name="com.frontegg.android.AuthenticationActivity"
-        tools:node="merge">
+              tools:node="merge">
         <intent-filter>
             <action android:name="android.intent.action.VIEW" />
 
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
 
-            <!--  Modify second domain -->
-            <data android:host="{{FRONTEGG_DOMAIN_2}}" android:scheme="${package_name}" />
+            <!-- DO NOT COMBINE THE FOLLOWING LINES INTO ONE LINE OR SPLIT TO MULTIPLE -->
+            <data android:host="${FRONTEGG_DOMAIN_2}" android:scheme="${package_name}" />
+            <data android:host="${FRONTEGG_DOMAIN_2}"
+                  android:pathPrefix="/${package_name}/android/oauth/callback"
+                  android:scheme="https" />
         </intent-filter>
     </activity>
 </application>
