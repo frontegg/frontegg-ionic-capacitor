@@ -48,7 +48,7 @@
     "start:ios": "cd example && ionic capacitor run ios --livereload --external"
   },
   "dependencies": {
-    "@frontegg/rest-api": "^3.1.5"
+    "@frontegg/rest-api": "^3.1.56"
   },
   "devDependencies": {
     "@angular/core": ">=14.0.0",
