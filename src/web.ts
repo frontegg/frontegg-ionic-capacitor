@@ -8,7 +8,8 @@ import type {
 
 export class FronteggNativeWeb
   extends WebPlugin
-  implements FronteggNativePlugin {
+  implements FronteggNativePlugin
+{
   async getConstants(): Promise<FronteggConstants> {
     throw Error('FronteggNative.getConstants not implemented in web');
   }
@@ -21,7 +22,10 @@ export class FronteggNativeWeb
     throw Error('FronteggNative.login not implemented in web');
   }
 
-  async directLoginAction(payload: { type: string, data: string }): Promise<void> {
+  async directLoginAction(payload: {
+    type: string;
+    data: string;
+  }): Promise<void> {
     throw Error(
       `FronteggNative.directLoginAction ${payload} not implemented in web`,
     );

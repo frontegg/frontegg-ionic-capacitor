@@ -1,4 +1,4 @@
-import { Component, Inject, NgZone } from '@angular/core';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { FronteggService, FronteggState } from '@frontegg/ionic-capacitor';
 import { ITenantsResponse } from '@frontegg/rest-api';
 
@@ -7,7 +7,7 @@ import { ITenantsResponse } from '@frontegg/rest-api';
   templateUrl: 'tab2.page.html',
   styleUrls: [ 'tab2.page.scss' ]
 })
-export class Tab2Page {
+export class Tab2Page implements OnInit {
 
   constructor(private ngZone: NgZone, @Inject('Frontegg') private fronteggService: FronteggService) {
   }
@@ -18,7 +18,7 @@ export class Tab2Page {
   activeTenantId: string | undefined;
 
   ngOnInit() {
-    const byName = (a:any, b:any) => a.name.localeCompare(b.name)
+    const byName = (a: any, b: any) => a.name.localeCompare(b.name)
     this.user = this.fronteggService.getState().user;
     this.tenants = (this.user?.tenants || []).sort(byName);
     this.activeTenantId = this.user?.tenantId

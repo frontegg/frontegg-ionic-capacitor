@@ -46,7 +46,7 @@ export interface FronteggNativePlugin {
    * @param payload.type - the direct login type (direct, social-login, custom-social-login)
    * @param payload.data - the direct login data (for direct it's saml url request, for social-login it's the provider name, for custom-social-login it's the provider entity id)
    */
-  directLoginAction(payload: { type: string, data: string }): Promise<void>;
+  directLoginAction(payload: { type: string; data: string }): Promise<void>;
 
   logout(): void;
 
@@ -85,7 +85,7 @@ type FronteggNativeRegionOptions = {
 type FronteggNativeOptions = (
   | FronteggNativeStandardOptions
   | FronteggNativeRegionOptions
-  ) & {
+) & {
   /**
    * Weather to handle login with social login in external browser.
    * If set to false, the plugin will navigate to the social login page with application webview.
