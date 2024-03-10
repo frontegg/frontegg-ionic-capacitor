@@ -130,6 +130,15 @@ export class FronteggService {
     return FronteggNative.login();
   }
 
+  /**
+   * Used to log in with social login provider directly without visiting the login page
+   * @param type - the direct login type (direct, social-login, custom-social-login)
+   * @param data - the direct login data (for direct it's saml url request, for social-login it's the provider name, for custom-social-login it's the provider entity id)
+   */
+  public directLoginAction(type: string, data: string): Promise<void> {
+    return FronteggNative.directLoginAction({ type, data });
+  }
+
   public logout(): void {
     FronteggNative.logout();
   }
@@ -149,6 +158,10 @@ export class FronteggService {
    * Android: https://github.com/frontegg/frontegg-android-kotlin#multi-region-support
    */
   public initWithRegion(regionKey: string): Promise<void> {
+    // check if current region is the same as the new region
+    if (this.getState().selectedRegion === regionKey) {
+      return Promise.resolve();
+    }
     return FronteggNative.initWithRegion({ regionKey });
   }
 

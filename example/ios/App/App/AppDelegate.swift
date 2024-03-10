@@ -38,8 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         
-        if(FronteggAuth.shared.handleOpenUrl(url)){
-            return true
+        if(url.absoluteString.hasPrefix(FronteggAuth.shared.baseUrl)){
+            return FronteggAuth.shared.handleOpenUrl(url)
         }
         /*
          * Called when the app was launched with a url. Feel free to add additional processing here,
@@ -57,9 +57,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          */
         
         if let url = userActivity.webpageURL {
-            if(FronteggAuth.shared.handleOpenUrl(url)){
-                return true
+            if(url.absoluteString.hasPrefix(FronteggAuth.shared.baseUrl)){
+                return FronteggAuth.shared.handleOpenUrl(url)
             }
+            
         }
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
