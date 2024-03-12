@@ -22,6 +22,15 @@ export class FronteggNativeWeb
     throw Error('FronteggNative.login not implemented in web');
   }
 
+  async directLoginAction(payload: {
+    type: string;
+    data: string;
+  }): Promise<void> {
+    throw Error(
+      `FronteggNative.directLoginAction ${payload} not implemented in web`,
+    );
+  }
+
   async logout(): Promise<void> {
     throw Error('FronteggNative.logout not implemented in web');
   }

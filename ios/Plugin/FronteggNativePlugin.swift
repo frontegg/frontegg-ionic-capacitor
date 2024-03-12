@@ -156,6 +156,24 @@ public class FronteggNativePlugin: CAPPlugin {
         }
         call.resolve()
     }
+    
+    
+    @objc func directLoginAction(_ call: CAPPluginCall) {
+        guard let type = call.options["type"] as? String else {
+            call.reject("No type provided")
+            return
+        }
+        
+        guard let data = call.options["data"] as? String else {
+            call.reject("No data provided")
+            return
+        }
+        
+        DispatchQueue.main.sync {
+            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data)
+        }
+        call.resolve()
+    }
 
     @objc func logout(_ call: CAPPluginCall) {
         DispatchQueue.main.sync {

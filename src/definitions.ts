@@ -40,6 +40,14 @@ export interface FronteggNativePlugin {
 
   login(): Promise<void>;
 
+  /**
+   * Used to log in with social login provider directly without visiting the login page
+   * @param payload
+   * @param payload.type - the direct login type (direct, social-login, custom-social-login)
+   * @param payload.data - the direct login data (for direct it's saml url request, for social-login it's the provider name, for custom-social-login it's the provider entity id)
+   */
+  directLoginAction(payload: { type: string; data: string }): Promise<void>;
+
   logout(): void;
 
   switchTenant(payload: { tenantId: string }): Promise<void>;
@@ -102,6 +110,15 @@ type FronteggNativeOptions = (
    * @default true
    */
   useAssetLinks?: boolean;
+
+  /**
+   * Weather to To enable social login via Chrome Custom Tabs, set the useChromeCustomTabs flag to true.
+   * By default, the SDK uses the Chrome browser for social login.
+   *
+   * NOTE: custom url scheme require user interaction to return to the app.
+   * @default true
+   */
+  useChromeCustomTabs?: boolean;
 };
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

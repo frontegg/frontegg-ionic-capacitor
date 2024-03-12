@@ -11,7 +11,8 @@ const config: CapacitorConfig = {
     FronteggNative:{
       // baseUrl:"https://auth.davidantoon.me",
       // clientId:"b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca",
-
+      useChromeCustomTabs:true,
+      useAssetLinks:true,
       regions:[{
         key: 'eu1',
         baseUrl: 'https://auth.davidantoon.me',

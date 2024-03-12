@@ -41,6 +41,7 @@ public class FronteggNativePlugin extends Plugin {
         // for regions initialization
         List<RegionConfig> regions = new ArrayList<>();
         boolean useAssetLinks = this.getConfig().getBoolean("useAssetsLinks", true);
+        boolean useChromeCustomTabs = this.getConfig().getBoolean("useChromeCustomTabs", false);
         JSONArray array;
         try {
             array = this.getConfig().getConfigJSON().optJSONArray("regions");
@@ -61,7 +62,7 @@ public class FronteggNativePlugin extends Plugin {
             throw new RuntimeException(e);
         }
 
-        if(regions.size() == 0) {
+        if(regions.isEmpty()) {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
@@ -76,10 +77,16 @@ public class FronteggNativePlugin extends Plugin {
                 baseUrl,
                 clientId,
                 this.getContext(),
-                useAssetLinks
+                useAssetLinks,
+                useChromeCustomTabs
             );
         }else {
-            FronteggApp.Companion.initWithRegions(regions, this.getContext(), useAssetLinks);
+            FronteggApp.Companion.initWithRegions(
+                regions,
+                this.getContext(),
+                useAssetLinks,
+                useChromeCustomTabs
+            );
         }
 
         FronteggAuth auth = FronteggAuth.Companion.getInstance();
@@ -138,6 +145,19 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void login(PluginCall call) {
         FronteggApp.Companion.getInstance().getAuth().login(this.getActivity());
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void directLoginAction(PluginCall call) {
+        String type = call.getString("type");
+        String data = call.getString("data");
+
+        if (type == null || data == null) {
+            call.reject("No type or data provided");
+            return;
+        }
+        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data);
         call.resolve();
     }
 
