@@ -218,7 +218,7 @@ public class FronteggNativePlugin extends Plugin {
     public void getConstants(PluginCall call) {
 
         String baseUrl = FronteggAuth.Companion.getInstance().getBaseUrl();
-        String clientId = FronteggAuth.Companion.getInstance().getBaseUrl();
+        String clientId = FronteggAuth.Companion.getInstance().getClientId();
         String packageName = getContext().getPackageName();
 
         List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getRegions();
