@@ -17,7 +17,8 @@ features for the product-led era.
 - [Setup Android Project](#setup-android-project)
   - [Set minimum SDK version](#set-minimum-sdk-version)
   - [Configure build config fields](#configure-build-config-fields)
-  - [Config Android AssetLinks](#config-ios-associated-domain)
+  - [Config Android AssetLinks](#config-android-assetlinks)
+  - [Enabling Chrome Custom Tabs for Social Login](#enabling-chrome-custom-tabs-for-social-login)
 - [Angular Usages](#angular-usages)
   - [Integrate Frontegg](#integrate-frontegg)
   - [Protect Routes](#protect-routes)
@@ -320,6 +321,42 @@ keytool -list -v -keystore /PATH/file.jks -alias YourAlias -storepass *** -keypa
 
 In order to use our API’s, follow [this guide](https://docs.frontegg.com/reference/getting-started-with-your-api) to
 generate a vendor token.
+
+
+### Enabling Chrome Custom Tabs for Social Login
+
+To enable social login via Chrome Custom Tabs in Android application, modify your `capacitor.config.ts` file and set the useChromeCustomTabs flag to true . By default, the SDK uses the Chrome browser for social login.
+
+ ```typescript 
+    import { CapacitorConfig } from '@capacitor/cli';
+
+    const config: CapacitorConfig = {
+      appId: '{YOUR_APPLICATION_ID}',
+      appName: '{YOUR_APPLICATION_NAME}',
+      webDir: 'www',
+      server: {
+        androidScheme: 'https'
+      },
+      ios: {
+        path: 'ios',
+      },
+      android: {
+        path: 'android',
+      },
+ 
+      plugins: {
+        FronteggNative:{
+          baseUrl: 'https://{FRONTEGG_DOMAIN_HOST.com}',
+          clientId: '{FRONTEGG_CLIENT_ID}',
+          
+          useChromeCustomTabs: true
+        }
+      }
+    };
+    
+    export default config;
+ ```
+
 
 ## Angular Usages
 
