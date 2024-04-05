@@ -807,18 +807,28 @@ NOTE: if you are using `Custom Chrome Tab` you have to use `android:name` `com.f
 
     <activity android:exported="true" android:name="com.frontegg.android.AuthenticationActivity"
               tools:node="merge">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
 
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-            <!-- DO NOT COMBINE THE FOLLOWING LINES INTO ONE LINE OR SPLIT TO MULTIPLE -->
-            <data android:host="${FRONTEGG_DOMAIN_2}" android:scheme="${package_name}" />
-            <data android:host="${FRONTEGG_DOMAIN_2}"
-                  android:pathPrefix="/${package_name}/android/oauth/callback"
-                  android:scheme="https" />
-        </intent-filter>
+                <!-- DONT NOT COMBINE THE FOLLOWING LINES INTO ONE LINE-->
+                <data
+                    android:host="${FRONTEGG_DOMAIN_2}"
+                    android:pathPrefix="/oauth/account/redirect/android/${package_name}"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${FRONTEGG_DOMAIN_2}"
+                    android:scheme="${package_name}" />
+            </intent-filter>
     </activity>
 </application>
 ```
