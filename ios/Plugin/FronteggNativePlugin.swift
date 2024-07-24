@@ -39,7 +39,8 @@ public class FronteggNativePlugin: CAPPlugin {
                     regions.append(RegionConfig(
                         key: dict["key"]!,
                         baseUrl: dict["baseUrl"]!,
-                        clientId: dict["clientId"]!
+                        clientId: dict["clientId"]!,
+                        applicationId: dict["applicationId"]
                     ))
                 }
             }
@@ -57,6 +58,7 @@ public class FronteggNativePlugin: CAPPlugin {
                let clientId = config.getString("clientId") {
                 fronteggApp.manualInit(baseUrl: baseUrl,
                                        cliendId: clientId,
+                                       applicationId: config.getString("applicationId"),
                                        handleLoginWithSocialLogin: handleLoginWithSocialLogin,
                                        handleLoginWithSSO: handleLoginWithSSO)
             }else {
@@ -116,21 +118,22 @@ public class FronteggNativePlugin: CAPPlugin {
     }
 
 
-    func regionToJson(_ region: RegionConfig?) -> [String:String]? {
+    func regionToJson(_ region: RegionConfig?) -> [String:String?]? {
 
         if let reg = region {
             return [
                 "baseUrl": reg.baseUrl,
                 "clientId": reg.clientId,
+                "applicationId": reg.applicationId,
                 "key": reg.key
             ]
         }else {
             return nil
         }
     }
-    func regionsToJson(_ regions: [RegionConfig]) -> [[String:String]] {
+    func regionsToJson(_ regions: [RegionConfig]) -> [[String:String?]] {
 
-        var regionData: [[String:String]] = []
+        var regionData: [[String:String?]] = []
         regions.forEach { reg in
             if let region = regionToJson(reg) {
                 regionData.append(region)
@@ -144,6 +147,7 @@ public class FronteggNativePlugin: CAPPlugin {
         call.resolve([
             "baseUrl": fronteggApp.baseUrl,
             "clientId": fronteggApp.clientId,
+            "applicationId": fronteggApp.applicationId as Any,
             "bundleId": Bundle.main.bundleIdentifier!,
             "isRegional": fronteggApp.auth.isRegional,
             "regionData": regionsToJson(fronteggApp.auth.regionData)

@@ -23,6 +23,7 @@ export type SubscribeMap<T> = {
 export interface FronteggConstants {
   baseUrl: string;
   clientId: string;
+  applicationId: string | null;
   bundleId: string;
   isRegional: boolean;
   regionData?: { key: string; baseUrl: string; clientId: string }[];
@@ -67,11 +68,13 @@ export type RegionConfig = {
   key: string;
   baseUrl: string;
   clientId: string;
+  applicationId?: string;
 };
 
 type FronteggNativeStandardOptions = {
   baseUrl: string;
   clientId: string;
+  applicationId?: string;
 };
 type FronteggNativeRegionOptions = {
   /**
