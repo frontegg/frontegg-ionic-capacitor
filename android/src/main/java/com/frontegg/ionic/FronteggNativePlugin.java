@@ -40,7 +40,7 @@ public class FronteggNativePlugin extends Plugin {
 
         // for regions initialization
         List<RegionConfig> regions = new ArrayList<>();
-        boolean useAssetLinks = this.getConfig().getBoolean("useAssetsLinks", true);
+        boolean useAssetLinks = this.getConfig().getBoolean("useAssetLinks", true);
         boolean useChromeCustomTabs = this.getConfig().getBoolean("useChromeCustomTabs", false);
         JSONArray array;
         try {
@@ -54,7 +54,8 @@ public class FronteggNativePlugin extends Plugin {
                 regions.add(new RegionConfig(
                     regionJson.getString("key"),
                     regionJson.getString("baseUrl"),
-                    regionJson.getString("clientId")
+                    regionJson.getString("clientId"),
+                    regionJson.getString("applicationId")
                 ));
             }
 
@@ -66,6 +67,7 @@ public class FronteggNativePlugin extends Plugin {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
+            String applicationId = config.getString("applicationId");
 
             if (baseUrl == null || clientId == null) {
                 throw new RuntimeException("Missing required config parameters: baseUrl, clientId");
@@ -77,15 +79,18 @@ public class FronteggNativePlugin extends Plugin {
                 baseUrl,
                 clientId,
                 this.getContext(),
+                applicationId,
                 useAssetLinks,
-                useChromeCustomTabs
+                useChromeCustomTabs,
+                null
             );
         }else {
             FronteggApp.Companion.initWithRegions(
                 regions,
                 this.getContext(),
                 useAssetLinks,
-                useChromeCustomTabs
+                useChromeCustomTabs,
+                null
             );
         }
 
@@ -176,7 +181,7 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No tenantId provided");
             return;
         }
-        FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, () -> {
+        FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, (success) -> {
             call.resolve();
             return null;
         });
@@ -219,6 +224,7 @@ public class FronteggNativePlugin extends Plugin {
 
         String baseUrl = FronteggAuth.Companion.getInstance().getBaseUrl();
         String clientId = FronteggAuth.Companion.getInstance().getClientId();
+        String applicationId = FronteggAuth.Companion.getInstance().getApplicationId();
         String packageName = getContext().getPackageName();
 
         List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getRegions();
@@ -227,6 +233,7 @@ public class FronteggNativePlugin extends Plugin {
         resultMap.put("baseUrl", baseUrl);
         resultMap.put("clientId", clientId);
         resultMap.put("bundleId", packageName);
+        resultMap.put("applicationId", applicationId);
         resultMap.put("isRegional", regionsData.size() > 0);
         resultMap.put("regionData", Parser.regionsToJSONObject(regionsData));
 
