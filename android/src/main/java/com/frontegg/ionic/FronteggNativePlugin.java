@@ -51,11 +51,15 @@ public class FronteggNativePlugin extends Plugin {
             }
             for (int i = 0; i < array.length(); i++) {
                 JSONObject regionJson = (JSONObject) array.get(i);
+                String applicationId = null;
+                if (regionJson.has("applicationId")) {
+                    applicationId = regionJson.getString("applicationId");
+                }
                 regions.add(new RegionConfig(
                     regionJson.getString("key"),
                     regionJson.getString("baseUrl"),
                     regionJson.getString("clientId"),
-                    regionJson.getString("applicationId")
+                    applicationId
                 ));
             }
 
