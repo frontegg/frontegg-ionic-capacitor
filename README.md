@@ -31,6 +31,8 @@ features for the product-led era.
   - [Step 1: Add regions to your Frontegg configuration](#step-1-add-regions-to-your-frontegg-configuration)
   - [Setup multi-region support for iOS Platform](#setup-multi-region-support-for-ios-platform)
   - [Setup multi-region support for Android Platform](#setup-multi-region-support-for-android-platform)
+- [Multi-apps Android Support](#multi-apps-support)
+  - [Step 1: Add application id to your Frontegg configuration](#step-1-add-application-id-to-your-frontegg-configuration)
 
 ## Project Requirements
 
@@ -831,4 +833,71 @@ NOTE: if you are using `Custom Chrome Tab` you have to use `android:name` `com.f
             </intent-filter>
     </activity>
 </application>
+```
+
+## Multi-apps Support
+
+This guide outlines the steps to configure your application to support multiple applications.
+
+### Step 1: Add application id to your Frontegg configuration
+
+Add `applicationId` to your Frontegg configuration in `capacitor.config.ts` file:
+
+Find example code in [example/capacitor.config.ts](example/capacitor.config.ts) file.
+
+
+```typescript
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+/*...*/
+plugins: {
+
+    /*...*/
+
+    FronteggNative: {
+        baseUrl: 'https://{FRONTEGG_DOMAIN_HOST.com}',
+        clientId: '{FRONTEGG_CLIENT_ID}',
+        applicationId: '{FRONTEGG_APPLICATION_ID}',
+    }
+}
+};
+
+export default config;
+```
+
+Or add `applicationId` to the `regions`:
+
+```typescript
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  /*...*/
+  plugins: {
+
+    /*...*/
+
+    FronteggNative: {
+      
+      /** Remove baseUrl and clientId from here */
+      // baseUrl: 'https://{FRONTEGG_DOMAIN_HOST.com}',
+      // clientId: '{FRONTEGG_CLIENT_ID}',
+      // applicationId: '{FRONTEGG_APPLICATION_ID}',
+      
+      regions: [ {
+        key: 'REGION_1_KEY',
+        baseUrl: 'https://region1.forntegg.com',
+        clientId: 'REGION_1_CLIEND_ID', 
+        applicationId: '{FRONTEGG_REGION_1_APPLICATION_ID}'
+      }, {
+        key: 'REGION_2_KEY',
+        baseUrl: 'https://region2.forntegg.com',
+        clientId: 'REGION_2_CLIEND_ID', 
+        applicationId: '{FRONTEGG_REGION_2_APPLICATION_ID}',
+      } ]
+    }
+  }
+};
+
+export default config;
 ```
