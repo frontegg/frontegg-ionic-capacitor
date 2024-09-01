@@ -2,7 +2,8 @@ import { registerPlugin } from '@capacitor/core';
 
 import type {
   FronteggConstants,
-  FronteggNativePlugin, FronteggServiceOptions,
+  FronteggNativePlugin,
+  FronteggServiceOptions,
   FronteggState,
   SubscribeMap,
 } from './definitions';
@@ -26,7 +27,7 @@ export class FronteggService {
     'selectedRegion',
     'showLoader',
     'refreshingToken',
-    'initializing'
+    'initializing',
   ];
 
   constructor(options?: FronteggServiceOptions) {
@@ -42,7 +43,7 @@ export class FronteggService {
       refreshToken: null,
       selectedRegion: null,
       refreshingToken: false,
-      initializing: true
+      initializing: true,
     };
 
     this.mapListeners = {
@@ -54,7 +55,7 @@ export class FronteggService {
       refreshToken: new Set(),
       selectedRegion: new Set(),
       refreshingToken: new Set(),
-      initializing: new Set()
+      initializing: new Set(),
     };
 
     FronteggNative.addListener(
@@ -64,11 +65,11 @@ export class FronteggService {
           isAuthenticated: state.isAuthenticated,
           showLoader: state.isLoading,
           user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
-          accessToken: state.accessToken ? "****" : null,
+          accessToken: state.accessToken ? '****' : null,
           refreshToken: state.refreshToken,
           selectedRegion: state.selectedRegion,
           refreshingToken: state.refreshingToken,
-          initializing: state.initializing
+          initializing: state.initializing,
         });
 
         const keys = this.orderedListenerKeys;
@@ -108,7 +109,12 @@ export class FronteggService {
     }
 
     // Check for null and undefined
-    if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) {
+    if (
+      obj1 === null ||
+      obj1 === undefined ||
+      obj2 === null ||
+      obj2 === undefined
+    ) {
       return obj1 !== obj2;
     }
 
@@ -151,7 +157,6 @@ export class FronteggService {
     return true;
   }
 
-
   public getState(): FronteggState {
     return this.state;
   }
@@ -193,7 +198,11 @@ export class FronteggService {
    * @param data - the direct login data (for direct it's saml url request, for social-login it's the provider name, for custom-social-login it's the provider entity id)
    * @param ephemeralSession - if true, the session will be ephemeral and will not be saved in the browser
    */
-  public directLoginAction(type: string, data: string, ephemeralSession = true): Promise<boolean> {
+  public directLoginAction(
+    type: string,
+    data: string,
+    ephemeralSession = true,
+  ): Promise<boolean> {
     return FronteggNative.directLoginAction({ type, data, ephemeralSession });
   }
 

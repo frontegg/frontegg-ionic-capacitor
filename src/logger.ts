@@ -18,26 +18,26 @@ export class Logger {
     this.logLevel = logLevel;
   }
 
-  info(message: string, ...args :any[]): void {
+  info(message: string, ...args: any[]): void {
     if (this.shouldLog(LogLevel.INFO)) {
       console.info(message, ...args);
     }
   }
 
-  warn(message: string, ...args :any[]): void {
+  warn(message: string, ...args: any[]): void {
     if (this.shouldLog(LogLevel.WARN)) {
       console.info(message, ...args);
     }
   }
 
-  error(message: string, ...args :any[]): void {
+  error(message: string, ...args: any[]): void {
     if (this.shouldLog(LogLevel.ERROR)) {
       console.info(message, ...args);
     }
   }
 
   private shouldLog(level: LogLevel): boolean {
-    const levels = [ LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR ];
+    const levels = [LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR];
     return levels.indexOf(level) >= levels.indexOf(this.logLevel);
   }
 }

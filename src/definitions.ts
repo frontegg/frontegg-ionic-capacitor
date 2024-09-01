@@ -71,7 +71,6 @@ export interface FronteggState {
   initializing: boolean;
 }
 
-
 export type SubscribeFunc<T, K extends keyof T> = (value: T[K]) => void;
 export type SubscribeMap<T> = {
   [K in keyof T]: Set<SubscribeFunc<T, K>>;
@@ -160,7 +159,11 @@ export interface FronteggNativePlugin {
    * @param payload.ephemeralSession - If true, the session will be ephemeral and will not be saved in the browser.
    * @returns A promise that resolves when the direct login action is completed.
    */
-  directLoginAction(payload: { type: string; data: string; ephemeralSession: boolean }): Promise<boolean>;
+  directLoginAction(payload: {
+    type: string;
+    data: string;
+    ephemeralSession: boolean;
+  }): Promise<boolean>;
 
   /**
    * Logs out the current user.
@@ -251,7 +254,7 @@ type FronteggNativeRegionOptions = {
 type FronteggNativeOptions = (
   | FronteggNativeStandardOptions
   | FronteggNativeRegionOptions
-  ) & {
+) & {
   /**
    * Weather to handle login with social login in external browser.
    * If set to false, the plugin will navigate to the social login page with application webview.
@@ -287,8 +290,8 @@ type FronteggNativeOptions = (
   useChromeCustomTabs?: boolean;
 };
 
-export interface FronteggServiceOptions  {
-  logLevel: LogLevel
+export interface FronteggServiceOptions {
+  logLevel: LogLevel;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
