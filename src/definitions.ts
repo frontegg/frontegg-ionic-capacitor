@@ -1,6 +1,7 @@
 import type { ListenerCallback, PluginListenerHandle } from '@capacitor/core';
 import type { ITenantsResponse, IUserProfile } from '@frontegg/rest-api';
-import { LogLevel } from './logger';
+
+import type { LogLevel } from './logger';
 
 export type User = IUserProfile & {
   tenants: ITenantsResponse[];
