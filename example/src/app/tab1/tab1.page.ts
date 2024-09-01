@@ -20,11 +20,11 @@ export class Tab1Page implements OnInit {
   ngOnInit() {
     console.log('start listening')
 
-    const { user, isAuthenticated, accessToken, showLoader } = this.fronteggService.getState();
+    const { user, isAuthenticated, accessToken, isLoading } = this.fronteggService.getState();
     this.user = user;
     this.isAuthenticated = isAuthenticated;
     this.accessToken = accessToken;
-    this.isLoading = showLoader;
+    this.isLoading = isLoading;
 
     this.fronteggService.$user.subscribe((user) => {
       console.log('change user', user)

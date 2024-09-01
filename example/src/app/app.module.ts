@@ -6,7 +6,7 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { FronteggService } from '@frontegg/ionic-capacitor';
+import { FronteggService, LogLevel } from '@frontegg/ionic-capacitor';
 import { SelectRegionModule } from './select-region/select-region.module';
 
 @NgModule({
@@ -14,7 +14,7 @@ import { SelectRegionModule } from './select-region/select-region.module';
   imports: [ BrowserModule, IonicModule.forRoot(), AppRoutingModule, SelectRegionModule ],
   providers: [ {
     provide: 'Frontegg',
-    useValue: new FronteggService(),
+    useValue: new FronteggService({logLevel:LogLevel.INFO}),
   }, {
     provide: RouteReuseStrategy,
     useClass: IonicRouteStrategy

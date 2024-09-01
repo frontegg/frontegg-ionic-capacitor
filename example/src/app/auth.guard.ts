@@ -36,7 +36,14 @@ export class AuthGuard {
    */
   private waitForLoader() {
     return new Promise((resolve) => {
+      console.log("checking is loading")
+      if(!this.fronteggService.$isLoading.value){
+        resolve(true)
+      }
+      console.log("isLoading is true, waiting for it to be false")
       const unsubscribe = this.fronteggService.$isLoading.subscribe((isLoading) => {
+        console.log("isLoading", isLoading)
+
         if (!isLoading) {
           resolve(true);
           unsubscribe();
@@ -50,19 +57,27 @@ export class AuthGuard {
    * @private
    */
   private async navigateToLoginIfNeeded(): Promise<boolean> {
-    const { isAuthenticated } = this.fronteggService.getState();
+    await this.waitForLoader()
+    console.log("checking is authenticated")
+    const { isAuthenticated, isLoading } = this.fronteggService.getState();
     if (!isAuthenticated) {
-      await this.fronteggService.login()
-      return false // prevent navigation
+      console.log("not authenticated")
+      try {
+        await this.fronteggService.directLoginAction("social-login", "google", false)
+      }catch (e){
+        console.log(e)
+      }
+
+      return this.navigateToLoginIfNeeded()
     }
     return true // activate navigation
   }
 
 
   canActivate: CanActivateFn = () => {
-    const { showLoader } = this.fronteggService.getState();
+    const { isLoading } = this.fronteggService.getState();
 
-    if (!showLoader) {
+    if (!isLoading) {
       // if showLoader false
       // check if user is authenticated
       return this.navigateToLoginIfNeeded()
