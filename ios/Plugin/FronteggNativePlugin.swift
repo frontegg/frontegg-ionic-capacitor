@@ -36,12 +36,13 @@ public class FronteggNativePlugin: CAPPlugin {
 
             array.forEach {item in
                 if let dict = item as? [String:String]  {
-                    regions.append(RegionConfig(
-                        key: dict["key"]!,
-                        baseUrl: dict["baseUrl"]!,
-                        clientId: dict["clientId"]!,
-                        applicationId: dict["applicationId"]
-                    ))
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
+                        let regionConfig = try JSONDecoder().decode(RegionConfig.self, from: jsonData)
+                        regions.append(regionConfig)
+                    } catch {
+                        print("Failed to decode RegionConfig: \(error)")
+                    }
                 }
             }
 
@@ -160,23 +161,31 @@ public class FronteggNativePlugin: CAPPlugin {
         }
         call.resolve()
     }
-    
-    
+
+
     @objc func directLoginAction(_ call: CAPPluginCall) {
         guard let type = call.options["type"] as? String else {
             call.reject("No type provided")
             return
         }
-        
+
         guard let data = call.options["data"] as? String else {
             call.reject("No data provided")
             return
         }
-        
+        let ephemeralSession = call.getBool("ephemeralSession", true)
+
         DispatchQueue.main.sync {
-            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data)
+            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data, ephemeralSession: ephemeralSession) { res in
+                switch(res) {
+                case .failure(let error):
+                    call.reject("\((error as NSError).code)")
+                case .success(let user):
+                    call.resolve()
+                }
+            }
         }
-        call.resolve()
+
     }
 
     @objc func logout(_ call: CAPPluginCall) {
@@ -210,8 +219,12 @@ public class FronteggNativePlugin: CAPPlugin {
 
         DispatchQueue.global(qos: .background).async {
             Task {
-                await self.fronteggApp.auth.refreshTokenIfNeeded()
-                call.resolve()
+                let result = await self.fronteggApp.auth.refreshTokenIfNeeded()
+                
+                let response: [String: Any?] = [
+                    "success": result
+                ]
+                call.resolve(response as PluginCallResultData)
             }
         }
     }

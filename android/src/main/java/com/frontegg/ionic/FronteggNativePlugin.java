@@ -67,7 +67,7 @@ public class FronteggNativePlugin extends Plugin {
             throw new RuntimeException(e);
         }
 
-        if(regions.isEmpty()) {
+        if (regions.isEmpty()) {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
@@ -76,7 +76,7 @@ public class FronteggNativePlugin extends Plugin {
             if (baseUrl == null || clientId == null) {
                 throw new RuntimeException("Missing required config parameters: baseUrl, clientId");
             }
-            if(baseUrl.startsWith("https://")) {
+            if (baseUrl.startsWith("https://")) {
                 baseUrl = baseUrl.substring(baseUrl.indexOf("://") + 3);
             }
             FronteggApp.Companion.init(
@@ -88,7 +88,7 @@ public class FronteggNativePlugin extends Plugin {
                 useChromeCustomTabs,
                 null
             );
-        }else {
+        } else {
             FronteggApp.Companion.initWithRegions(
                 regions,
                 this.getContext(),
@@ -186,7 +186,9 @@ public class FronteggNativePlugin extends Plugin {
             return;
         }
         FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, (success) -> {
-            call.resolve();
+            JSObject result = new JSObject();
+            result.put("success", success);
+            call.resolve((JSObject) result);
             return null;
         });
     }
@@ -194,17 +196,17 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void initWithRegion(PluginCall call) {
-      String regionKey = call.getString("regionKey");
-      if (regionKey == null) {
-        call.reject("No regionKey provided");
-        return;
-      }
-      ExecutorService executor = Executors.newSingleThreadExecutor();
-      executor.submit(() -> {
-        FronteggApp.Companion.getInstance().initWithRegion(regionKey);
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(call::resolve);
-      });
+        String regionKey = call.getString("regionKey");
+        if (regionKey == null) {
+            call.reject("No regionKey provided");
+            return;
+        }
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            FronteggApp.Companion.getInstance().initWithRegion(regionKey);
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(call::resolve);
+        });
     }
 
     @PluginMethod

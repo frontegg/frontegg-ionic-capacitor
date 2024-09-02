@@ -25,7 +25,8 @@ export class FronteggNativeWeb
   async directLoginAction(payload: {
     type: string;
     data: string;
-  }): Promise<void> {
+    ephemeralSession?: boolean;
+  }): Promise<boolean> {
     throw Error(
       `FronteggNative.directLoginAction ${payload} not implemented in web`,
     );
