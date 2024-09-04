@@ -56,10 +56,10 @@ public class FronteggNativePlugin extends Plugin {
                     applicationId = regionJson.getString("applicationId");
                 }
                 regions.add(new RegionConfig(
-                    regionJson.getString("key"),
-                    regionJson.getString("baseUrl"),
-                    regionJson.getString("clientId"),
-                    applicationId
+                        regionJson.getString("key"),
+                        regionJson.getString("baseUrl"),
+                        regionJson.getString("clientId"),
+                        applicationId
                 ));
             }
 
@@ -80,21 +80,21 @@ public class FronteggNativePlugin extends Plugin {
                 baseUrl = baseUrl.substring(baseUrl.indexOf("://") + 3);
             }
             FronteggApp.Companion.init(
-                baseUrl,
-                clientId,
-                this.getContext(),
-                applicationId,
-                useAssetLinks,
-                useChromeCustomTabs,
-                null
+                    baseUrl,
+                    clientId,
+                    this.getContext(),
+                    applicationId,
+                    useAssetLinks,
+                    useChromeCustomTabs,
+                    null
             );
         } else {
             FronteggApp.Companion.initWithRegions(
-                regions,
-                this.getContext(),
-                useAssetLinks,
-                useChromeCustomTabs,
-                null
+                    regions,
+                    this.getContext(),
+                    useAssetLinks,
+                    useChromeCustomTabs,
+                    null
             );
         }
 
@@ -104,13 +104,13 @@ public class FronteggNativePlugin extends Plugin {
             this.disposable.dispose();
         }
         this.disposable = Observable.mergeArray(
-            auth.getAccessToken().getObservable(),
-            auth.getRefreshToken().getObservable(),
-            auth.getUser().getObservable(),
-            auth.isAuthenticated().getObservable(),
-            auth.isLoading().getObservable(),
-            auth.getInitializing().getObservable(),
-            auth.getShowLoader().getObservable()
+                auth.getAccessToken().getObservable(),
+                auth.getRefreshToken().getObservable(),
+                auth.getUser().getObservable(),
+                auth.isAuthenticated().getObservable(),
+                auth.isLoading().getObservable(),
+                auth.getInitializing().getObservable(),
+                auth.getShowLoader().getObservable()
         ).subscribe(nullableObject -> {
             debouncer.debounce(this::sendEvent);
         });
@@ -166,8 +166,10 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No type or data provided");
             return;
         }
-        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data);
-        call.resolve();
+        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, () -> {
+            call.resolve();
+            return null;
+        });
     }
 
     @PluginMethod
