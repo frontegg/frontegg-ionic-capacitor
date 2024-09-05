@@ -63,12 +63,8 @@ export class AuthGuard {
     if (!isAuthenticated) {
       console.log('not authenticated')
 
-      try {
-        // use await to hold application until login is completed or canceled
-        await this.fronteggService.directLoginAction('social-login', 'google', false)
-      }catch (e){
-        console.error('login failed', e)
-      }
+      // use await to hold application until login is completed or canceled
+      await this.fronteggService.directLoginAction('social-login', 'google', false)
       // recheck if user is authenticated after login
       return this.navigateToLoginIfNeeded()
     }
