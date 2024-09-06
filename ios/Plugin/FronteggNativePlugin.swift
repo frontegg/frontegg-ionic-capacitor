@@ -176,13 +176,8 @@ public class FronteggNativePlugin: CAPPlugin {
         let ephemeralSession = call.getBool("ephemeralSession", true)
 
         DispatchQueue.main.sync {
-            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data, ephemeralSession: ephemeralSession) { res in
-                switch(res) {
-                case .failure(let error):
-                    call.reject("\((error as NSError).code)")
-                case .success(let user):
-                    call.resolve()
-                }
+            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data, ephemeralSession: ephemeralSession) { _ in
+                call.resolve()
             }
         }
 
@@ -220,7 +215,7 @@ public class FronteggNativePlugin: CAPPlugin {
         DispatchQueue.global(qos: .background).async {
             Task {
                 let result = await self.fronteggApp.auth.refreshTokenIfNeeded()
-                
+
                 let response: [String: Any?] = [
                     "success": result
                 ]
