@@ -1,7 +1,6 @@
 # @frontegg/ionic-capacitor
 
-Frontegg is a first-of-its-kind full-stack user management platform, empowering software teams with user infrastructure
-features for the product-led era.
+The @frontegg/ionic-capacitor SDK integrates Frontegg's authentication and user management capabilities into Ionic Capacitor apps. It simplifies adding features like login, signup, and user profile management, enhancing security and user experience for mobile applications. Follow the integration steps below to use the SDK:
 
 ## Table of Contents
 
