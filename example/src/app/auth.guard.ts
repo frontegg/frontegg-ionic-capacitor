@@ -1,7 +1,6 @@
-import { CanActivateFn } from '@angular/router';
 import { Inject, Injectable } from '@angular/core';
-import { FronteggService } from '@frontegg/ionic-capacitor';
-
+import { CanActivateFn } from '@angular/router';
+import { FronteggService, FronteggState } from '@frontegg/ionic-capacitor';
 
 @Injectable({
   providedIn: 'root'
@@ -16,17 +15,6 @@ export class AuthGuard {
      */
     this.fronteggService.$isAuthenticated.subscribe(async () => {
       window.location.reload()
-    });
-
-    /**
-     * Listens to application visibility changes
-     * Reload the page to trigger canActivate
-     * when application returns from login page without authentication
-     */
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && !this.fronteggService.getState().isAuthenticated) {
-        window.location.reload()
-      }
     });
   }
 
@@ -80,7 +68,6 @@ export class AuthGuard {
       // check if user is authenticated
       return this.navigateToLoginIfNeeded()
     }
-
 
     // if showLoader true
     // wait for loader to finish and then check if user is authenticated
