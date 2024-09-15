@@ -13,6 +13,7 @@
         </ion-toolbar>
     </ion-header>
 
+
     <br/>
     <ion-text>isLoading: {{user ? user.email : 'Not Logged In' }}</ion-text>
     <br/>
@@ -26,6 +27,8 @@
         accessToken:{{' '}}
         {{accessToken ? accessToken.substring(accessToken.length - 40) : ''}}
     </ion-text>
+    <br/>
+    <ion-text>Refreshing Token: {{refreshingToken ? "refreshing..." : 'false' }}</ion-text>
     <br/>
     <br/>
 

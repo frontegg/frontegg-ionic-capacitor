@@ -181,6 +181,10 @@ export class FronteggService {
     return createObservable(this.mapListeners, this.state, 'accessToken');
   }
 
+  public get $refreshingToken(): FronteggObservable<'refreshingToken'> {
+    return createObservable(this.mapListeners, this.state, 'refreshingToken');
+  }
+
   public get $selectedRegion(): FronteggObservable<'selectedRegion'> {
     return createObservable(this.mapListeners, this.state, 'selectedRegion');
   }

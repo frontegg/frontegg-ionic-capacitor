@@ -14,6 +14,7 @@ export class FronteggNativeWeb
     throw Error('FronteggNative.getConstants not implemented in web');
   }
 
+
   async getAuthState(): Promise<FronteggState> {
     throw Error('FronteggNative.getAuthState not implemented in web');
   }

@@ -131,7 +131,7 @@ export interface FronteggNativePlugin {
   addListener(
     eventName: string,
     listenerFunc: ListenerCallback,
-  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+  ): Promise<PluginListenerHandle> ;
 
   /**
    * Retrieves the constant configuration values used by the Frontegg authentication module.
