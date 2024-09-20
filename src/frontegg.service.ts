@@ -15,7 +15,6 @@ const FronteggNative = registerPlugin<FronteggNativePlugin>('FronteggNative', {
   web: () => import('./web').then(m => new m.FronteggNativeWeb()),
 });
 
-
 export class FronteggService {
   private state: FronteggState;
   private logger: Logger;
@@ -59,20 +58,22 @@ export class FronteggService {
       initializing: new Set(),
     };
 
-
     FronteggNative.addListener(
       'onFronteggAuthEvent',
       (state: FronteggState) => {
-        this.logger.info('onFronteggAuthEvent', JSON.stringify({
-          isAuthenticated: state.isAuthenticated,
-          showLoader: state.isLoading,
-          user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
-          accessToken: state.accessToken ? '****' : null,
-          refreshToken: state.refreshToken,
-          selectedRegion: state.selectedRegion,
-          refreshingToken: state.refreshingToken,
-          initializing: state.initializing,
-        }));
+        this.logger.info(
+          'onFronteggAuthEvent',
+          JSON.stringify({
+            isAuthenticated: state.isAuthenticated,
+            showLoader: state.isLoading,
+            user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
+            accessToken: state.accessToken ? '****' : null,
+            refreshToken: state.refreshToken,
+            selectedRegion: state.selectedRegion,
+            refreshingToken: state.refreshingToken,
+            initializing: state.initializing,
+          }),
+        );
 
         const keys = this.orderedListenerKeys;
         keys.forEach(key => {
@@ -96,9 +97,7 @@ export class FronteggService {
         const key = item as keyof FronteggState;
 
         (this.state as any)[key] = state[key];
-        this.mapListeners[key].forEach((listener: any) =>
-          listener(state[key]),
-        );
+        this.mapListeners[key].forEach((listener: any) => listener(state[key]));
       }
 
       this.state.initializing = false;
@@ -202,31 +201,33 @@ export class FronteggService {
     return FronteggNative.login();
   }
 
-
   /**
    * Wait for loader to finish
    * @private
    */
   public async waitForLoader(): Promise<boolean> {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise<boolean>(async (resolve) => {
-      console.log('checking is loading')
+    return new Promise<boolean>(async resolve => {
+      console.log('checking is loading');
       const { isLoading, initializing } = this.getState();
 
-      console.log('checking is loading', JSON.stringify({isLoading, initializing}))
+      console.log(
+        'checking is loading',
+        JSON.stringify({ isLoading, initializing }),
+      );
       if (!isLoading && !initializing) {
-        resolve(true)
+        resolve(true);
         return;
       }
-      console.log('isLoading is true, waiting for it to be false')
-      const unsubscribe = this.$isLoading.subscribe((isLoading) => {
-        console.log('isLoading', isLoading)
+      console.log('isLoading is true, waiting for it to be false');
+      const unsubscribe = this.$isLoading.subscribe(isLoading => {
+        console.log('isLoading', isLoading);
         if (!isLoading) {
           resolve(true);
           unsubscribe();
         }
       });
-    })
+    });
   }
 
   /**
@@ -240,19 +241,15 @@ export class FronteggService {
     data: string,
     ephemeralSession = true,
   ): Promise<boolean> {
-
-    const state = await this.getNativeState()
-    console.log('direct login action', state)
-    await this.waitForLoader()
+    const state = await this.getNativeState();
+    console.log('direct login action', state);
+    await this.waitForLoader();
     if (state.isAuthenticated) {
-      return true
+      return true;
     }
 
-
     this.state.isLoading = true;
-    this.mapListeners.isLoading.forEach((listener: any) =>
-      listener(true),
-    );
+    this.mapListeners.isLoading.forEach((listener: any) => listener(true));
     return FronteggNative.directLoginAction({ type, data, ephemeralSession });
   }
 
