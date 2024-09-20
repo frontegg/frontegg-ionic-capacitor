@@ -8,8 +8,9 @@ import { FronteggService } from '@frontegg/ionic-capacitor';
 })
 export class AuthGuard {
 
-  constructor(@Inject('Frontegg') private fronteggService: FronteggService) {
-
+  constructor(
+    @Inject('Frontegg') private fronteggService: FronteggService
+  ) {
     /**
      * Listens to $isAuthenticated changes
      * Reload the page to trigger canActivate function again
@@ -18,38 +19,6 @@ export class AuthGuard {
       window.location.reload()
     });
 
-    /**
-     * Listens to application visibility changes
-     * Reload the page to trigger canActivate
-     * when application returns from login page without authentication
-     */
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && !this.fronteggService.getState().isAuthenticated) {
-        window.location.reload()
-      }
-    });
-  }
-
-  /**
-   * Wait for loader to finish
-   * @private
-   */
-  private waitForLoader() {
-    return new Promise((resolve) => {
-      console.log('checking is loading')
-      if (!this.fronteggService.$isLoading.value) {
-        resolve(true)
-      }
-      console.log('isLoading is true, waiting for it to be false')
-      const unsubscribe = this.fronteggService.$isLoading.subscribe((isLoading) => {
-        console.log('isLoading', isLoading)
-
-        if (!isLoading) {
-          resolve(true);
-          unsubscribe();
-        }
-      });
-    })
   }
 
   /**
@@ -57,9 +26,9 @@ export class AuthGuard {
    * @private
    */
   private async navigateToLoginIfNeeded(): Promise<boolean> {
-    await this.waitForLoader()
+    await this.fronteggService.waitForLoader()
     console.log('checking is authenticated')
-    const { isAuthenticated, isLoading } = this.fronteggService.getState();
+    const { isAuthenticated, isLoading } = await this.fronteggService.getNativeState();
     if (!isAuthenticated) {
       console.log('not authenticated')
 
@@ -72,8 +41,8 @@ export class AuthGuard {
   }
 
 
-  canActivate: CanActivateFn = () => {
-    const { isLoading } = this.fronteggService.getState();
+  canActivate: CanActivateFn = async () => {
+    const { isLoading } = await this.fronteggService.getNativeState();
 
     if (!isLoading) {
       // if showLoader false
@@ -85,7 +54,7 @@ export class AuthGuard {
     // if showLoader true
     // wait for loader to finish and then check if user is authenticated
     return new Promise<boolean>(async (resolve) => {
-      await this.waitForLoader()
+      await this.fronteggService.waitForLoader()
       const activated = await this.navigateToLoginIfNeeded()
       resolve(activated)
     })

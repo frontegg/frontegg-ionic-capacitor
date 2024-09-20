@@ -3,6 +3,7 @@ package com.frontegg.ionic;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
@@ -35,9 +36,11 @@ public class FronteggNativePlugin extends Plugin {
     private Disposable disposable = null;
     private final Debouncer debouncer = new Debouncer(50);  // 200ms delay
 
+
     @Override
     public void load() {
 
+        Log.d("FronteggNative", "Loading FronteggNativePlugin");
         // for regions initialization
         List<RegionConfig> regions = new ArrayList<>();
         boolean useAssetLinks = this.getConfig().getBoolean("useAssetLinks", true);
