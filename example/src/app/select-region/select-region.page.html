@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
-    <ion-toolbar>
-        <ion-title>
+    <ion-toolbar *ngIf="!loading">
+        <ion-title *ngIf="!loading">
             Select Region
         </ion-title>
     </ion-toolbar>
@@ -8,16 +8,22 @@
 
 <ion-content [fullscreen]="true">
     <ion-header collapse="condense">
-        <ion-toolbar>
+        <ion-toolbar *ngIf="!loading">
             <ion-title size="large">Select Region</ion-title>
         </ion-toolbar>
     </ion-header>
 
 
-    <ion-list lines="full">
+    <ion-list lines="full" *ngIf="!loading">
         <ion-item *ngFor="let reg of regions" (click)="selectRegion(reg.key)">
-            <ion-label>{{reg.key}}</ion-label>
-            <ion-label>{{reg.baseUrl}}</ion-label>
+            <ion-label>{{ reg.key }}</ion-label>
+            <ion-label>{{ reg.baseUrl }}</ion-label>
         </ion-item>
     </ion-list>
+
+    <ng-container *ngIf="loading">
+        <div class="spinner-wrapper">
+            <ion-spinner></ion-spinner>
+        </div>
+    </ng-container>
 </ion-content>

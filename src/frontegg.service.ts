@@ -61,16 +61,19 @@ export class FronteggService {
     FronteggNative.addListener(
       'onFronteggAuthEvent',
       (state: FronteggState) => {
-        this.logger.info('onFronteggAuthEvent', {
-          isAuthenticated: state.isAuthenticated,
-          showLoader: state.isLoading,
-          user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
-          accessToken: state.accessToken ? '****' : null,
-          refreshToken: state.refreshToken,
-          selectedRegion: state.selectedRegion,
-          refreshingToken: state.refreshingToken,
-          initializing: state.initializing,
-        });
+        this.logger.info(
+          'onFronteggAuthEvent',
+          JSON.stringify({
+            isAuthenticated: state.isAuthenticated,
+            showLoader: state.isLoading,
+            user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
+            accessToken: state.accessToken ? '****' : null,
+            refreshToken: state.refreshToken,
+            selectedRegion: state.selectedRegion,
+            refreshingToken: state.refreshingToken,
+            initializing: state.initializing,
+          }),
+        );
 
         const keys = this.orderedListenerKeys;
         keys.forEach(key => {
@@ -87,18 +90,20 @@ export class FronteggService {
     );
 
     FronteggNative.getAuthState().then((state: FronteggState) => {
-      this.logger.info('getAuthState()', state);
+      this.logger.info(`getAuthState(): \n ${JSON.stringify(state)} DONE`);
 
       const keys = Object.keys(this.mapListeners);
-      for (const item of keys) {
+      for (const item of keys.filter(key => key !== 'initializing')) {
         const key = item as keyof FronteggState;
-        if (this.isChanged(this.state[key], state[key])) {
-          (this.state as any)[key] = state[key];
-          this.mapListeners[key].forEach((listener: any) =>
-            listener(state[key]),
-          );
-        }
+
+        (this.state as any)[key] = state[key];
+        this.mapListeners[key].forEach((listener: any) => listener(state[key]));
       }
+
+      this.state.initializing = false;
+      this.mapListeners.initializing.forEach((listener: any) =>
+        listener(false),
+      );
     });
   }
 
@@ -181,6 +186,10 @@ export class FronteggService {
     return createObservable(this.mapListeners, this.state, 'accessToken');
   }
 
+  public get $refreshingToken(): FronteggObservable<'refreshingToken'> {
+    return createObservable(this.mapListeners, this.state, 'refreshingToken');
+  }
+
   public get $selectedRegion(): FronteggObservable<'selectedRegion'> {
     return createObservable(this.mapListeners, this.state, 'selectedRegion');
   }
@@ -193,16 +202,54 @@ export class FronteggService {
   }
 
   /**
+   * Wait for loader to finish
+   * @private
+   */
+  public async waitForLoader(): Promise<boolean> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise<boolean>(async resolve => {
+      console.log('checking is loading');
+      const { isLoading, initializing } = this.getState();
+
+      console.log(
+        'checking is loading',
+        JSON.stringify({ isLoading, initializing }),
+      );
+      if (!isLoading && !initializing) {
+        resolve(true);
+        return;
+      }
+      console.log('isLoading is true, waiting for it to be false');
+      const unsubscribe = this.$isLoading.subscribe(isLoading => {
+        console.log('isLoading', isLoading);
+        if (!isLoading) {
+          resolve(true);
+          unsubscribe();
+        }
+      });
+    });
+  }
+
+  /**
    * Used to log in with social login provider directly without visiting the login page
    * @param type - the direct login type (direct, social-login, custom-social-login)
    * @param data - the direct login data (for direct it's saml url request, for social-login it's the provider name, for custom-social-login it's the provider entity id)
    * @param ephemeralSession - if true, the session will be ephemeral and will not be saved in the browser
    */
-  public directLoginAction(
+  public async directLoginAction(
     type: string,
     data: string,
     ephemeralSession = true,
   ): Promise<boolean> {
+    const state = await this.getNativeState();
+    console.log('direct login action', state);
+    await this.waitForLoader();
+    if (state.isAuthenticated) {
+      return true;
+    }
+
+    this.state.isLoading = true;
+    this.mapListeners.isLoading.forEach((listener: any) => listener(true));
     return FronteggNative.directLoginAction({ type, data, ephemeralSession });
   }
 

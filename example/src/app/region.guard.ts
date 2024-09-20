@@ -9,14 +9,15 @@ export class RegionGuard {
 
   constructor(@Inject('Frontegg') private fronteggService: FronteggService, private router: Router) {
 
+
     /**
      * Listens to $isAuthenticated changes
      * Reload the page to trigger canActivate function again
      */
     this.fronteggService.$selectedRegion.subscribe(async () => {
-      console.log("selected region changed")
       window.location.reload()
     });
+
   }
 
   canActivate: CanActivateFn = async () => {
@@ -27,6 +28,7 @@ export class RegionGuard {
       return true
     }
 
-    return this.router.navigate([ '/select-region' ])
+    this.router.navigate([ '/select-region' ])
+    return false
   }
 }
