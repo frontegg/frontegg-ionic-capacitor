@@ -218,11 +218,8 @@ export class FronteggService {
       console.log('checking is loading');
       const { isLoading } = this.getState();
 
-      console.log(
-        'checking is loading',
-        JSON.stringify({ isLoading }),
-      );
-      if (!isLoading ) {
+      console.log('checking is loading', JSON.stringify({ isLoading }));
+      if (!isLoading) {
         resolve(true);
         return;
       }
