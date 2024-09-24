@@ -58,7 +58,10 @@ export class AuthGuardComponent implements OnInit, OnDestroy {
     combineLatest([ this.isAuthenticated$, this.isLoading$, visibility$ ])
       .pipe(
         takeUntil(this.destroy$),
-        filter(([ isAuthenticated, isLoading ]) => !isLoading && !isAuthenticated),
+        filter(([ isAuthenticated, isLoading ]) => {
+          console.log('AuthGuardComponent#ngOnInit called',JSON.stringify( { isAuthenticated, isLoading }));
+          return !isLoading && !isAuthenticated
+        }),
         map(([ isAuthenticated, isLoading ]) => {
           console.warn('User is not authenticated, redirecting to login');
           this.ngZone.run(() => {

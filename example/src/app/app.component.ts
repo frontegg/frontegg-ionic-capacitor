@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { FronteggService } from '@frontegg/ionic-capacitor';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,12 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
 
-  constructor() {}
+  isLoading = true;
+
+  constructor(@Inject('Frontegg') private fronteggService: FronteggService,) {
+
+    this.fronteggService.$isLoading.subscribe((isLoading) => {
+      this.isLoading = isLoading;
+    });
+  }
 }
