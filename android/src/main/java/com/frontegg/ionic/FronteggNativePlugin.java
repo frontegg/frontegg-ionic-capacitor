@@ -214,15 +214,24 @@ public class FronteggNativePlugin extends Plugin {
         });
     }
 
+
     @PluginMethod
     public void refreshToken(PluginCall call) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
-            FronteggApp.Companion.getInstance().getAuth().refreshTokenIfNeeded();
             Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(call::resolve);
+            FronteggAuth fronteggAuth = FronteggAuth.Companion.getInstance();
+            if (!fronteggAuth.refreshTokenIfNeeded()) {
+                fronteggAuth.logout(() -> {
+                    handler.post(call::resolve);
+                    return null;
+                });
+            } else {
+                handler.post(call::resolve);
+            }
         });
     }
+
 
     @PluginMethod
     public void getAuthState(PluginCall call) {

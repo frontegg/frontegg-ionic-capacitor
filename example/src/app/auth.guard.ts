@@ -1,62 +1,60 @@
-import { CanActivateFn } from '@angular/router';
-import { Inject, Injectable } from '@angular/core';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { Injectable, Inject } from '@angular/core';
 import { FronteggService } from '@frontegg/ionic-capacitor';
-
+import {  Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard {
+export class AuthGuard implements CanActivate {
+
+  isAuthenticated$: Observable<boolean>;
+  isLoading$: Observable<boolean>;
 
   constructor(
-    @Inject('Frontegg') private fronteggService: FronteggService
+    @Inject('Frontegg') private fronteggService: FronteggService,
+    private router: Router
   ) {
-    /**
-     * Listens to $isAuthenticated changes
-     * Reload the page to trigger canActivate function again
-     */
-    this.fronteggService.$isAuthenticated.subscribe(async () => {
-      window.location.reload()
+    this.isAuthenticated$ = new Observable<boolean>((observer: any) => {
+      // Emit the initial value
+      observer.next(this.fronteggService.$isAuthenticated.value);
+
+      // Subscribe to changes
+      const unsubscribe = this.fronteggService.$isAuthenticated.subscribe((newValue) => {
+        observer.next(newValue);
+      });
+
+      // Return the unsubscribe function
+      return unsubscribe;
     });
 
+    this.isLoading$ = new Observable<boolean>((observer: any) => {
+      // Emit the initial value
+      observer.next(this.fronteggService.$isLoading.value);
+
+      // Subscribe to changes
+      const unsubscribe = this.fronteggService.$isLoading.subscribe((newValue) => {
+        observer.next(newValue);
+      });
+
+      // Return the unsubscribe function
+      return unsubscribe;
+    });
   }
 
-  /**
-   * Navigate to login page if user is not authenticated
-   * @private
-   */
-  private async navigateToLoginIfNeeded(): Promise<boolean> {
+  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+
     await this.fronteggService.waitForLoader()
-    console.log('checking is authenticated')
-    const { isAuthenticated, isLoading } = await this.fronteggService.getNativeState();
-    if (!isAuthenticated) {
-      console.log('not authenticated')
+    const {isAuthenticated, isLoading} = this.fronteggService.getState()
+    console.log('AuthGuard#canActivate called', { isAuthenticated, isLoading });
 
-      // use await to hold application until login is completed or canceled
-      await this.fronteggService.directLoginAction('social-login', 'google', false)
-      // recheck if user is authenticated after login
-      return this.navigateToLoginIfNeeded()
-    }
-    return true // activate navigation
-  }
-
-
-  canActivate: CanActivateFn = async () => {
-    const { isLoading } = await this.fronteggService.getNativeState();
-
-    if (!isLoading) {
-      // if showLoader false
-      // check if user is authenticated
-      return this.navigateToLoginIfNeeded()
+    if (isAuthenticated) {
+      return true;
+    } else {
+      this.router.navigate([ '/login' ]);
+      return false;
     }
 
 
-    // if showLoader true
-    // wait for loader to finish and then check if user is authenticated
-    return new Promise<boolean>(async (resolve) => {
-      await this.fronteggService.waitForLoader()
-      const activated = await this.navigateToLoginIfNeeded()
-      resolve(activated)
-    })
   }
 }

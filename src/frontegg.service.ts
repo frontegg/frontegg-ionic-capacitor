@@ -28,6 +28,7 @@ export class FronteggService {
     'showLoader',
     'refreshingToken',
     'initializing',
+    'isLoading',
   ];
 
   constructor(options?: FronteggServiceOptions) {
@@ -66,6 +67,7 @@ export class FronteggService {
           JSON.stringify({
             isAuthenticated: state.isAuthenticated,
             showLoader: state.isLoading,
+            isLoading: state.isLoading,
             user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
             accessToken: state.accessToken ? '****' : null,
             refreshToken: state.refreshToken,
@@ -174,6 +176,11 @@ export class FronteggService {
     return createObservable(this.mapListeners, this.state, 'isLoading');
   }
 
+  // @deprecated use $isLoading instead
+  public get $showLoader(): FronteggObservable<'showLoader'> {
+    return createObservable(this.mapListeners, this.state, 'showLoader');
+  }
+
   public get $isAuthenticated(): FronteggObservable<'isAuthenticated'> {
     return createObservable(this.mapListeners, this.state, 'isAuthenticated');
   }
@@ -209,18 +216,19 @@ export class FronteggService {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise<boolean>(async resolve => {
       console.log('checking is loading');
-      const { isLoading, initializing } = this.getState();
+      const { isLoading } = this.getState();
 
       console.log(
         'checking is loading',
-        JSON.stringify({ isLoading, initializing }),
+        JSON.stringify({ isLoading }),
       );
-      if (!isLoading && !initializing) {
+      if (!isLoading ) {
         resolve(true);
         return;
       }
       console.log('isLoading is true, waiting for it to be false');
-      const unsubscribe = this.$isLoading.subscribe(isLoading => {
+      const unsubscribe = this.$isLoading.subscribe(() => {
+        const { isLoading } = this.getState();
         console.log('isLoading', isLoading);
         if (!isLoading) {
           resolve(true);
