@@ -8,7 +8,7 @@ import { FronteggService } from '@frontegg/ionic-capacitor';
 })
 export class AppComponent {
 
-  isLoading = true;
+  isLoading = false;
 
   constructor(@Inject('Frontegg') private fronteggService: FronteggService,) {
 

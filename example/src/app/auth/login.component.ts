@@ -39,11 +39,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   handleVisibilityChange(): void {
     if (document.visibilityState === 'visible') {
       console.log('App resumed, rechecking authentication');
-      this.loginIfNeeded();
+      // this.loginIfNeeded();
     }
   }
 
-  async loginIfNeeded() {
+  async loginIfNeeded():Promise<void> {
     const { isLoading, isAuthenticated } = await this.fronteggService.getNativeState()
     console.log('AuthComponent#loginIfNeeded called', { isLoading, isAuthenticated });
 
@@ -64,7 +64,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     console.log('AuthComponent#loginIfNeeded not isAuthenticated');
 
-    this.fronteggService.directLoginAction('social-login', 'google')
+    await this.fronteggService.directLoginAction('social-login', 'google')
+
+    return this.loginIfNeeded()
   }
 
   ngOnDestroy() {

@@ -216,7 +216,8 @@ export class FronteggService {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise<boolean>(async resolve => {
       console.log('checking is loading');
-      const { isLoading } = this.getState();
+      const state = await this.getNativeState();
+      let isLoading = state.isLoading;
 
       console.log('checking is loading', JSON.stringify({ isLoading }));
       if (!isLoading) {
@@ -224,14 +225,16 @@ export class FronteggService {
         return;
       }
       console.log('isLoading is true, waiting for it to be false');
-      const unsubscribe = this.$isLoading.subscribe(() => {
-        const { isLoading } = this.getState();
-        console.log('isLoading', isLoading);
-        if (!isLoading) {
+      while (isLoading) {
+        const { isLoading: newIsLoading } = await this.getNativeState();
+        if (!newIsLoading) {
           resolve(true);
-          unsubscribe();
+          return;
         }
-      });
+        isLoading = newIsLoading;
+        await new Promise(r => setTimeout(r, 100));
+      }
+
     });
   }
 
