@@ -8,13 +8,19 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FronteggService, LogLevel } from '@frontegg/ionic-capacitor';
 import { SelectRegionModule } from './select-region/select-region.module';
+import { AuthModule } from './auth/auth.module';
 
 @NgModule({
   declarations: [ AppComponent ],
-  imports: [ BrowserModule, IonicModule.forRoot(), AppRoutingModule, SelectRegionModule ],
+  imports: [ BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    SelectRegionModule,
+    AuthModule
+  ],
   providers: [ {
     provide: 'Frontegg',
-    useValue: new FronteggService({logLevel:LogLevel.INFO}),
+    useValue: new FronteggService({ logLevel: LogLevel.INFO }),
   }, {
     provide: RouteReuseStrategy,
     useClass: IonicRouteStrategy
