@@ -12,8 +12,9 @@ export class AppComponent {
 
   constructor(@Inject('Frontegg') private fronteggService: FronteggService,) {
 
-    this.fronteggService.$isLoading.subscribe((isLoading) => {
-      this.isLoading = isLoading;
+    this.fronteggService.$isLoading.subscribe(() => {
+      const {isLoading, selectedRegion} = this.fronteggService.getState();
+      this.isLoading = selectedRegion == null ? false : isLoading;
     });
   }
 }

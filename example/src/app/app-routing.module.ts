@@ -16,12 +16,12 @@ const routes: Routes = [
         component: AuthGuardComponent,
         canActivate: [ AuthGuard ],
         loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-      },
+      },{
+        path: 'login',
+        component: LoginComponent
+      }
     ]
-  }, {
-    path: 'login',
-    component: LoginComponent
-  }, {
+  },  {
     path: 'select-region',
     component: SelectRegionComponent
   }
