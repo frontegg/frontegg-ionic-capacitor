@@ -54,7 +54,7 @@ from [Frontegg Portal Domain](https://portal.frontegg.com/development/settings/d
   - Add `{{IOS_BUNDLE_IDENTIFIER}}://{{FRONTEGG_BASE_URL}}/ios/oauth/callback`
 - Toggle Hosted login method for Android:
   - Add `{{ANDROID_PACKAGE_NAME}}://{{FRONTEGG_BASE_URL}}/android/oauth/callback` **(without assetlinks)**
-  - Add `https://{{FRONTEGG_BASE_URL}}/{{ANDROID_PACKAGE_NAME}}/android/oauth/callback` **(required for assetlinks)**
+  - Add `Add https://{{FRONTEGG_BASE_URL}}/oauth/account/redirect/android/{{ANDROID_PACKAGE_NAME}}` **(required for assetlinks)**
 - Add `{{FRONTEGG_BASE_URL}}/oauth/authorize`
 - Replace `IOS_BUNDLE_IDENTIFIER` with your application identifier
 - Replace `FRONTEGG_BASE_URL` with your frontegg base url
