@@ -1,0 +1,7 @@
+- package-ecosystem: "yarn"
+    directory: "/example"
+    schedule:
+      interval: "monthly"
+    labels: [ ]
+    ignore:
+      - dependency-name: "*"
