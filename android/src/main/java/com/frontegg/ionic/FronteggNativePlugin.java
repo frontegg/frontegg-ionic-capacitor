@@ -113,7 +113,8 @@ public class FronteggNativePlugin extends Plugin {
                 auth.isAuthenticated().getObservable(),
                 auth.isLoading().getObservable(),
                 auth.getInitializing().getObservable(),
-                auth.getShowLoader().getObservable()
+                auth.getShowLoader().getObservable(),
+                auth.getRefreshingToken().getObservable()
         ).subscribe(nullableObject -> {
             debouncer.debounce(this::sendEvent);
         });
@@ -135,6 +136,7 @@ public class FronteggNativePlugin extends Plugin {
         boolean isLoading = auth.isLoading().getValue();
         boolean initializing = auth.getInitializing().getValue();
         boolean showLoader = auth.getShowLoader().getValue();
+        boolean refreshingToken = auth.getRefreshingToken().getValue();
         RegionConfig selectedRegion = auth.getSelectedRegion();
 
         JSObject data = new JSObject();
@@ -148,6 +150,7 @@ public class FronteggNativePlugin extends Plugin {
         data.put("isLoading", isLoading);
         data.put("initializing", initializing);
         data.put("showLoader", showLoader);
+        data.put("refreshingToken", refreshingToken);
         data.put("selectedRegion", Parser.regionToJSONObject(selectedRegion));
 
         return data;
@@ -156,8 +159,11 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void login(PluginCall call) {
-        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity());
-        call.resolve();
+        String loginHint = call.getString("loginHint");
+        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, ()-> {
+            call.resolve();
+            return null;
+        });
     }
 
     @PluginMethod

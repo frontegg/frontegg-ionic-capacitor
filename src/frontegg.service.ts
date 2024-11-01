@@ -204,8 +204,8 @@ export class FronteggService {
   /**
    * Call frontegg native login method
    */
-  public login(): Promise<void> {
-    return FronteggNative.login();
+  public login(loginHint?: string): Promise<void> {
+    return FronteggNative.login({ loginHint });
   }
 
   /**
