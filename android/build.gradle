@@ -36,7 +36,10 @@ android {
     lintOptions {
         abortOnError false
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 repositories {
@@ -51,8 +54,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.browser:browser:1.8.0"
     implementation 'io.reactivex.rxjava3:rxkotlin:3.0.1'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'com.frontegg.sdk:android:1.2.27'
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.frontegg.sdk:android:1.2.27-alpha.1730467213619'
 
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
