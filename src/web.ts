@@ -18,8 +18,8 @@ export class FronteggNativeWeb
     throw Error('FronteggNative.getAuthState not implemented in web');
   }
 
-  async login(): Promise<void> {
-    throw Error('FronteggNative.login not implemented in web');
+  async login(payload: { loginHint?: string }): Promise<void> {
+    throw Error(`FronteggNative.login(${payload}) not implemented in web`);
   }
 
   async directLoginAction(payload: {

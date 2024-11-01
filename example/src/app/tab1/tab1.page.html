@@ -14,9 +14,11 @@
     </ion-header>
 
     <br/>
-    <ion-text>isLoading: {{user ? user.email : 'Not Logged In' }}</ion-text>
+    <ion-text>Email: {{user ? user.email : 'Not Logged In' }}</ion-text>
     <br/>
     <ion-text>isLoading: {{isLoading ? 'true' : 'false'}}</ion-text>
+    <br/>
+    <ion-text>Is Refreshing Token: {{refreshingToken ? 'true' : 'false'}}</ion-text>
     <br/>
     <ion-text>isAuthenticated: {{isAuthenticated ? 'true' : 'false'}}</ion-text>
     <br/>
