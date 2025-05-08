@@ -71,21 +71,34 @@ public class FronteggNativePlugin: CAPPlugin {
 
 
         let auth = fronteggApp.auth
-        var anyChange: AnyPublisher<Void, Never> {
-            return Publishers.Merge8 (
-                auth.$accessToken.map { _ in },
-                auth.$refreshToken.map {_ in },
-                auth.$user.map {_ in },
+        var stateChange: AnyPublisher<Void, Never> {
+            return Publishers.Merge5 (
+                auth.$refreshingToken.map { _ in },
                 auth.$isAuthenticated.map {_ in },
                 auth.$isLoading.map {_ in },
                 auth.$initializing.map {_ in },
-                auth.$showLoader.map {_ in },
+                auth.$showLoader.map {_ in }
+            )
+            .eraseToAnyPublisher()
+        }
+        
+        var dataChange: AnyPublisher<Void, Never> {
+            return Publishers.Merge4 (
+                auth.$accessToken.map { _ in },
+                auth.$refreshToken.map {_ in },
+                auth.$user.map {_ in },
                 auth.$selectedRegion.map{_ in}
             )
             .eraseToAnyPublisher()
         }
 
-        anyChange.sink(receiveValue: { () in
+        stateChange.sink(receiveValue: { () in
+            self.debounce() {
+                self.sendEvent()
+            }
+        }).store(in: &cancellables)
+        
+        dataChange.sink(receiveValue: { () in
             self.debounce() {
                 self.sendEvent()
             }
@@ -107,6 +120,7 @@ public class FronteggNativePlugin: CAPPlugin {
         let body: [String: Any?] = [
             "accessToken": auth.accessToken,
             "refreshToken": auth.refreshToken,
+            "refreshingToken": auth.refreshingToken,
             "user": jsonUser,
             "isAuthenticated": auth.isAuthenticated,
             "isLoading": auth.isLoading,
@@ -156,10 +170,13 @@ public class FronteggNativePlugin: CAPPlugin {
     }
 
     @objc func login(_ call: CAPPluginCall) {
+        let loginHint = call.options["loginHint"] as? String
         DispatchQueue.main.sync {
-            fronteggApp.auth.login()
+            fronteggApp.auth.login({ _ in
+                call.resolve()
+            }, loginHint: loginHint)
         }
-        call.resolve()
+        
     }
 
 
@@ -234,6 +251,7 @@ public class FronteggNativePlugin: CAPPlugin {
         let body: [String: Any?] = [
             "accessToken": auth.accessToken,
             "refreshToken": auth.refreshToken,
+            "refreshingToken": auth.refreshingToken,
             "user": jsonUser,
             "isAuthenticated": auth.isAuthenticated,
             "isLoading": auth.isLoading,

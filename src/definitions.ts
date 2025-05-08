@@ -149,7 +149,7 @@ export interface FronteggNativePlugin {
    * Initiates the login process.
    * @returns A promise that resolves when the login process is completed.
    */
-  login(): Promise<void>;
+  login(payload: { loginHint?: string }): Promise<void>;
 
   /**
    * Used to log in with a social login provider directly without visiting the login page.
