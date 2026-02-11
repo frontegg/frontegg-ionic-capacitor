@@ -1,2 +1,9 @@
-include ':capacitor-android'
-project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+// Resolve path: repo root (../node_modules) or plugin inside app's node_modules (../../../node_modules)
+def capacitorAndroidDir = new File(settingsDir, '../node_modules/@capacitor/android/capacitor')
+if (!capacitorAndroidDir.exists()) {
+  capacitorAndroidDir = new File(settingsDir, '../../../node_modules/@capacitor/android/capacitor')
+}
+if (capacitorAndroidDir.exists()) {
+  include ':capacitor-android'
+  project(':capacitor-android').projectDir = capacitorAndroidDir
+}

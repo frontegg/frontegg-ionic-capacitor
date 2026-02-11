@@ -6,5 +6,11 @@
 	<string>debug</string>
 	<key>lateInit</key>
 	<true/>
+	<key>embeddedMode</key>
+	<true/>
+	<key>baseUrl</key>
+	<string>https://autheu.davidantoon.me</string>
+	<key>clientId</key>
+	<string>b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca</string>
 </dict>
 </plist>

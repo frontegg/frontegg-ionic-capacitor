@@ -1,4 +1,5 @@
 import UIKit
+import SwiftUICore
 import Capacitor
 import FronteggSwift
 
@@ -9,6 +10,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+
+        DefaultLoader.customLoaderView = AnyView(Text("Loading..."))
         
         FronteggApp.shared.didFinishLaunchingWithOptions()
         return true

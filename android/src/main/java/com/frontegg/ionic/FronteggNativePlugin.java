@@ -9,6 +9,7 @@ import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
 import com.frontegg.android.regions.RegionConfig;
+import com.frontegg.android.ui.DefaultLoader;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -101,7 +102,14 @@ public class FronteggNativePlugin extends Plugin {
             );
         }
 
-        FronteggAuth auth = FronteggAuth.Companion.getInstance();
+        FronteggAuth auth = FronteggAuth.Companion.getInstance().getAuth();
+
+        DefaultLoader.setLoaderProvider(context -> {
+            ProgressBar progressBar = new ProgressBar(context);
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.BLUE));
+            return progressBar;
+        });        
+
 
         if (this.disposable != null) {
             this.disposable.dispose();
@@ -128,7 +136,7 @@ public class FronteggNativePlugin extends Plugin {
     }
 
     private JSObject getData() {
-        FronteggAuth auth = FronteggAuth.Companion.getInstance();
+        FronteggAuth auth = FronteggAuth.Companion.getInstance().getAuth();
         String accessToken = auth.getAccessToken().getValue();
         String refreshToken = auth.getRefreshToken().getValue();
         User user = auth.getUser().getValue();
@@ -226,7 +234,7 @@ public class FronteggNativePlugin extends Plugin {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
             Handler handler = new Handler(Looper.getMainLooper());
-            FronteggAuth fronteggAuth = FronteggAuth.Companion.getInstance();
+            FronteggAuth fronteggAuth = FronteggAuth.Companion.getInstance().getAuth();
             if (!fronteggAuth.refreshTokenIfNeeded()) {
                 fronteggAuth.logout(() -> {
                     handler.post(call::resolve);
