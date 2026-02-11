@@ -5,15 +5,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.widget.ProgressBar;
-
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
 import com.frontegg.android.regions.RegionConfig;
-import com.frontegg.android.ui.DefaultLoader;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -108,12 +103,6 @@ public class FronteggNativePlugin extends Plugin {
 
         FronteggAuth auth = FronteggApp.Companion.getInstance().getAuth();
 
-        DefaultLoader.setLoaderProvider(context -> {
-            ProgressBar progressBar = new ProgressBar(context);
-            progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.BLUE));
-            return progressBar;
-        });
-
         if (this.disposable != null) {
             this.disposable.dispose();
         }
@@ -171,10 +160,7 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void login(PluginCall call) {
         String loginHint = call.getString("loginHint");
-        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, ()-> {
-            call.resolve();
-            return null;
-        });
+        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, (Runnable) () -> call.resolve());
     }
 
     @PluginMethod
@@ -186,10 +172,7 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No type or data provided");
             return;
         }
-        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, () -> {
-            call.resolve();
-            return null;
-        });
+        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, (Runnable) () -> call.resolve());
     }
 
     @PluginMethod
@@ -264,7 +247,7 @@ public class FronteggNativePlugin extends Plugin {
         String applicationId = FronteggApp.Companion.getInstance().getAuth().getApplicationId();
         String packageName = getContext().getPackageName();
 
-        List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getRegions();
+        List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getAuth().getRegions();
 
         JSObject resultMap = new JSObject();
         resultMap.put("baseUrl", baseUrl);
