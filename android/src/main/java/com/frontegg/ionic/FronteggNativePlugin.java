@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import kotlin.Unit;
+
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
@@ -160,7 +162,10 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void login(PluginCall call) {
         String loginHint = call.getString("loginHint");
-        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, (Runnable) () -> call.resolve());
+        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, (Exception e) -> {
+            call.resolve();
+            return Unit.INSTANCE;
+        });
     }
 
     @PluginMethod
@@ -172,7 +177,10 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No type or data provided");
             return;
         }
-        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, (Runnable) () -> call.resolve());
+        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, (Exception e) -> {
+            call.resolve();
+            return Unit.INSTANCE;
+        });
     }
 
     @PluginMethod
