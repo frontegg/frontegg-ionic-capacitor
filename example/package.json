@@ -10,8 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "ios": "cap run ios",
-    "android": "cap run android"
+    "ios": "npm run build && cap run ios",
+    "android": "npm run build && cap run android"
   },
   "private": true,
   "dependencies": {
