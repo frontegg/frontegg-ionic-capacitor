@@ -45,8 +45,8 @@
     "prepublishOnly": "npm run build",
     "prepack": "npm run build",
     "sync": "npm run verify && npm pack && node scripts/postpack.js && cd example && ionic capacitor sync",
-    "start:android": "cd example && ionic capacitor run android --livereload --external",
-    "start:ios": "cd example && ionic capacitor run ios --livereload --external"
+    "start:android": "cd example && npx cap run android --livereload --external",
+    "start:ios": "cd example && npx cap run ios --livereload --external"
   },
   "dependencies": {
     "@frontegg/rest-api": "^7.0.0"
