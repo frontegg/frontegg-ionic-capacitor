@@ -32,9 +32,7 @@ android {
             package_name      : "com.frontegg.demo",
             frontegg_domain   : "auth.davidantoon.me",
             frontegg_client_id: "b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca"
-    ]
-}
-
+        ]
     }
     buildTypes {
         release {
@@ -49,7 +47,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-
+}
 
 repositories {
     google()
