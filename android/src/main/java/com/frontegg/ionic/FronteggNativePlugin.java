@@ -5,11 +5,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.widget.ProgressBar;
+
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
 import com.frontegg.android.regions.RegionConfig;
-import com.getcapacitor.BridgeActivity;
+import com.frontegg.android.ui.DefaultLoader;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -90,7 +94,7 @@ public class FronteggNativePlugin extends Plugin {
                     applicationId,
                     useAssetLinks,
                     useChromeCustomTabs,
-                    BridgeActivity.class
+                    null
             );
         } else {
             FronteggApp.Companion.initWithRegions(
@@ -98,14 +102,17 @@ public class FronteggNativePlugin extends Plugin {
                     this.getContext(),
                     useAssetLinks,
                     useChromeCustomTabs,
-                    BridgeActivity.class,
-                    false,
-                    false,
-                    false
+                    null
             );
         }
 
-        FronteggAuth auth = FronteggApp.Companion.INSTANCE.getAuth();
+        FronteggAuth auth = FronteggApp.Companion.getInstance().getAuth();
+
+        DefaultLoader.setLoaderProvider(context -> {
+            ProgressBar progressBar = new ProgressBar(context);
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.BLUE));
+            return progressBar;
+        });
 
         if (this.disposable != null) {
             this.disposable.dispose();
@@ -132,7 +139,7 @@ public class FronteggNativePlugin extends Plugin {
     }
 
     private JSObject getData() {
-        FronteggAuth auth = FronteggApp.Companion.INSTANCE.getAuth();
+        FronteggAuth auth = FronteggApp.Companion.getInstance().getAuth();
         String accessToken = auth.getAccessToken().getValue();
         String refreshToken = auth.getRefreshToken().getValue();
         User user = auth.getUser().getValue();
@@ -164,7 +171,7 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void login(PluginCall call) {
         String loginHint = call.getString("loginHint");
-        FronteggApp.Companion.INSTANCE.getAuth().login(this.getActivity(), loginHint, ()-> {
+        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, ()-> {
             call.resolve();
             return null;
         });
@@ -179,7 +186,7 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No type or data provided");
             return;
         }
-        FronteggApp.Companion.INSTANCE.getAuth().directLoginAction(this.getActivity(), type, data, () -> {
+        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, () -> {
             call.resolve();
             return null;
         });
@@ -187,7 +194,7 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void logout(PluginCall call) {
-        FronteggApp.Companion.INSTANCE.getAuth().logout(() -> {
+        FronteggApp.Companion.getInstance().getAuth().logout(() -> {
             call.resolve();
             return null;
         });
@@ -200,7 +207,7 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No tenantId provided");
             return;
         }
-        FronteggApp.Companion.INSTANCE.getAuth().switchTenant(tenantId, (success) -> {
+        FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, (success) -> {
             JSObject result = new JSObject();
             result.put("success", success);
             call.resolve((JSObject) result);
@@ -218,7 +225,7 @@ public class FronteggNativePlugin extends Plugin {
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
-            FronteggApp.Companion.INSTANCE.initWithRegion(regionKey);
+            FronteggApp.Companion.getInstance().initWithRegion(regionKey);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(call::resolve);
         });
@@ -230,7 +237,7 @@ public class FronteggNativePlugin extends Plugin {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
             Handler handler = new Handler(Looper.getMainLooper());
-            FronteggAuth fronteggAuth = FronteggApp.Companion.INSTANCE.getAuth();
+            FronteggAuth fronteggAuth = FronteggApp.Companion.getInstance().getAuth();
             if (!fronteggAuth.refreshTokenIfNeeded()) {
                 fronteggAuth.logout(() -> {
                     handler.post(call::resolve);
@@ -252,12 +259,12 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void getConstants(PluginCall call) {
 
-        String baseUrl = FronteggApp.Companion.INSTANCE.getAuth().getBaseUrl();
-        String clientId = FronteggApp.Companion.INSTANCE.getAuth().getClientId();
-        String applicationId = FronteggApp.Companion.INSTANCE.getAuth().getApplicationId();
+        String baseUrl = FronteggApp.Companion.getInstance().getAuth().getBaseUrl();
+        String clientId = FronteggApp.Companion.getInstance().getAuth().getClientId();
+        String applicationId = FronteggApp.Companion.getInstance().getAuth().getApplicationId();
         String packageName = getContext().getPackageName();
 
-        List<RegionConfig> regionsData = FronteggApp.Companion.INSTANCE.getRegions();
+        List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getRegions();
 
         JSObject resultMap = new JSObject();
         resultMap.put("baseUrl", baseUrl);
