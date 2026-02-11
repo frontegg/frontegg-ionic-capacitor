@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 
-def fronteggDomain = "auth.davidantoon.me"
+def fronteggDomain = "autheu.davidantoon.me"
 def fronteggClientId = "b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca"
 
 android {
@@ -50,6 +50,7 @@ dependencies {
   implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
   implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
   implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+
   implementation project(':capacitor-android')
   testImplementation "junit:junit:$junitVersion"
   androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"

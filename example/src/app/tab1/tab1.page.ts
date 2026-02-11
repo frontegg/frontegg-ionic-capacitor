@@ -13,6 +13,7 @@ export class Tab1Page implements OnInit {
 
   user: FronteggState['user'] = null
   isLoading: boolean = true
+  refreshingToken: boolean = false
   isAuthenticated: boolean = false
   accessToken: string | null = null
 
@@ -20,10 +21,11 @@ export class Tab1Page implements OnInit {
   ngOnInit() {
     console.log('start listening')
 
-    const { user, isAuthenticated, accessToken, isLoading } = this.fronteggService.getState();
+    const { user, isAuthenticated, accessToken, isLoading, refreshingToken } = this.fronteggService.getState();
     this.user = user;
     this.isAuthenticated = isAuthenticated;
     this.accessToken = accessToken;
+    this.refreshingToken = refreshingToken;
     this.isLoading = isLoading;
 
     this.fronteggService.$user.subscribe((user) => {
@@ -33,6 +35,10 @@ export class Tab1Page implements OnInit {
     this.fronteggService.$isLoading.subscribe((isLoading) => {
       console.log('change isLoading', isLoading)
       this.ngZone.run(() => this.isLoading = isLoading)
+    })
+    this.fronteggService.$refreshingToken.subscribe((refreshingToken) => {
+      console.log('change refreshingToken', refreshingToken)
+      this.ngZone.run(() => this.refreshingToken = refreshingToken)
     })
     this.fronteggService.$isAuthenticated.subscribe((isAuthenticated) => {
       console.log('change isAuthenticated', isAuthenticated)
