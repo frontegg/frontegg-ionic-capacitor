@@ -1295,7 +1295,7 @@
     "@babel/types" "^7.4.4"
     esutils "^2.0.2"
 
-"@babel/runtime@^7.17.2", "@babel/runtime@^7.18.6", "@babel/runtime@^7.8.4", "@babel/runtime@7.22.6":
+"@babel/runtime@^7.18.6", "@babel/runtime@^7.8.4", "@babel/runtime@7.22.6":
   version "7.22.6"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.22.6.tgz"
   integrity sha512-wDb5pWm4WDdF6LFUde3Jl8WzPA+3ZbxYqkC6xAXuD3irdEHN1k0NfTRrJD8ZD378SJ61miMLCqIOXYhd8x+AJQ==
@@ -1495,12 +1495,11 @@
   resolved "https://registry.npmjs.org/@frontegg/entitlements-javascript-commons/-/entitlements-javascript-commons-1.1.2.tgz"
   integrity sha512-vwCFxj9KSIKHXinOH0HbBf4DhKRbUWhjCnL14+JfQnwuEl/zKtSGZoZecrXcPajWUypdi0uT+8q3GGcqnCW13Q==
 
-"@frontegg/ionic-capacitor@file:../frontegg-ionic-capacitor-2.0.10.tgz":
+"@frontegg/ionic-capacitor@file:..":
   version "2.0.10"
-  resolved "file:../frontegg-ionic-capacitor-2.0.10.tgz"
-  integrity sha512-KG0lBtwignhVxjZ3kqfaemqXkERDU71teOqsDfvaMA3j2wBglqKcMMFlQQFihYsex5a7fAXeakcNALQdjnkuLQ==
+  resolved "file:.."
   dependencies:
-    "@frontegg/rest-api" "^3.1.56"
+    "@frontegg/rest-api" "^7.0.0"
 
 "@frontegg/react-native@^1.2.14":
   version "1.2.14"
@@ -1524,12 +1523,12 @@
     set-value "^4.1.0"
     uuid "^10.0.0"
 
-"@frontegg/rest-api@^3.1.56":
-  version "3.2.5"
-  resolved "https://registry.npmjs.org/@frontegg/rest-api/-/rest-api-3.2.5.tgz"
-  integrity sha512-H4Yt4a/wzfUoD87zdzLSiG8NVarm4TaYcQ+ICWGVm4o0Ca5XnrdQh4SIjcz3w6zabY0FgFrp0kRYnR9mdpzhKA==
+"@frontegg/rest-api@^7.0.0":
+  version "7.101.0"
+  resolved "https://registry.npmjs.org/@frontegg/rest-api/-/rest-api-7.101.0.tgz"
+  integrity sha512-zWWYFzf7cjw6xeeBKDqOyacgB9YDa6t/mpzh+pc/bb4aHz2e8rMzJAxhZkwJZUI/yU/dMsTe1loIEC84JgE5pw==
   dependencies:
-    "@babel/runtime" "^7.17.2"
+    "@babel/runtime" "^7.18.6"
     "@frontegg/entitlements-javascript-commons" "1.1.2"
 
 "@frontegg/rest-api@7.66.0":
