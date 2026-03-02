@@ -64,9 +64,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     console.log('AuthComponent#loginIfNeeded not isAuthenticated');
 
-    await this.fronteggService.directLoginAction('social-login', 'google')
+    await this.fronteggService.login()
 
-    return this.loginIfNeeded()
+    // return this.loginIfNeeded()
   }
 
   ngOnDestroy() {

@@ -10,7 +10,9 @@ const config: CapacitorConfig = {
   plugins:{
     FronteggNative:{
       useChromeCustomTabs:true,
-      useAssetLinks:true,
+      useAssetLinks:false,
+      mainActivityClass: 'com.frontegg.demo.MainActivity',
+      useDiskCacheWebView: false,
       regions:[{
         key: 'EU',
         baseUrl: 'https://autheu.davidantoon.me',

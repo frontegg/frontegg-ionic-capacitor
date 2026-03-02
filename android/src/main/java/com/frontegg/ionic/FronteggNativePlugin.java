@@ -5,7 +5,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import kotlin.Unit;
+
 import com.frontegg.android.FronteggApp;
+import com.frontegg.android.FronteggAppKt;
 import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.User;
 import com.frontegg.android.regions.RegionConfig;
@@ -43,11 +46,21 @@ public class FronteggNativePlugin extends Plugin {
         Log.d("FronteggNative", "Loading FronteggNativePlugin");
         // for regions initialization
         List<RegionConfig> regions = new ArrayList<>();
-        boolean useAssetLinks = this.getConfig().getBoolean("useAssetLinks", true);
-        boolean useChromeCustomTabs = this.getConfig().getBoolean("useChromeCustomTabs", false);
+        boolean useAssetLinks = false;
+        boolean useChromeCustomTabs = false;
         JSONArray array;
         try {
-            array = this.getConfig().getConfigJSON().optJSONArray("regions");
+            JSONObject configJson = this.getConfig().getConfigJSON();
+
+            useAssetLinks = configJson.has("useAssetLinks")
+                    ? configJson.optBoolean("useAssetLinks", false)
+                    : false;
+
+            useChromeCustomTabs = configJson.has("useChromeCustomTabs")
+                    ? configJson.optBoolean("useChromeCustomTabs", false)
+                    : false;
+
+            array = configJson.optJSONArray("regions");
 
             if (array == null) {
                 array = new JSONArray();
@@ -70,6 +83,18 @@ public class FronteggNativePlugin extends Plugin {
             throw new RuntimeException(e);
         }
 
+        Class<?> mainActivityClass = resolveMainActivityClass();
+        String deepLinkScheme;
+        if (useAssetLinks) {
+            deepLinkScheme = null;
+        } else {
+            deepLinkScheme = this.getConfig().getString("deepLinkScheme");
+            if (deepLinkScheme == null || deepLinkScheme.isEmpty()) {
+                deepLinkScheme = this.getContext().getPackageName();
+            }
+        }
+        boolean useDiskCacheWebView = this.getConfig().getBoolean("useDiskCacheWebView", false);
+
         if (regions.isEmpty()) {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
@@ -82,13 +107,18 @@ public class FronteggNativePlugin extends Plugin {
             if (baseUrl.startsWith("https://")) {
                 baseUrl = baseUrl.substring(baseUrl.indexOf("://") + 3);
             }
-            FronteggApp.Companion.init(
+            FronteggApp.Companion.init$android_release(
                     baseUrl,
                     clientId,
                     this.getContext(),
                     applicationId,
                     useAssetLinks,
                     useChromeCustomTabs,
+                    mainActivityClass,
+                    deepLinkScheme,
+                    useDiskCacheWebView,
+                    false,
+                    false,
                     null
             );
         } else {
@@ -97,11 +127,15 @@ public class FronteggNativePlugin extends Plugin {
                     this.getContext(),
                     useAssetLinks,
                     useChromeCustomTabs,
+                    mainActivityClass,
+                    useDiskCacheWebView,
+                    false,
+                    false,
                     null
             );
         }
 
-        FronteggAuth auth = FronteggAuth.Companion.getInstance();
+        FronteggAuth auth = FronteggAppKt.getFronteggAuth(this.getContext());
 
         if (this.disposable != null) {
             this.disposable.dispose();
@@ -122,20 +156,33 @@ public class FronteggNativePlugin extends Plugin {
         sendEvent();
     }
 
+    private Class<?> resolveMainActivityClass() {
+        String className = this.getConfig().getString("mainActivityClass");
+        if (className == null || className.isEmpty()) {
+            className = this.getContext().getPackageName() + ".MainActivity";
+        }
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            Log.w("FronteggNative", "MainActivity class not found: " + className + ", using null");
+            return null;
+        }
+    }
+
     private void sendEvent() {
         JSObject data = getData();
         notifyListeners("onFronteggAuthEvent", data);
     }
 
     private JSObject getData() {
-        FronteggAuth auth = FronteggAuth.Companion.getInstance();
+        FronteggAuth auth = FronteggAppKt.getFronteggAuth(this.getContext());
         String accessToken = auth.getAccessToken().getValue();
         String refreshToken = auth.getRefreshToken().getValue();
         User user = auth.getUser().getValue();
         boolean isAuthenticated = auth.isAuthenticated().getValue();
-        boolean isLoading = auth.isLoading().getValue();
-        boolean initializing = auth.getInitializing().getValue();
         boolean showLoader = auth.getShowLoader().getValue();
+        boolean isLoading = showLoader;
+        boolean initializing = auth.getInitializing().getValue();
         boolean refreshingToken = auth.getRefreshingToken().getValue();
         RegionConfig selectedRegion = auth.getSelectedRegion();
 
@@ -160,9 +207,9 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void login(PluginCall call) {
         String loginHint = call.getString("loginHint");
-        FronteggApp.Companion.getInstance().getAuth().login(this.getActivity(), loginHint, ()-> {
+        FronteggAppKt.getFronteggAuth(this.getContext()).login(this.getActivity(), loginHint != null ? loginHint : "", null, (Exception e) -> {
             call.resolve();
-            return null;
+            return Unit.INSTANCE;
         });
     }
 
@@ -175,15 +222,15 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No type or data provided");
             return;
         }
-        FronteggApp.Companion.getInstance().getAuth().directLoginAction(this.getActivity(), type, data, () -> {
+        FronteggAppKt.getFronteggAuth(this.getContext()).directLoginAction(this.getActivity(), type, data, (Exception e) -> {
             call.resolve();
-            return null;
+            return Unit.INSTANCE;
         });
     }
 
     @PluginMethod
     public void logout(PluginCall call) {
-        FronteggApp.Companion.getInstance().getAuth().logout(() -> {
+        FronteggAppKt.getFronteggAuth(this.getContext()).logout(() -> {
             call.resolve();
             return null;
         });
@@ -196,7 +243,7 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("No tenantId provided");
             return;
         }
-        FronteggApp.Companion.getInstance().getAuth().switchTenant(tenantId, (success) -> {
+        FronteggAppKt.getFronteggAuth(this.getContext()).switchTenant(tenantId, (success) -> {
             JSObject result = new JSObject();
             result.put("success", success);
             call.resolve((JSObject) result);
@@ -214,7 +261,7 @@ public class FronteggNativePlugin extends Plugin {
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
-            FronteggApp.Companion.getInstance().initWithRegion(regionKey);
+            FronteggApp.Companion.getInstance$android_release().initWithRegion(regionKey);
             Handler handler = new Handler(Looper.getMainLooper());
             handler.post(call::resolve);
         });
@@ -226,7 +273,7 @@ public class FronteggNativePlugin extends Plugin {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(() -> {
             Handler handler = new Handler(Looper.getMainLooper());
-            FronteggAuth fronteggAuth = FronteggAuth.Companion.getInstance();
+            FronteggAuth fronteggAuth = FronteggAppKt.getFronteggAuth(this.getContext());
             if (!fronteggAuth.refreshTokenIfNeeded()) {
                 fronteggAuth.logout(() -> {
                     handler.post(call::resolve);
@@ -248,12 +295,12 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void getConstants(PluginCall call) {
 
-        String baseUrl = FronteggAuth.Companion.getInstance().getBaseUrl();
-        String clientId = FronteggAuth.Companion.getInstance().getClientId();
-        String applicationId = FronteggAuth.Companion.getInstance().getApplicationId();
+        String baseUrl = FronteggAppKt.getFronteggAuth(this.getContext()).getBaseUrl();
+        String clientId = FronteggAppKt.getFronteggAuth(this.getContext()).getClientId();
+        String applicationId = FronteggAppKt.getFronteggAuth(this.getContext()).getApplicationId();
         String packageName = getContext().getPackageName();
 
-        List<RegionConfig> regionsData = FronteggApp.Companion.getInstance().getRegions();
+        List<RegionConfig> regionsData = FronteggAppKt.getFronteggAuth(this.getContext()).getRegions();
 
         JSObject resultMap = new JSObject();
         resultMap.put("baseUrl", baseUrl);

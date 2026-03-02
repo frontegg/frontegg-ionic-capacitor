@@ -25,6 +25,10 @@
 
         </activity>
 
+        <!-- Use Hosted Auth (Chrome Custom Tabs) to avoid WebView MFA autofill NPE and to try working around auth_time crash. See docs/troubleshooting.md -->
+        <activity android:name="com.frontegg.android.EmbeddedAuthActivity" tools:replace="android:enabled" android:enabled="false"/>
+        <activity android:name="com.frontegg.android.HostedAuthActivity" tools:replace="android:enabled" android:enabled="true"/>
+
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="${applicationId}.fileprovider"

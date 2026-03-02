@@ -15,10 +15,12 @@ def capacitor_pods
   pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
   pod 'CapacitorKeyboard', :path => '../../node_modules/@capacitor/keyboard'
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
-  pod 'FronteggIonicCapacitor', :path => '../../node_modules/@frontegg/ionic-capacitor'
+  pod 'FronteggIonicCapacitor', :path => '../../..'
 end
 
 target 'App' do
+  # Resolve FronteggSwift from git (1.2.76 not on CocoaPods trunk yet); must be before FronteggIonicCapacitor
+  pod 'FronteggSwift', :git => 'https://github.com/frontegg/frontegg-ios-swift.git', :tag => '1.2.76'
   capacitor_pods
   # Add your Pods here
 end
