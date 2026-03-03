@@ -10,7 +10,7 @@ jobs:
   lint-build:
     if: "!contains(join(github.event.pull_request.labels.*.name, ','), 'Release') && github.event.pull_request.merged == true"
     name: 'Lint | Build'
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v3
