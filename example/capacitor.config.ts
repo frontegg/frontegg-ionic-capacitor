@@ -11,14 +11,11 @@ const config: CapacitorConfig = {
     FronteggNative:{
       useChromeCustomTabs:true,
       useAssetLinks:true,
+      // Same Frontegg tenant as Swift/Kotlin SDK E2E (auth-utils defaults)
       regions:[{
-        key: 'EU',
-        baseUrl: 'https://autheu.davidantoon.me',
-        clientId: 'b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca'
-      }, {
-        key: 'US',
-        baseUrl: 'https://authus.frontegg.com',
-        clientId: 'd7d07347-2c57-4450-8418-0ec7ee6e096b'
+        key: 'default',
+        baseUrl: 'https://app-x4gr8g28fxr5.frontegg.com',
+        clientId: '5f493de4-01c5-4a61-8642-fca650a6a9dc'
       }]
     }
   }
