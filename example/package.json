@@ -33,7 +33,6 @@
     "@capacitor/status-bar": "5.0.6",
     "@frontegg/ionic-capacitor": "file:..",
     "@frontegg/rest-api": "^7.0.0",
-    "@frontegg/react-native": "^1.2.14",
     "@ionic/angular": "^7.0.0",
     "ionicons": "^7.0.0",
     "rxjs": "7.8.1",

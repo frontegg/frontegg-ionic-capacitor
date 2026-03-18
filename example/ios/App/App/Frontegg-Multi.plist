@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>regions</key>
+    <array>
+        <dict>
+            <key>key</key>
+            <string>default</string>
+            <key>baseUrl</key>
+            <string>https://app-x4gr8g28fxr5.frontegg.com</string>
+            <key>clientId</key>
+            <string>5f493de4-01c5-4a61-8642-fca650a6a9dc</string>
+        </dict>
+    </array>
+    <key>embeddedMode</key>
+    <true/>
+    <key>logLevel</key>
+    <string>trace</string>
+</dict>
+</plist>

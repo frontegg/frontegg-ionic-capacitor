@@ -1,9 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
-def fronteggDomain = "autheu.davidantoon.me"
-def fronteggDomainUs = "authus.frontegg.com"
-def fronteggClientId = "b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca"
+def fronteggDomain = "app-x4gr8g28fxr5.frontegg.com"
+def fronteggClientId = "5f493de4-01c5-4a61-8642-fca650a6a9dc"
 
 android {
   namespace "com.frontegg.demo"
@@ -22,10 +21,9 @@ android {
     }
 
     manifestPlaceholders = [
-      "package_name"        : applicationId,
-      "frontegg_domain"     : fronteggDomain,
-      "frontegg_domain_us"  : fronteggDomainUs,
-      "frontegg_client_id"  : fronteggClientId
+      "package_name"       : applicationId,
+      "frontegg_domain"    : fronteggDomain,
+      "frontegg_client_id" : fronteggClientId
     ]
   }
 

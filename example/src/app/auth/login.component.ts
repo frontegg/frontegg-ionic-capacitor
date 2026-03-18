@@ -11,24 +11,26 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private ngZone: NgZone, @Inject('Frontegg') private fronteggService: FronteggService, private router: Router) {
   }
 
-  loading: boolean = false
-  unsubscribeLoading?: (() => void)
-  unsubscribeIsAuthenticated?: (() => void)
-  visibilityChangeListener?: (() => void)
-  regions: { key: string, baseUrl: string, clientId: string }[] = []
+  loading: boolean = false;
+  isAuthenticated: boolean = false;
+  unsubscribeLoading?: (() => void);
+  unsubscribeIsAuthenticated?: (() => void);
+  visibilityChangeListener?: (() => void);
+  regions: { key: string, baseUrl: string, clientId: string }[] = [];
 
   ngOnInit() {
     console.log('AuthComponent#ngOnInit called');
     this.loginIfNeeded()
 
-    this.unsubscribeIsAuthenticated = this.fronteggService.$isAuthenticated.subscribe(async (isAuthenticated) => {
-      if (isAuthenticated) {
-        console.log('AuthComponent#ngOnInit isAuthenticated');
-        this.ngZone.run(() => {
-          this.router.navigate([ '/' ], { replaceUrl: true })
-        })
-      }
-    })
+    this.unsubscribeIsAuthenticated = this.fronteggService.$isAuthenticated.subscribe((isAuthenticated) => {
+      this.ngZone.run(() => {
+        this.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+          console.log('AuthComponent#ngOnInit isAuthenticated');
+          this.router.navigate([ '/' ], { replaceUrl: true });
+        }
+      });
+    });
 
     // Listen for visibility changes
     this.visibilityChangeListener = this.handleVisibilityChange.bind(this);
@@ -43,30 +45,31 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
-  async loginIfNeeded():Promise<void> {
-    const { isLoading, isAuthenticated } = await this.fronteggService.getNativeState()
+  async loginIfNeeded(): Promise<void> {
+    const { isLoading, isAuthenticated } = await this.fronteggService.getNativeState();
     console.log('AuthComponent#loginIfNeeded called', { isLoading, isAuthenticated });
-
+    this.ngZone.run(() => {
+      this.loading = isLoading;
+      this.isAuthenticated = isAuthenticated;
+    });
     if (isLoading) {
       console.log('AuthComponent#loginIfNeeded isLoading');
-      this.unsubscribeLoading?.()
+      this.unsubscribeLoading?.();
       this.unsubscribeLoading = this.fronteggService.$isLoading.subscribe(() => {
-        this.loginIfNeeded()
-      })
-      return
-    }
-    console.log('AuthComponent#loginIfNeeded not isLoading');
-    if (isAuthenticated) {
-      console.log('AuthComponent#loginIfNeeded isAuthenticated');
-      this.router.navigate([ '/' ], { replaceUrl: true })
+        this.loginIfNeeded();
+      });
       return;
     }
+    if (isAuthenticated) {
+      console.log('AuthComponent#loginIfNeeded isAuthenticated');
+      this.router.navigate([ '/' ], { replaceUrl: true });
+      return;
+    }
+    console.log('AuthComponent#loginIfNeeded not isAuthenticated, showing Login button');
+  }
 
-    console.log('AuthComponent#loginIfNeeded not isAuthenticated');
-
-    await this.fronteggService.login()
-
-    // return this.loginIfNeeded()
+  openLogin(): void {
+    this.fronteggService.login();
   }
 
   ngOnDestroy() {
