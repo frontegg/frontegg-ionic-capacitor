@@ -1,5 +1,16 @@
 <ion-content [fullscreen]="true">
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <ion-header [translucent]="true">
+        <ion-toolbar>
+            <ion-title>Frontegg Ionic SDK</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <div *ngIf="loading" style="display: flex; justify-content: center; align-items: center; height: 50vh;">
         <ion-spinner></ion-spinner>
+    </div>
+    <div *ngIf="!loading && !isAuthenticated" style="padding: 16px;">
+        <ion-text>Not Logged In</ion-text>
+        <br/>
+        <br/>
+        <ion-button (click)="openLogin()">Login</ion-button>
     </div>
 </ion-content>
