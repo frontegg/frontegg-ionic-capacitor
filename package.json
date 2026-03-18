@@ -1,6 +1,6 @@
 {
   "name": "@frontegg/ionic-capacitor",
-  "version": "2.0.10",
+  "version": "2.0.12",
   "description": "Frontegg Ionic Capacitor SDK",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -9,6 +9,7 @@
   "files": [
     "android/src/main/",
     "android/build.gradle",
+    "android/settings.gradle",
     "dist/",
     "ios/Plugin/",
     "FronteggIonicCapacitor.podspec"
@@ -44,13 +45,18 @@
     "prepublishOnly": "npm run build",
     "prepack": "npm run build",
     "sync": "npm run verify && npm pack && node scripts/postpack.js && cd example && ionic capacitor sync",
-    "start:android": "cd example && ionic capacitor run android --livereload --external",
-    "start:ios": "cd example && ionic capacitor run ios --livereload --external"
+    "start:android": "cd example && npx cap run android --livereload --external",
+    "start:ios": "cd example && npx cap run ios --livereload --external"
   },
   "dependencies": {
-    "@frontegg/rest-api": "^3.1.56"
+    "@frontegg/rest-api": "^7.0.0"
   },
   "devDependencies": {
+    "@angular-eslint/builder": "^16.0.0",
+    "@angular-eslint/eslint-plugin": "^16.0.0",
+    "@angular-eslint/eslint-plugin-template": "^16.0.0",
+    "@angular-eslint/schematics": "^16.0.0",
+    "@angular-eslint/template-parser": "^16.0.0",
     "@angular/core": ">=14.0.0",
     "@capacitor/android": "^5.0.0",
     "@capacitor/core": "^5.0.0",
@@ -65,12 +71,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.32.0",
     "swiftlint": "^1.0.1",
-    "typescript": "~4.1.5",
-    "@angular-eslint/builder": "^16.0.0",
-    "@angular-eslint/eslint-plugin": "^16.0.0",
-    "@angular-eslint/eslint-plugin-template": "^16.0.0",
-    "@angular-eslint/schematics": "^16.0.0",
-    "@angular-eslint/template-parser": "^16.0.0"
+    "typescript": "~4.1.5"
   },
   "peerDependencies": {
     "@capacitor/core": "^5.0.0"

@@ -288,6 +288,24 @@ type FronteggNativeOptions = (
    * @default true
    */
   useChromeCustomTabs?: boolean;
+
+  /**
+   * Android only. Full class name of the MainActivity for deep links (e.g. "com.example.app.MainActivity").
+   * If not set, defaults to {packageName}.MainActivity.
+   */
+  mainActivityClass?: string;
+
+  /**
+   * Android only. Custom deep link scheme for OAuth callback (e.g. "myapp").
+   * If not set, asset links or default scheme is used.
+   */
+  deepLinkScheme?: string;
+
+  /**
+   * Android only. Enable WebView disk cache.
+   * @default false
+   */
+  useDiskCacheWebView?: boolean;
 };
 
 export interface FronteggServiceOptions {

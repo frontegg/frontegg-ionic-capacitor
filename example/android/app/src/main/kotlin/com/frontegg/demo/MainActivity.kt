@@ -1,0 +1,22 @@
+package com.frontegg.demo
+
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Bundle
+import android.widget.ProgressBar
+import com.frontegg.android.ui.DefaultLoader
+import com.getcapacitor.BridgeActivity
+
+class MainActivity : BridgeActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Setup Loader for Frontegg Embedded Activity Loading
+        DefaultLoader.setLoaderProvider {
+            val progressBar = ProgressBar(it)
+            val colorStateList = ColorStateList.valueOf(Color.GREEN)
+            progressBar.indeterminateTintList = colorStateList
+            progressBar
+        }
+    }
+}

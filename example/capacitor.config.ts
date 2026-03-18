@@ -11,7 +11,8 @@ const config: CapacitorConfig = {
     FronteggNative:{
       useChromeCustomTabs:true,
       useAssetLinks:true,
-      // Same Frontegg tenant as Swift/Kotlin SDK E2E (auth-utils defaults)
+      mainActivityClass: 'com.frontegg.demo.MainActivity',
+      useDiskCacheWebView: false,
       regions:[{
         key: 'default',
         baseUrl: 'https://app-x4gr8g28fxr5.frontegg.com',
