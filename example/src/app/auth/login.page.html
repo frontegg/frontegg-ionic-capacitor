@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="frontegg-content">
     <ion-header [translucent]="true">
         <ion-toolbar>
             <ion-title>Frontegg Ionic SDK</ion-title>
@@ -7,10 +7,10 @@
     <div *ngIf="loading" style="display: flex; justify-content: center; align-items: center; height: 50vh;">
         <ion-spinner></ion-spinner>
     </div>
-    <div *ngIf="!loading && !isAuthenticated" style="padding: 16px;">
+    <div *ngIf="!loading && !isAuthenticated" class="frontegg-card">
         <ion-text>Not Logged In</ion-text>
-        <br/>
-        <br/>
-        <ion-button (click)="openLogin()">Login</ion-button>
+        <div class="frontegg-btn-stack" style="margin-top: 16px;">
+            <ion-button class="frontegg-btn" expand="block" (click)="openLogin()">Login</ion-button>
+        </div>
     </div>
 </ion-content>
