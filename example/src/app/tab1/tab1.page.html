@@ -6,36 +6,56 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="frontegg-content">
     <ion-header collapse="condense">
         <ion-toolbar>
             <ion-title size="large">Frontegg Ionic SDK</ion-title>
         </ion-toolbar>
     </ion-header>
 
-    <br/>
-    <ion-text>Email: {{user ? user.email : 'Not Logged In' }}</ion-text>
-    <br/>
-    <ion-text>isLoading: {{isLoading ? 'true' : 'false'}}</ion-text>
-    <br/>
-    <ion-text>Is Refreshing Token: {{refreshingToken ? 'true' : 'false'}}</ion-text>
-    <br/>
-    <ion-text>isAuthenticated: {{isAuthenticated ? 'true' : 'false'}}</ion-text>
-    <br/>
-    <ion-text>Active Tenant: {{user?.activeTenant?.name}}</ion-text>
-    <br/>
-    <ion-text>
-        accessToken:{{' '}}
-        {{accessToken ? accessToken.substring(accessToken.length - 40) : ''}}
-    </ion-text>
-    <br/>
-    <br/>
+    <div class="frontegg-card">
+        <ion-text>Email: {{user ? user.email : 'Not Logged In' }}</ion-text>
+        <br/>
+        <ion-text>isLoading: {{isLoading ? 'true' : 'false'}}</ion-text>
+        <br/>
+        <ion-text>Is Refreshing Token: {{refreshingToken ? 'true' : 'false'}}</ion-text>
+        <br/>
+        <ion-text>isAuthenticated: {{isAuthenticated ? 'true' : 'false'}}</ion-text>
+        <br/>
+        <ion-text>Active Tenant: {{user?.activeTenant?.name}}</ion-text>
+        <br/>
+        <ion-text>
+            accessToken:{{' '}}
+            {{accessToken ? accessToken.substring(accessToken.length - 40) : ''}}
+        </ion-text>
 
+        <div class="frontegg-btn-stack" style="margin-top: 16px;">
+            <ion-button
+              *ngIf="!isAuthenticated"
+              class="frontegg-btn"
+              expand="block"
+              (click)="login()"
+            >
+              Login
+            </ion-button>
 
-    <ion-button *ngIf="!isAuthenticated" (click)="login()">Login</ion-button>
-    <ion-button *ngIf="isAuthenticated" (click)="logout()">Logout</ion-button>
+            <ion-button
+              *ngIf="isAuthenticated"
+              class="frontegg-btn"
+              expand="block"
+              (click)="logout()"
+            >
+              Logout
+            </ion-button>
 
-    <br/>
-    <br/>
-    <ion-button *ngIf="isAuthenticated" (click)="refreshToken()">Refresh Token</ion-button>
+            <ion-button
+              *ngIf="isAuthenticated"
+              class="frontegg-btn"
+              expand="block"
+              (click)="refreshToken()"
+            >
+              Refresh Token
+            </ion-button>
+        </div>
+    </div>
 </ion-content>
