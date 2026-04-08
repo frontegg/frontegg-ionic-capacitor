@@ -44,7 +44,7 @@ jobs:
 
       - name: Install example dependencies
         working-directory: example
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Build Ionic web assets
         working-directory: example
