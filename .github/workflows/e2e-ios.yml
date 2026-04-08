@@ -1,0 +1,82 @@
+name: E2E iOS (example)
+
+# Modeled on frontegg/frontegg-ios-swift/.github/workflows/swift-sdk-e2e.yml.
+# The reference workflow delegates to a shared reusable workflow in the
+# frontegg/e2e-system-tests repo; here we inline a standalone xcodebuild
+# invocation against the Ionic example.
+#
+# NOTE: The AppUITests target must first be wired into example/ios/App/App.xcodeproj
+# in Xcode — see example/ios/App/AppUITests/README.md. Until that is done,
+# this workflow's test step will fail with "scheme/target not found".
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  ios-e2e:
+    name: iOS E2E
+    runs-on: macos-14
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app || sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Install example dependencies
+        working-directory: example
+        run: npm ci
+
+      - name: Build Ionic web assets
+        working-directory: example
+        run: npm run build
+
+      - name: Capacitor sync (ios)
+        working-directory: example
+        run: npx cap sync ios
+
+      - name: Install CocoaPods
+        working-directory: example/ios/App
+        run: pod install --repo-update
+
+      - name: Run UI tests
+        working-directory: example/ios/App
+        env:
+          LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
+          LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -only-testing:AppUITests \
+            LOGIN_EMAIL="$LOGIN_EMAIL" \
+            LOGIN_PASSWORD="$LOGIN_PASSWORD" \
+            | xcpretty --report junit --output build/reports/junit.xml || exit $?
+
+      - name: Publish JUnit report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: example/ios/App/build/reports/junit.xml
+          check_name: E2E iOS
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-e2e-results
+          path: example/ios/App/build/reports/
+          if-no-files-found: ignore
