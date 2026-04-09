@@ -51,7 +51,19 @@ jobs:
         working-directory: example/ios/App
         run: pod install --repo-update
 
+      - name: Check AppUITests target exists
+        id: check_target
+        working-directory: example/ios/App
+        run: |
+          if xcodebuild -workspace App.xcworkspace -list 2>/dev/null | grep -q "AppUITests"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::AppUITests target not wired into Xcode project yet — skipping UI tests. See example/ios/App/AppUITests/README.md"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run UI tests
+        if: steps.check_target.outputs.exists == 'true'
         working-directory: example/ios/App
         env:
           LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}

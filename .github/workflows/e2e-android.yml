@@ -91,11 +91,7 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew :app:connectedDebugAndroidTest \
-              -Pandroid.testInstrumentationRunnerArguments.LOGIN_EMAIL="$LOGIN_EMAIL" \
-              -Pandroid.testInstrumentationRunnerArguments.LOGIN_PASSWORD="$LOGIN_PASSWORD" \
-              -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_EMAIL="${LOGIN_WRONG_EMAIL:-wrong@example.com}" \
-              -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_PASSWORD="${LOGIN_WRONG_PASSWORD:-wrong}"
+            ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.LOGIN_EMAIL="$LOGIN_EMAIL" -Pandroid.testInstrumentationRunnerArguments.LOGIN_PASSWORD="$LOGIN_PASSWORD" -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_EMAIL="${LOGIN_WRONG_EMAIL:-wrong@example.com}" -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_PASSWORD="${LOGIN_WRONG_PASSWORD:-wrong}"
 
       - name: Collect JUnit reports
         if: always()
