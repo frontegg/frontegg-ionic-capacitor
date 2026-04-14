@@ -16,7 +16,37 @@
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		B293D8AF4868454285AD58D8 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E689A65725350846C1C24CB3 /* Pods_App.framework */; };
+		E2E00001AAAAAAAAAAAA0001 /* LoginPasswordUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0001 /* LoginPasswordUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0002 /* LogoutUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0002 /* LogoutUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0003 /* SessionRestoreUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0003 /* SessionRestoreUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0004 /* TokenRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0004 /* TokenRefreshUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0005 /* TenantSwitchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0005 /* TenantSwitchUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0006 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0006 /* TestHelpers.swift */; };
+		E2E00001AAAAAAAAAAAA0007 /* LocalMockAuthServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0007 /* LocalMockAuthServer.swift */; };
+		E2E00001AAAAAAAAAAAA0008 /* scenario-catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0008 /* scenario-catalog.json */; };
+		E2E00001AAAAAAAAAAAA0009 /* StabilityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0009 /* StabilityUITests.swift */; };
+		E2E00001AAAAAAAAAAAA000A /* ColdLaunchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA000A /* ColdLaunchUITests.swift */; };
+		E2E00001AAAAAAAAAAAA000B /* LogoutClearsSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA000B /* LogoutClearsSessionUITests.swift */; };
+		E2E00001AAAAAAAAAAAA000C /* LogoutAndReloginUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA000C /* LogoutAndReloginUITests.swift */; };
+		E2E00001AAAAAAAAAAAA000D /* LoginNegativeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA000D /* LoginNegativeUITests.swift */; };
+		E2E00001AAAAAAAAAAAA000E /* MockServerTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA000E /* MockServerTestCase.swift */; };
+		E2E00001AAAAAAAAAAAA000F /* MockTokenExpiryUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA000F /* MockTokenExpiryUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0010 /* MockSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0010 /* MockSessionUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0011 /* MockConnectivityUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0011 /* MockConnectivityUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0012 /* ProfileDataUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0012 /* ProfileDataUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0013 /* OfflineModeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0013 /* OfflineModeUITests.swift */; };
+		E2E00001AAAAAAAAAAAA0014 /* SocialLoginEdgeCaseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E00002AAAAAAAAAAAA0014 /* SocialLoginEdgeCaseUITests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E2E00003AAAAAAAAAAAA0001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 504EC3031FED79650016851F;
+			remoteInfo = App;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
@@ -34,6 +64,27 @@
 		5E1CE11C59C80197A4D0BB40 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		E2EE9FF9681F2D02490C102B /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 		E689A65725350846C1C24CB3 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2E00002AAAAAAAAAAAA0001 /* LoginPasswordUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPasswordUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0002 /* LogoutUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0003 /* SessionRestoreUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestoreUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0004 /* TokenRefreshUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenRefreshUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0005 /* TenantSwitchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TenantSwitchUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0006 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0007 /* LocalMockAuthServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalMockAuthServer.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0008 /* scenario-catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "scenario-catalog.json"; sourceTree = "<group>"; };
+		E2E00004AAAAAAAAAAAA0001 /* AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2E00002AAAAAAAAAAAA0009 /* StabilityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StabilityUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA000A /* ColdLaunchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColdLaunchUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA000B /* LogoutClearsSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutClearsSessionUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA000C /* LogoutAndReloginUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutAndReloginUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA000D /* LoginNegativeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginNegativeUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA000E /* MockServerTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockServerTestCase.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA000F /* MockTokenExpiryUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTokenExpiryUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0010 /* MockSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSessionUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0011 /* MockConnectivityUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockConnectivityUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0012 /* ProfileDataUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDataUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0013 /* OfflineModeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineModeUITests.swift; sourceTree = "<group>"; };
+		E2E00002AAAAAAAAAAAA0014 /* SocialLoginEdgeCaseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialLoginEdgeCaseUITests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +93,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B293D8AF4868454285AD58D8 /* Pods_App.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2E00005AAAAAAAAAAAA0001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3061FED79650016851F /* App */,
+				E2E00006AAAAAAAAAAAA0001 /* AppUITests */,
 				504EC3051FED79650016851F /* Products */,
 				27E2DDA53C4D2A4D1A88CE4A /* Frameworks */,
 				4170845252A2FA8BB4884118 /* Pods */,
@@ -80,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				E2E00004AAAAAAAAAAAA0001 /* AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -99,6 +159,41 @@
 				41E744682B3301F80034D40C /* Frontegg.plist */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		E2E00006AAAAAAAAAAAA0001 /* AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				E2E00002AAAAAAAAAAAA0001 /* LoginPasswordUITests.swift */,
+				E2E00002AAAAAAAAAAAA0002 /* LogoutUITests.swift */,
+				E2E00002AAAAAAAAAAAA0003 /* SessionRestoreUITests.swift */,
+				E2E00002AAAAAAAAAAAA0004 /* TokenRefreshUITests.swift */,
+				E2E00002AAAAAAAAAAAA0005 /* TenantSwitchUITests.swift */,
+				E2E00002AAAAAAAAAAAA0009 /* StabilityUITests.swift */,
+				E2E00002AAAAAAAAAAAA000A /* ColdLaunchUITests.swift */,
+				E2E00002AAAAAAAAAAAA000B /* LogoutClearsSessionUITests.swift */,
+				E2E00002AAAAAAAAAAAA000C /* LogoutAndReloginUITests.swift */,
+				E2E00002AAAAAAAAAAAA000D /* LoginNegativeUITests.swift */,
+				E2E00002AAAAAAAAAAAA000F /* MockTokenExpiryUITests.swift */,
+				E2E00002AAAAAAAAAAAA0010 /* MockSessionUITests.swift */,
+				E2E00002AAAAAAAAAAAA0011 /* MockConnectivityUITests.swift */,
+				E2E00002AAAAAAAAAAAA0012 /* ProfileDataUITests.swift */,
+				E2E00002AAAAAAAAAAAA0013 /* OfflineModeUITests.swift */,
+				E2E00002AAAAAAAAAAAA0014 /* SocialLoginEdgeCaseUITests.swift */,
+				E2E00006AAAAAAAAAAAA0002 /* Support */,
+			);
+			path = AppUITests;
+			sourceTree = "<group>";
+		};
+		E2E00006AAAAAAAAAAAA0002 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				E2E00002AAAAAAAAAAAA0006 /* TestHelpers.swift */,
+				E2E00002AAAAAAAAAAAA0007 /* LocalMockAuthServer.swift */,
+				E2E00002AAAAAAAAAAAA000E /* MockServerTestCase.swift */,
+				E2E00002AAAAAAAAAAAA0008 /* scenario-catalog.json */,
+			);
+			path = Support;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -123,6 +218,24 @@
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E2E00007AAAAAAAAAAAA0001 /* AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E2E00009AAAAAAAAAAAA0001 /* Build configuration list for PBXNativeTarget "AppUITests" */;
+			buildPhases = (
+				E2E00007AAAAAAAAAAAA0002 /* Sources */,
+				E2E00005AAAAAAAAAAAA0001 /* Frameworks */,
+				E2E00007AAAAAAAAAAAA0003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E2E00003AAAAAAAAAAAA0002 /* PBXTargetDependency */,
+			);
+			name = AppUITests;
+			productName = AppUITests;
+			productReference = E2E00004AAAAAAAAAAAA0001 /* AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -136,6 +249,11 @@
 						CreatedOnToolsVersion = 9.2;
 						LastSwiftMigration = 1100;
 						ProvisioningStyle = Automatic;
+					};
+					E2E00007AAAAAAAAAAAA0001 = {
+						CreatedOnToolsVersion = 15.0;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 504EC3031FED79650016851F;
 					};
 				};
 			};
@@ -153,6 +271,7 @@
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				E2E00007AAAAAAAAAAAA0001 /* AppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -169,6 +288,14 @@
 				41E744692B3301F80034D40C /* Frontegg.plist in Resources */,
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E2E00007AAAAAAAAAAAA0003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E00001AAAAAAAAAAAA0008 /* scenario-catalog.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,7 +350,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E2E00007AAAAAAAAAAAA0002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E2E00001AAAAAAAAAAAA0001 /* LoginPasswordUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0002 /* LogoutUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0003 /* SessionRestoreUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0004 /* TokenRefreshUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0005 /* TenantSwitchUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0006 /* TestHelpers.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0007 /* LocalMockAuthServer.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0009 /* StabilityUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA000A /* ColdLaunchUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA000B /* LogoutClearsSessionUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA000C /* LogoutAndReloginUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA000D /* LoginNegativeUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA000E /* MockServerTestCase.swift in Sources */,
+				E2E00001AAAAAAAAAAAA000F /* MockTokenExpiryUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0010 /* MockSessionUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0011 /* MockConnectivityUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0012 /* ProfileDataUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0013 /* OfflineModeUITests.swift in Sources */,
+				E2E00001AAAAAAAAAAAA0014 /* SocialLoginEdgeCaseUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E2E00003AAAAAAAAAAAA0002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 504EC3031FED79650016851F /* App */;
+			targetProxy = E2E00003AAAAAAAAAAAA0001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		504EC30B1FED79650016851F /* Main.storyboard */ = {
@@ -412,6 +573,48 @@
 			};
 			name = Release;
 		};
+		E2E00008AAAAAAAAAAAA0001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3R2X6557U2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.frontegg.demo.AppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = App;
+			};
+			name = Debug;
+		};
+		E2E00008AAAAAAAAAAAA0002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3R2X6557U2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.frontegg.demo.AppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = App;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -429,6 +632,15 @@
 			buildConfigurations = (
 				504EC3171FED79650016851F /* Debug */,
 				504EC3181FED79650016851F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E2E00009AAAAAAAAAAAA0001 /* Build configuration list for PBXNativeTarget "AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2E00008AAAAAAAAAAAA0001 /* Debug */,
+				E2E00008AAAAAAAAAAAA0002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
