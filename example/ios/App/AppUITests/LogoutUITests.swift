@@ -47,7 +47,8 @@ final class LogoutUITests: XCTestCase {
         passwordField.typeText(password)
         webView.buttons["Sign in"].tap()
 
-        let logoutButton = app.buttons["LOGOUT"]
+        let logoutPredicate = NSPredicate(format: "label ==[c] %@", "Logout")
+        let logoutButton = app.buttons.matching(logoutPredicate).firstMatch
         XCTAssertTrue(logoutButton.waitForExistence(timeout: 30), "Login did not complete")
         logoutButton.tap()
 

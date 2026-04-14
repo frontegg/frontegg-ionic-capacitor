@@ -15,6 +15,12 @@ object Env {
     val loginWrongPassword: String
         get() = getStringByName("LOGIN_WRONG_PASSWORD")
 
+    val googleEmail: String
+        get() = getStringByName("GOOGLE_EMAIL")
+
+    val googlePassword: String
+        get() = getStringByName("GOOGLE_PASSWORD")
+
     private fun getStringByName(name: String) =
         InstrumentationRegistry.getArguments().getString(name) ?: ""
 }

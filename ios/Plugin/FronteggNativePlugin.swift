@@ -55,8 +55,19 @@ public class FronteggNativePlugin: CAPPlugin {
                                           handleLoginWithSSO: handleLoginWithSSO)
         } else {
             print("standard initialization")
-            if let baseUrl = config.getString("baseUrl"),
-               let clientId = config.getString("clientId") {
+            // E2E test mode: allow overriding baseUrl via environment variable
+            // so UI tests can point the SDK at a local mock server.
+            let e2eBaseUrl = ProcessInfo.processInfo.environment["FRONTEGG_E2E_BASE_URL"]
+            let e2eClientId = ProcessInfo.processInfo.environment["FRONTEGG_E2E_CLIENT_ID"]
+
+            let resolvedBaseUrl = e2eBaseUrl ?? config.getString("baseUrl")
+            let resolvedClientId = e2eClientId ?? config.getString("clientId")
+
+            if let baseUrl = resolvedBaseUrl,
+               let clientId = resolvedClientId {
+                if e2eBaseUrl != nil {
+                    print("Frontegg E2E: using mock server at \(baseUrl)")
+                }
                 fronteggApp.manualInit(baseUrl: baseUrl,
                                        cliendId: clientId,
                                        applicationId: config.getString("applicationId"),

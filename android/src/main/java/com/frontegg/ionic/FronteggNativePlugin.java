@@ -1,6 +1,7 @@
 package com.frontegg.ionic;
 
 
+
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -100,6 +101,14 @@ public class FronteggNativePlugin extends Plugin {
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
             String applicationId = config.getString("applicationId");
+
+            // Allow E2E tests to override the base URL via system property.
+            // Tests set this via: System.setProperty("FRONTEGG_E2E_BASE_URL", url)
+            String e2eBaseUrl = System.getProperty("FRONTEGG_E2E_BASE_URL");
+            if (e2eBaseUrl != null && !e2eBaseUrl.isEmpty()) {
+                Log.i("FronteggNative", "E2E override: using base URL " + e2eBaseUrl);
+                baseUrl = e2eBaseUrl;
+            }
 
             if (baseUrl == null || clientId == null) {
                 throw new RuntimeException("Missing required config parameters: baseUrl, clientId");

@@ -3,6 +3,7 @@ package com.frontegg.demo
 import androidx.test.uiautomator.By
 import com.frontegg.demo.utils.Env
 import com.frontegg.demo.utils.UiTestInstrumentation
+import com.frontegg.demo.utils.logout
 import com.frontegg.demo.utils.tapLoginButton
 import org.junit.Before
 import org.junit.Test
@@ -28,9 +29,9 @@ class LogoutTest {
 
         instrumentation.clickByText("Sign in")
 
-        instrumentation.clickByText("LOGOUT")
+        instrumentation.clickByTextIgnoreCase("Logout")
 
-        instrumentation.waitForView(By.text("Not authenticated"))
-            ?: throw Exception("Logout exception")
+        instrumentation.waitForView(By.text("Not Logged In"), timeout = 10_000)
+            ?: throw Exception("Logout exception — 'Not Logged In' text not found")
     }
 }

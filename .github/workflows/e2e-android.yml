@@ -75,6 +75,9 @@ jobs:
           LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
           LOGIN_WRONG_EMAIL: ${{ secrets.LOGIN_WRONG_EMAIL }}
           LOGIN_WRONG_PASSWORD: ${{ secrets.LOGIN_WRONG_PASSWORD }}
+          GOOGLE_EMAIL: ${{ secrets.GOOGLE_EMAIL }}
+          GOOGLE_PASSWORD: ${{ secrets.GOOGLE_PASSWORD }}
+          FRONTEGG_E2E_BASE_URL: ${{ secrets.FRONTEGG_E2E_BASE_URL }}
         with:
           api-level: 33
           arch: x86_64
@@ -91,7 +94,14 @@ jobs:
             adb shell settings put global window_animation_scale 0
             adb shell settings put global transition_animation_scale 0
             adb shell settings put global animator_duration_scale 0
-            ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.LOGIN_EMAIL="$LOGIN_EMAIL" -Pandroid.testInstrumentationRunnerArguments.LOGIN_PASSWORD="$LOGIN_PASSWORD" -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_EMAIL="${LOGIN_WRONG_EMAIL:-wrong@example.com}" -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_PASSWORD="${LOGIN_WRONG_PASSWORD:-wrong}"
+            ./gradlew :app:connectedDebugAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.LOGIN_EMAIL="$LOGIN_EMAIL" \
+              -Pandroid.testInstrumentationRunnerArguments.LOGIN_PASSWORD="$LOGIN_PASSWORD" \
+              -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_EMAIL="${LOGIN_WRONG_EMAIL:-wrong@example.com}" \
+              -Pandroid.testInstrumentationRunnerArguments.LOGIN_WRONG_PASSWORD="${LOGIN_WRONG_PASSWORD:-wrong}" \
+              -Pandroid.testInstrumentationRunnerArguments.GOOGLE_EMAIL="${GOOGLE_EMAIL:-}" \
+              -Pandroid.testInstrumentationRunnerArguments.GOOGLE_PASSWORD="${GOOGLE_PASSWORD:-}" \
+              -Pandroid.testInstrumentationRunnerArguments.FRONTEGG_E2E_BASE_URL="${FRONTEGG_E2E_BASE_URL:-}"
 
       - name: Collect JUnit reports
         if: always()

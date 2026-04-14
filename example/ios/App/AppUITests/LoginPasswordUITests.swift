@@ -60,8 +60,9 @@ final class LoginPasswordUITests: XCTestCase {
 
         webView.buttons["Sign in"].tap()
 
-        // Back in the app, the logged-in state surfaces a LOGOUT button.
-        let logoutButton = app.buttons["LOGOUT"]
-        XCTAssertTrue(logoutButton.waitForExistence(timeout: 30), "LOGOUT button did not appear — login likely failed")
+        // Back in the app, the logged-in state surfaces a Logout button.
+        let logoutPredicate = NSPredicate(format: "label ==[c] %@", "Logout")
+        let logoutButton = app.buttons.matching(logoutPredicate).firstMatch
+        XCTAssertTrue(logoutButton.waitForExistence(timeout: 30), "Logout button did not appear — login likely failed")
     }
 }

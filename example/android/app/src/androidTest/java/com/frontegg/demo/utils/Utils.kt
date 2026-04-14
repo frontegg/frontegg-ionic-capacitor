@@ -26,8 +26,8 @@ fun UiTestInstrumentation.tapLoginButton() {
 }
 
 fun UiTestInstrumentation.logout() {
-    clickByText("LOGOUT")
+    clickByTextIgnoreCase("Logout")
 
-    waitForView(By.text("Not authenticated"))
-        ?: throw Exception("Logout exception")
+    waitForView(By.text("Not Logged In"), timeout = 10_000)
+        ?: throw Exception("Logout exception — 'Not Logged In' text not found")
 }
