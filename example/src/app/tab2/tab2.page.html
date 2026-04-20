@@ -6,17 +6,24 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="frontegg-content">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Tenants</ion-title>
     </ion-toolbar>
   </ion-header>
-
-
-  <br/>
-  <ion-button *ngFor="let tenant of tenants" (click)="switchTenant(tenant.tenantId)">
-    {{tenant.name}}{{tenant.tenantId === activeTenantId ? ' (active)' : ''}}{{tenant.tenantId === switching ? ' (switching...)' : ''}}
-  </ion-button>
+  <div class="frontegg-card">
+    <div class="frontegg-btn-stack" style="margin-top: 16px;">
+      <ion-button
+        *ngFor="let tenant of tenants"
+        class="frontegg-btn"
+        expand="block"
+        [disabled]="tenant.tenantId === switching"
+        (click)="switchTenant(tenant.tenantId)"
+      >
+        {{tenant.name}}{{tenant.tenantId === activeTenantId ? ' (active)' : ''}}{{tenant.tenantId === switching ? ' (switching...)' : ''}}
+      </ion-button>
+    </div>
+  </div>
 
 </ion-content>

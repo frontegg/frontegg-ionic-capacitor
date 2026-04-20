@@ -15,8 +15,9 @@ const config: CapacitorConfig = {
       useDiskCacheWebView: false,
       regions:[{
         key: 'default',
-        baseUrl: 'https://app-x4gr8g28fxr5.frontegg.com',
-        clientId: '5f493de4-01c5-4a61-8642-fca650a6a9dc'
+        baseUrl: 'https://autheu.davidantoon.me',
+        clientId: 'b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca',
+        applicationId: '7ae7de24-99f7-4880-a325-1b638ad933ee'
       }]
     }
   }
