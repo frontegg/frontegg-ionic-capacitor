@@ -2,6 +2,7 @@ import FronteggSwift
 import Foundation
 import Combine
 import Capacitor
+import SwiftUI
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -248,6 +249,55 @@ public class FronteggNativePlugin: CAPPlugin {
                     "success": result
                 ]
                 call.resolve(response as PluginCallResultData)
+            }
+        }
+    }
+
+    @objc func loadEntitlements(_ call: CAPPluginCall) {
+        let forceRefresh = call.getBool("forceRefresh", false)
+        fronteggApp.auth.loadEntitlements(forceRefresh: forceRefresh) { success in
+            call.resolve(["success": success])
+        }
+    }
+
+    @objc func getFeatureEntitlement(_ call: CAPPluginCall) {
+        guard let key = call.options["key"] as? String else {
+            call.reject("No key provided")
+            return
+        }
+        let entitlement = fronteggApp.auth.getFeatureEntitlements(featureKey: key)
+        call.resolve([
+            "isEntitled": entitlement.isEntitled,
+            "justification": entitlement.justification as Any
+        ])
+    }
+
+    @objc func getPermissionEntitlement(_ call: CAPPluginCall) {
+        guard let key = call.options["key"] as? String else {
+            call.reject("No key provided")
+            return
+        }
+        let entitlement = fronteggApp.auth.getPermissionEntitlements(permissionKey: key)
+        call.resolve([
+            "isEntitled": entitlement.isEntitled,
+            "justification": entitlement.justification as Any
+        ])
+    }
+
+    @objc func showAdminPortal(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            guard let root = self.bridge?.viewController else {
+                call.reject("No host view controller available")
+                return
+            }
+            if #available(iOS 14.0, *) {
+                let host = UIHostingController(rootView: AdminPortalView())
+                host.modalPresentationStyle = .pageSheet
+                root.present(host, animated: true) {
+                    call.resolve()
+                }
+            } else {
+                call.reject("Admin portal requires iOS 14.0+")
             }
         }
     }

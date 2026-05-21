@@ -1,6 +1,7 @@
 import { WebPlugin } from '@capacitor/core';
 
 import type {
+  Entitlement,
   FronteggConstants,
   FronteggNativePlugin,
   FronteggState,
@@ -56,5 +57,33 @@ export class FronteggNativeWeb
 
   async refreshToken(): Promise<void> {
     throw Error(`FronteggNative.refreshToken not implemented in web`);
+  }
+
+  async loadEntitlements(payload?: {
+    forceRefresh?: boolean;
+  }): Promise<{ success: boolean }> {
+    throw Error(
+      `FronteggNative.loadEntitlements ${JSON.stringify(
+        payload,
+      )} not implemented in web`,
+    );
+  }
+
+  async getFeatureEntitlement(payload: { key: string }): Promise<Entitlement> {
+    throw Error(
+      `FronteggNative.getFeatureEntitlement ${payload} not implemented in web`,
+    );
+  }
+
+  async getPermissionEntitlement(payload: {
+    key: string;
+  }): Promise<Entitlement> {
+    throw Error(
+      `FronteggNative.getPermissionEntitlement ${payload} not implemented in web`,
+    );
+  }
+
+  async showAdminPortal(): Promise<void> {
+    throw Error('FronteggNative.showAdminPortal not implemented in web');
   }
 }

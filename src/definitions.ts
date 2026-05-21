@@ -192,6 +192,61 @@ export interface FronteggNativePlugin {
    * @returns A promise that resolves when the token refresh is completed.
    */
   refreshToken(): Promise<void>;
+
+  /**
+   * Loads (or reloads) the current user's entitlements for the active tenant.
+   * Must be called after a successful login and after switching tenants.
+   * @param payload.forceRefresh - If true, bypasses any cached state and re-fetches from the server.
+   * @returns A promise resolving to `{ success: true }` if entitlements were loaded.
+   */
+  loadEntitlements(payload?: {
+    forceRefresh?: boolean;
+  }): Promise<{ success: boolean }>;
+
+  /**
+   * Checks whether the current user is entitled to a specific feature.
+   * @param payload.key - The feature key as configured in Frontegg.
+   * @returns A promise resolving to an Entitlement describing the result.
+   */
+  getFeatureEntitlement(payload: { key: string }): Promise<Entitlement>;
+
+  /**
+   * Checks whether the current user holds a specific permission.
+   * @param payload.key - The permission key as configured in Frontegg.
+   * @returns A promise resolving to an Entitlement describing the result.
+   */
+  getPermissionEntitlement(payload: { key: string }): Promise<Entitlement>;
+
+  /**
+   * Opens the Frontegg admin portal (BETA).
+   * On iOS this presents a SwiftUI sheet containing a WKWebView; on Android
+   * it starts an embedded WebView Activity. The portal is dismissed by the
+   * user (swipe / X button / back button).
+   *
+   * NOTE: Beta API — the surface may change in future minor releases.
+   *
+   * Android: requires `AdminPortalActivity` declared in the host app's
+   * AndroidManifest.xml. See the setup guide.
+   */
+  showAdminPortal(): Promise<void>;
+}
+
+/**
+ * Represents the result of an entitlement check.
+ */
+export interface Entitlement {
+  /**
+   * Whether the user is entitled.
+   */
+  isEntitled: boolean;
+
+  /**
+   * Optional reason when `isEntitled` is false. Common values:
+   * - "ENTITLEMENTS_DISABLED": entitlements feature is disabled on this account
+   * - "ENTITLEMENTS_NOT_LOADED": `loadEntitlements()` was not called yet
+   * - "MISSING_FEATURE" / "MISSING_PERMISSION": user does not hold this key
+   */
+  justification?: string | null;
 }
 
 /**
