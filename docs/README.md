@@ -14,7 +14,7 @@ This repository includes:
 - A [Get Started](https://ionic-capacitor-guide.frontegg.com/#/getting-started) guide for quick integration
 - A [Setup Guide](https://ionic-capacitor-guide.frontegg.com/#/setup) with detailed setup instructions
 - [Usage Examples](https://ionic-capacitor-guide.frontegg.com/#/usage) with common implementation patterns
-- [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) for complex integration scenarIonic
+- [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) for complex integration scenarios
 - A [Embedded](https://github.com/frontegg/frontegg-ionic-capacitor/tree/master/example) example projects to help you get started quickly
 
 For full documentation, visit the Frontegg Developer Portal:  
@@ -22,14 +22,12 @@ For full documentation, visit the Frontegg Developer Portal:
 
 ---
 
-## 🔐 Native SDK versions
+## 🧩 Entitlements & Admin Portal
 
-The Ionic Capacitor wrapper depends on the underlying native SDKs:
+The wrapper bridges two native capabilities into your Ionic app:
 
-- On **Android**, the plugin and example app use `com.frontegg.sdk:android:1.3.34`.
-- On **iOS**, the plugin depends on `FronteggSwift` **1.3.10** via CocoaPods.
-
-After upgrading, run `pod install` in your iOS project and rebuild both platforms.
+- **Entitlements** — gate features and permissions on-device with `loadEntitlements()`, `getFeatureEntitlement({ key })`, and `getPermissionEntitlement({ key })` (each resolves to `{ isEntitled, justification }`). See the [Entitlements guide](https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/docs/usage.md#entitlements).
+- **Admin Portal** — open the embedded Frontegg Admin Portal for authenticated users with `openAdminPortal()`. It opens through the native iOS/Android token bridge, so users aren't prompted to log in again. See the [Admin Portal guide](https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/docs/advanced.md#admin-portal-beta).
 
 ---
 
