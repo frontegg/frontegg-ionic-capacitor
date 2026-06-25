@@ -287,3 +287,13 @@ export class MyPage implements OnInit {
   }
 }
 ```
+
+## Admin Portal (Beta)
+
+Open the embedded Frontegg Admin Portal for authenticated users:
+
+```typescript
+await this.fronteggService.openAdminPortal();
+```
+
+See [Advanced Topics](advanced.md#admin-portal-beta) for prerequisites and platform behavior.

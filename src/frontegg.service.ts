@@ -289,4 +289,8 @@ export class FronteggService {
   public refreshToken(): Promise<void> {
     return FronteggNative.refreshToken();
   }
+
+  public openAdminPortal(): Promise<void> {
+    return FronteggNative.openAdminPortal();
+  }
 }

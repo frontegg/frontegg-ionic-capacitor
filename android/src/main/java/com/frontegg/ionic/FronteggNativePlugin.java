@@ -8,6 +8,7 @@ import android.util.Log;
 
 import kotlin.Unit;
 
+import com.frontegg.android.AdminPortalActivity;
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAppKt;
 import com.frontegg.android.FronteggAuth;
@@ -320,6 +321,17 @@ public class FronteggNativePlugin extends Plugin {
         resultMap.put("regionData", Parser.regionsToJSONObject(regionsData));
 
         call.resolve(resultMap);
+    }
+
+    @PluginMethod
+    public void openAdminPortal(PluginCall call) {
+        if (this.getActivity() == null) {
+            call.reject("NO_ACTIVITY", "Cannot open Admin Portal without an active Activity");
+            return;
+        }
+
+        AdminPortalActivity.open(this.getActivity());
+        call.resolve();
     }
 
 }
