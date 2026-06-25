@@ -2,6 +2,7 @@ package com.frontegg.ionic;
 
 
 
+import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -12,6 +13,7 @@ import com.frontegg.android.AdminPortalActivity;
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAppKt;
 import com.frontegg.android.FronteggAuth;
+import com.frontegg.android.models.Entitlement;
 import com.frontegg.android.models.User;
 import com.frontegg.android.regions.RegionConfig;
 import com.getcapacitor.JSObject;
@@ -295,6 +297,62 @@ public class FronteggNativePlugin extends Plugin {
         });
     }
 
+
+    @PluginMethod
+    public void loadEntitlements(PluginCall call) {
+        Boolean forceRefresh = call.getBoolean("forceRefresh", false);
+        FronteggAppKt.getFronteggAuth(this.getContext()).loadEntitlements(
+                forceRefresh != null ? forceRefresh : false,
+                (success) -> {
+                    JSObject result = new JSObject();
+                    result.put("success", success);
+                    call.resolve(result);
+                    return null;
+                });
+    }
+
+    @PluginMethod
+    public void getFeatureEntitlement(PluginCall call) {
+        String key = call.getString("key");
+        if (key == null) {
+            call.reject("No key provided");
+            return;
+        }
+        Entitlement entitlement = FronteggAppKt.getFronteggAuth(this.getContext())
+                .getFeatureEntitlements(key, null);
+        JSObject result = new JSObject();
+        result.put("isEntitled", entitlement.isEntitled());
+        result.put("justification", entitlement.getJustification());
+        call.resolve(result);
+    }
+
+    @PluginMethod
+    public void getPermissionEntitlement(PluginCall call) {
+        String key = call.getString("key");
+        if (key == null) {
+            call.reject("No key provided");
+            return;
+        }
+        Entitlement entitlement = FronteggAppKt.getFronteggAuth(this.getContext())
+                .getPermissionEntitlements(key, null);
+        JSObject result = new JSObject();
+        result.put("isEntitled", entitlement.isEntitled());
+        result.put("justification", entitlement.getJustification());
+        call.resolve(result);
+    }
+
+    @PluginMethod
+    public void showAdminPortal(PluginCall call) {
+        Activity activity = this.getActivity();
+        if (activity == null) {
+            call.reject("No host activity available");
+            return;
+        }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            AdminPortalActivity.open(activity);
+            call.resolve();
+        });
+    }
 
     @PluginMethod
     public void getAuthState(PluginCall call) {

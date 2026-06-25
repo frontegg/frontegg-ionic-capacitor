@@ -288,6 +288,47 @@ export class MyPage implements OnInit {
 }
 ```
 
+### Entitlements
+
+The SDK exposes the underlying Frontegg entitlements API so you can gate features and check permissions on-device. Call `loadEntitlements()` once after a successful login, and again after `switchTenant()` — the tenant context determines which features and permissions resolve.
+
+```typescript
+import { Inject } from '@angular/core';
+import { FronteggService } from '@frontegg/ionic-capacitor';
+
+@Component({
+  /** .... */
+})
+export class MyPage {
+
+  constructor(@Inject('Frontegg') private fronteggService: FronteggService) {}
+
+  async ngOnInit() {
+    // After login (or after switchTenant):
+    await this.fronteggService.loadEntitlements();
+
+    const feature = await this.fronteggService.getFeatureEntitlement('beta-dashboard');
+    if (feature.isEntitled) {
+      // show the gated feature
+    } else {
+      console.log('Not entitled because:', feature.justification);
+    }
+
+    const permission = await this.fronteggService.getPermissionEntitlement('billing.read');
+    // permission.isEntitled / permission.justification
+  }
+}
+```
+
+`justification` values returned when `isEntitled` is `false`:
+
+| Justification | Meaning |
+|---|---|
+| `ENTITLEMENTS_DISABLED` | Entitlements are disabled for this account. |
+| `ENTITLEMENTS_NOT_LOADED` | `loadEntitlements()` was not called (or failed). |
+| `MISSING_FEATURE` / `MISSING_PERMISSION` | The user does not hold this key. |
+| `NOT_AUTHENTICATED` (iOS) | No user is currently signed in. |
+
 ## Admin Portal (Beta)
 
 Open the embedded Frontegg Admin Portal for authenticated users:

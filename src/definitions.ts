@@ -194,10 +194,52 @@ export interface FronteggNativePlugin {
   refreshToken(): Promise<void>;
 
   /**
+   * Loads (or reloads) the current user's entitlements for the active tenant.
+   * Must be called after a successful login and after switching tenants.
+   * @param payload.forceRefresh - If true, bypasses any cached state and re-fetches from the server.
+   * @returns A promise resolving to `{ success: true }` if entitlements were loaded.
+   */
+  loadEntitlements(payload?: {
+    forceRefresh?: boolean;
+  }): Promise<{ success: boolean }>;
+
+  /**
+   * Checks whether the current user is entitled to a specific feature.
+   * @param payload.key - The feature key as configured in Frontegg.
+   * @returns A promise resolving to an Entitlement describing the result.
+   */
+  getFeatureEntitlement(payload: { key: string }): Promise<Entitlement>;
+
+  /**
+   * Checks whether the current user holds a specific permission.
+   * @param payload.key - The permission key as configured in Frontegg.
+   * @returns A promise resolving to an Entitlement describing the result.
+   */
+  getPermissionEntitlement(payload: { key: string }): Promise<Entitlement>;
+
+  /**
    * Opens the embedded Frontegg Admin Portal in a native WebView.
    * @returns A promise that resolves when the portal is presented.
    */
   openAdminPortal(): Promise<void>;
+}
+
+/**
+ * Represents the result of an entitlement check.
+ */
+export interface Entitlement {
+  /**
+   * Whether the user is entitled.
+   */
+  isEntitled: boolean;
+
+  /**
+   * Optional reason when `isEntitled` is false. Common values:
+   * - "ENTITLEMENTS_DISABLED": entitlements feature is disabled on this account
+   * - "ENTITLEMENTS_NOT_LOADED": `loadEntitlements()` was not called yet
+   * - "MISSING_FEATURE" / "MISSING_PERMISSION": user does not hold this key
+   */
+  justification?: string | null;
 }
 
 /**

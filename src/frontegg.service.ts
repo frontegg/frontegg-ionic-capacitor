@@ -1,6 +1,7 @@
 import { registerPlugin } from '@capacitor/core';
 
 import type {
+  Entitlement,
   FronteggConstants,
   FronteggNativePlugin,
   FronteggServiceOptions,
@@ -288,6 +289,28 @@ export class FronteggService {
 
   public refreshToken(): Promise<void> {
     return FronteggNative.refreshToken();
+  }
+
+  /**
+   * Load (or reload) entitlements for the current user and active tenant.
+   * Call after a successful login and after `switchTenant()`.
+   */
+  public loadEntitlements(forceRefresh = false): Promise<{ success: boolean }> {
+    return FronteggNative.loadEntitlements({ forceRefresh });
+  }
+
+  /**
+   * Check whether the current user is entitled to a feature.
+   */
+  public getFeatureEntitlement(key: string): Promise<Entitlement> {
+    return FronteggNative.getFeatureEntitlement({ key });
+  }
+
+  /**
+   * Check whether the current user holds a permission.
+   */
+  public getPermissionEntitlement(key: string): Promise<Entitlement> {
+    return FronteggNative.getPermissionEntitlement({ key });
   }
 
   public openAdminPortal(): Promise<void> {

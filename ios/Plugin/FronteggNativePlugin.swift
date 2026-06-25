@@ -254,6 +254,37 @@ public class FronteggNativePlugin: CAPPlugin {
         }
     }
 
+    @objc func loadEntitlements(_ call: CAPPluginCall) {
+        let forceRefresh = call.getBool("forceRefresh", false)
+        fronteggApp.auth.loadEntitlements(forceRefresh: forceRefresh) { success in
+            call.resolve(["success": success])
+        }
+    }
+
+    @objc func getFeatureEntitlement(_ call: CAPPluginCall) {
+        guard let key = call.options["key"] as? String else {
+            call.reject("No key provided")
+            return
+        }
+        let entitlement = fronteggApp.auth.getFeatureEntitlements(featureKey: key)
+        call.resolve([
+            "isEntitled": entitlement.isEntitled,
+            "justification": entitlement.justification as Any
+        ])
+    }
+
+    @objc func getPermissionEntitlement(_ call: CAPPluginCall) {
+        guard let key = call.options["key"] as? String else {
+            call.reject("No key provided")
+            return
+        }
+        let entitlement = fronteggApp.auth.getPermissionEntitlements(permissionKey: key)
+        call.resolve([
+            "isEntitled": entitlement.isEntitled,
+            "justification": entitlement.justification as Any
+        ])
+    }
+
     @objc func getAuthState(_ call: CAPPluginCall) {
         let auth = fronteggApp.auth
         var jsonUser: [String: Any]? = nil
