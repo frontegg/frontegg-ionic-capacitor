@@ -65,4 +65,11 @@ export class Tab1Page implements OnInit {
     console.log('refreshToken()');
     this.fronteggService.refreshToken()
   }
+
+  openAdminPortal() {
+    console.log('openAdminPortal()');
+    this.fronteggService.openAdminPortal().catch((error) => {
+      console.error('Failed to open Admin Portal:', error);
+    });
+  }
 }

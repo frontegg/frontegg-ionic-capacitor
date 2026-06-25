@@ -57,4 +57,8 @@ export class FronteggNativeWeb
   async refreshToken(): Promise<void> {
     throw Error(`FronteggNative.refreshToken not implemented in web`);
   }
+
+  async openAdminPortal(): Promise<void> {
+    throw Error('FronteggNative.openAdminPortal not implemented in web');
+  }
 }

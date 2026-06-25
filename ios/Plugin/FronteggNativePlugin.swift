@@ -2,6 +2,8 @@ import FronteggSwift
 import Foundation
 import Combine
 import Capacitor
+import SwiftUI
+import UIKit
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -55,8 +57,19 @@ public class FronteggNativePlugin: CAPPlugin {
                                           handleLoginWithSSO: handleLoginWithSSO)
         } else {
             print("standard initialization")
-            if let baseUrl = config.getString("baseUrl"),
-               let clientId = config.getString("clientId") {
+            // E2E test mode: allow overriding baseUrl via environment variable
+            // so UI tests can point the SDK at a local mock server.
+            let e2eBaseUrl = ProcessInfo.processInfo.environment["FRONTEGG_E2E_BASE_URL"]
+            let e2eClientId = ProcessInfo.processInfo.environment["FRONTEGG_E2E_CLIENT_ID"]
+
+            let resolvedBaseUrl = e2eBaseUrl ?? config.getString("baseUrl")
+            let resolvedClientId = e2eClientId ?? config.getString("clientId")
+
+            if let baseUrl = resolvedBaseUrl,
+               let clientId = resolvedClientId {
+                if e2eBaseUrl != nil {
+                    print("Frontegg E2E: using mock server at \(baseUrl)")
+                }
                 fronteggApp.manualInit(baseUrl: baseUrl,
                                        cliendId: clientId,
                                        applicationId: config.getString("applicationId"),
@@ -260,6 +273,37 @@ public class FronteggNativePlugin: CAPPlugin {
             "selectedRegion": regionToJson(auth.selectedRegion)
         ]
         call.resolve(body as [String: Any] )
+    }
+
+    @objc func openAdminPortal(_ call: CAPPluginCall) {
+        DispatchQueue.main.async {
+            guard let viewController = Self.topViewController() else {
+                call.reject("NO_VIEW_CONTROLLER", "Cannot open Admin Portal without an active view controller")
+                return
+            }
+
+            if #available(iOS 14.0, *) {
+                let host = UIHostingController(rootView: AdminPortalView())
+                host.modalPresentationStyle = .pageSheet
+                viewController.present(host, animated: true)
+                call.resolve()
+            } else {
+                call.reject("UNSUPPORTED", "Admin Portal requires iOS 14+")
+            }
+        }
+    }
+
+    private static func topViewController() -> UIViewController? {
+        let keyWindow = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }
+
+        var topController = keyWindow?.rootViewController
+        while let presented = topController?.presentedViewController {
+            topController = presented
+        }
+        return topController
     }
 
 }
