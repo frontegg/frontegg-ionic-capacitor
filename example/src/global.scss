@@ -24,3 +24,48 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+/* -------------------------------------------------------------------------- */
+/* Demo UI (Frontegg)                                                      */
+/* Match Flutter/Kotlin button + spacing.                                   */
+/* -------------------------------------------------------------------------- */
+
+.frontegg-content {
+  --background: #f9fafc;
+}
+
+.frontegg-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.frontegg-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Flutter: SizedBox(height: 8) */
+}
+
+ion-button.frontegg-btn {
+  width: 100%;
+  /* Flutter: ElevatedButtonThemeData
+     - minHeight: 48
+     - borderRadius: 8
+     - padding: vertical 9, horizontal 24 */
+  min-height: 48px;
+  --border-radius: 8px;
+  --min-height: 48px;
+  --padding-top: 9px;
+  --padding-bottom: 9px;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+
+  /* Ensure solid primary fill */
+  --background: var(--ion-color-primary);
+  --background-hover: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary);
+}
+

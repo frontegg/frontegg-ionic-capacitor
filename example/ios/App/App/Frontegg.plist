@@ -12,5 +12,7 @@
 	<string>https://autheu.davidantoon.me</string>
 	<key>clientId</key>
 	<string>b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca</string>
+	<key>applicationId</key>
+	<string>7ae7de24-99f7-4880-a325-1b638ad933ee</string>
 </dict>
 </plist>
