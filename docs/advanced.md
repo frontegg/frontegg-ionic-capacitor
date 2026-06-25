@@ -244,4 +244,25 @@ export default config;
 
 If your app supports multiple environments or regions, define `applicationId` inside each region object:
 
+## Admin Portal (Beta)
+
+The Admin Portal is a hosted page that lets end users manage their account, profile, sessions, and tenant settings. The Ionic Capacitor SDK exposes `openAdminPortal()` on `FronteggService`, which delegates to the native SDKs:
+
+- **Android** — launches `AdminPortalActivity` (full-screen `WebView`)
+- **iOS** — presents `AdminPortalView` as a page sheet (`WKWebView`)
+
+The portal loads `${baseUrl}/oauth/portal?appId=<applicationId>` and shares the SDK session, so authenticated users are not asked to sign in again.
+
+> **Beta.** The API may change in future minor releases. Pin to an exact SDK version when embedding this in a shipping app.
+
+### Multi-app prerequisite
+
+For multi-app workspaces, configure `applicationId` in your native setup (see [Multi-apps support](#multi-apps-support)). Without `?appId=` the portal renders **"Application not found"** after sign-in.
+
+### Open the portal
+
+```typescript
+await this.fronteggService.openAdminPortal();
 ```
+
+The portal is dismissed when the user swipes down (iOS) or taps the built-in close button. On Android, `window.close()` finishes the activity automatically.

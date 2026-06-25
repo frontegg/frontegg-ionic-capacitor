@@ -15,7 +15,7 @@ CAP_PLUGIN(FronteggNativePlugin, "FronteggNative",
            CAP_PLUGIN_METHOD(loadEntitlements, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getFeatureEntitlement, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getPermissionEntitlement, CAPPluginReturnPromise);
-           CAP_PLUGIN_METHOD(showAdminPortal, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(openAdminPortal, CAPPluginReturnPromise);
 )
 
 

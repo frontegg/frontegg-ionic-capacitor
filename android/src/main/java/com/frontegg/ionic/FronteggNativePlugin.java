@@ -381,4 +381,15 @@ public class FronteggNativePlugin extends Plugin {
         call.resolve(resultMap);
     }
 
+    @PluginMethod
+    public void openAdminPortal(PluginCall call) {
+        if (this.getActivity() == null) {
+            call.reject("NO_ACTIVITY", "Cannot open Admin Portal without an active Activity");
+            return;
+        }
+
+        AdminPortalActivity.open(this.getActivity());
+        call.resolve();
+    }
+
 }

@@ -83,7 +83,7 @@ export class FronteggNativeWeb
     );
   }
 
-  async showAdminPortal(): Promise<void> {
-    throw Error('FronteggNative.showAdminPortal not implemented in web');
+  async openAdminPortal(): Promise<void> {
+    throw Error('FronteggNative.openAdminPortal not implemented in web');
   }
 }

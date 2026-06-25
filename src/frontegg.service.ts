@@ -313,13 +313,7 @@ export class FronteggService {
     return FronteggNative.getPermissionEntitlement({ key });
   }
 
-  /**
-   * Open the Frontegg admin portal (BETA).
-   * iOS: presents a SwiftUI sheet over the host view controller.
-   * Android: starts AdminPortalActivity — must be declared in the host
-   * AndroidManifest.xml.
-   */
-  public showAdminPortal(): Promise<void> {
-    return FronteggNative.showAdminPortal();
+  public openAdminPortal(): Promise<void> {
+    return FronteggNative.openAdminPortal();
   }
 }

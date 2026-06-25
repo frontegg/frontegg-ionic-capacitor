@@ -218,17 +218,10 @@ export interface FronteggNativePlugin {
   getPermissionEntitlement(payload: { key: string }): Promise<Entitlement>;
 
   /**
-   * Opens the Frontegg admin portal (BETA).
-   * On iOS this presents a SwiftUI sheet containing a WKWebView; on Android
-   * it starts an embedded WebView Activity. The portal is dismissed by the
-   * user (swipe / X button / back button).
-   *
-   * NOTE: Beta API — the surface may change in future minor releases.
-   *
-   * Android: requires `AdminPortalActivity` declared in the host app's
-   * AndroidManifest.xml. See the setup guide.
+   * Opens the embedded Frontegg Admin Portal in a native WebView.
+   * @returns A promise that resolves when the portal is presented.
    */
-  showAdminPortal(): Promise<void>;
+  openAdminPortal(): Promise<void>;
 }
 
 /**

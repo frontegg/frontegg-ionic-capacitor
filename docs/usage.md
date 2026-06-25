@@ -329,14 +329,12 @@ export class MyPage {
 | `MISSING_FEATURE` / `MISSING_PERMISSION` | The user does not hold this key. |
 | `NOT_AUTHENTICATED` (iOS) | No user is currently signed in. |
 
-### Admin portal (Beta)
+## Admin Portal (Beta)
 
-The SDK can present the Frontegg-hosted admin portal inside the app. On iOS this is a SwiftUI sheet over your root view controller; on Android this is `AdminPortalActivity` (declared by the SDK).
+Open the embedded Frontegg Admin Portal for authenticated users:
 
 ```typescript
-this.fronteggService.showAdminPortal();
+await this.fronteggService.openAdminPortal();
 ```
 
-> **Beta:** the portal API may change in future minor releases. Behavior and styling are inherited from the underlying iOS/Android SDKs.
-
-Android requires no manifest change — the SDK declares `AdminPortalActivity` itself. iOS requires no additional setup. Just call `showAdminPortal()` from any view.
+See [Advanced Topics](advanced.md#admin-portal-beta) for prerequisites and platform behavior.
