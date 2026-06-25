@@ -14,7 +14,7 @@ This repository includes:
 - A [Get Started](https://ionic-capacitor-guide.frontegg.com/#/getting-started) guide for quick integration
 - A [Setup Guide](https://ionic-capacitor-guide.frontegg.com/#/setup) with detailed setup instructions
 - [Usage Examples](https://ionic-capacitor-guide.frontegg.com/#/usage) with common implementation patterns
-- [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) for complex integration scenarIonic
+- [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) for complex integration scenarios
 - A [Embedded](https://github.com/frontegg/frontegg-ionic-capacitor/tree/master/example) example projects to help you get started quickly
 
 For full documentation, visit the Frontegg Developer Portal:  
