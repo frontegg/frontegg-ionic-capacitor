@@ -192,6 +192,12 @@ export interface FronteggNativePlugin {
    * @returns A promise that resolves when the token refresh is completed.
    */
   refreshToken(): Promise<void>;
+
+  /**
+   * Opens the embedded Frontegg Admin Portal in a native WebView.
+   * @returns A promise that resolves when the portal is presented.
+   */
+  openAdminPortal(): Promise<void>;
 }
 
 /**

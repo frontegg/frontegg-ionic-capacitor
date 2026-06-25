@@ -19,8 +19,7 @@ def capacitor_pods
 end
 
 target 'App' do
-  # Resolve FronteggSwift from git (1.2.76 not on CocoaPods trunk yet); must be before FronteggIonicCapacitor
-  pod 'FronteggSwift', :git => 'https://github.com/frontegg/frontegg-ios-swift.git', :tag => '1.2.76'
+  pod 'FronteggSwift', '1.3.10'
   capacitor_pods
   # Add your Pods here
 end

@@ -38,4 +38,10 @@
     <br/>
     <br/>
     <ion-button *ngIf="isAuthenticated" (click)="refreshToken()">Refresh Token</ion-button>
+
+    <br/>
+    <br/>
+    <ion-button *ngIf="isAuthenticated" (click)="openAdminPortal()" aria-label="OpenAdminPortalButton">
+        Open Admin Portal
+    </ion-button>
 </ion-content>
