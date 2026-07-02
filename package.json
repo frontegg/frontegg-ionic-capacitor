@@ -55,7 +55,7 @@
     "@angular-eslint/builder": "^16.0.0",
     "@angular-eslint/eslint-plugin": "^16.0.0",
     "@angular-eslint/eslint-plugin-template": "^16.0.0",
-    "@angular-eslint/schematics": "^16.0.0",
+    "@angular-eslint/schematics": "^22.0.0",
     "@angular-eslint/template-parser": "^16.0.0",
     "@angular/core": ">=14.0.0",
     "@capacitor/android": "^5.0.0",
