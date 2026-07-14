@@ -222,6 +222,27 @@ export interface FronteggNativePlugin {
    * @returns A promise that resolves when the portal is presented.
    */
   openAdminPortal(): Promise<void>;
+
+  /**
+   * Starts a step-up (re-)authentication: the user re-verifies with a stronger factor
+   * (MFA) before a sensitive action. Resolves once step-up completes (rejects on failure).
+   *
+   * @param payload.maxAge - Optional freshness window, in **seconds**. If the user
+   * authenticated more recently than this, step-up may be skipped.
+   *
+   * Note: `maxAge` is honored on **iOS**. On **Android** it is not yet forwarded (the native
+   * API takes a Kotlin `Duration` that cannot be constructed from the Java plugin); Android
+   * uses the server default freshness window until a native Java-friendly overload lands.
+   */
+  stepUp(payload?: { maxAge?: number }): Promise<void>;
+
+  /**
+   * Returns whether the current session is already "stepped up" (has a recent MFA/ACR).
+   *
+   * @param payload.maxAge - Optional freshness window, in **seconds** (see `stepUp` for the
+   * Android `maxAge` caveat).
+   */
+  isSteppedUp(payload?: { maxAge?: number }): Promise<{ isSteppedUp: boolean }>;
 }
 
 /**

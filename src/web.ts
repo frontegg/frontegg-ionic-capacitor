@@ -86,4 +86,20 @@ export class FronteggNativeWeb
   async openAdminPortal(): Promise<void> {
     throw Error('FronteggNative.openAdminPortal not implemented in web');
   }
+
+  async stepUp(payload?: { maxAge?: number }): Promise<void> {
+    throw Error(
+      `FronteggNative.stepUp ${JSON.stringify(payload)} not implemented in web`,
+    );
+  }
+
+  async isSteppedUp(payload?: {
+    maxAge?: number;
+  }): Promise<{ isSteppedUp: boolean }> {
+    throw Error(
+      `FronteggNative.isSteppedUp ${JSON.stringify(
+        payload,
+      )} not implemented in web`,
+    );
+  }
 }

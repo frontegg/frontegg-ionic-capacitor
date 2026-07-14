@@ -316,4 +316,22 @@ export class FronteggService {
   public openAdminPortal(): Promise<void> {
     return FronteggNative.openAdminPortal();
   }
+
+  /**
+   * Start a step-up (re-)authentication. Resolves when step-up completes.
+   * @param maxAge Optional freshness window in seconds (honored on iOS; see docs for the
+   * Android caveat).
+   */
+  public stepUp(maxAge?: number): Promise<void> {
+    return FronteggNative.stepUp({ maxAge });
+  }
+
+  /**
+   * Whether the current session is already stepped up.
+   * @param maxAge Optional freshness window in seconds.
+   */
+  public async isSteppedUp(maxAge?: number): Promise<boolean> {
+    const { isSteppedUp } = await FronteggNative.isSteppedUp({ maxAge });
+    return isSteppedUp;
+  }
 }

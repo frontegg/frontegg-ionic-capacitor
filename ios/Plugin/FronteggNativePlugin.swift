@@ -324,6 +324,27 @@ public class FronteggNativePlugin: CAPPlugin {
         }
     }
 
+    @objc func isSteppedUp(_ call: CAPPluginCall) {
+        // `maxAge` is optional and expressed in seconds (TimeInterval); nil uses the SDK default.
+        let maxAge = call.getDouble("maxAge")
+        call.resolve(["isSteppedUp": fronteggApp.auth.isSteppedUp(maxAge: maxAge)])
+    }
+
+    @objc func stepUp(_ call: CAPPluginCall) {
+        let maxAge = call.getDouble("maxAge")
+        let completion: FronteggAuth.CompletionHandler = { result in
+            switch result {
+            case .success:
+                call.resolve()
+            case .failure(let error):
+                call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+            }
+        }
+        Task {
+            await self.fronteggApp.auth.stepUp(maxAge: maxAge, completion)
+        }
+    }
+
     private static func topViewController() -> UIViewController? {
         let keyWindow = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
