@@ -19,7 +19,7 @@ def capacitor_pods
 end
 
 target 'App' do
-  pod 'FronteggSwift', '1.3.10'
+  pod 'FronteggSwift', '1.3.11'
   capacitor_pods
   # Add your Pods here
 end
