@@ -238,6 +238,9 @@ public class FronteggNativePlugin: CAPPlugin {
         }
 
         fronteggApp.initWithRegion(regionKey: regionKey)
+        // FR-25945: the JS promise from initWithRegion hung forever on iOS because we never
+        // resolved the call (Android already resolves). Resolve so await-based region flows proceed.
+        call.resolve()
     }
 
     @objc func refreshToken(_ call: CAPPluginCall) {
