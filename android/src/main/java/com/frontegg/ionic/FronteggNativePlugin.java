@@ -84,7 +84,10 @@ public class FronteggNativePlugin extends Plugin {
             }
 
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            // FR-25948: don't throw — a RuntimeException here hard-kills the app on a config error.
+            // Log and abort initialization; JS calls surface the error instead of a crash.
+            Log.e("FronteggNative", "Failed to parse Frontegg regions config", e);
+            return;
         }
 
         Class<?> mainActivityClass = resolveMainActivityClass();
@@ -114,7 +117,9 @@ public class FronteggNativePlugin extends Plugin {
             }
 
             if (baseUrl == null || clientId == null) {
-                throw new RuntimeException("Missing required config parameters: baseUrl, clientId");
+                // FR-25948: don't throw — log and abort initialization instead of crashing the app.
+                Log.e("FronteggNative", "Missing required config parameters: baseUrl, clientId");
+                return;
             }
             if (baseUrl.startsWith("https://")) {
                 baseUrl = baseUrl.substring(baseUrl.indexOf("://") + 3);

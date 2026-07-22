@@ -49,8 +49,10 @@ public class FronteggNativePlugin: CAPPlugin {
             }
 
             if(regions.isEmpty){
+                // FR-25948: don't exit(1) — hard-killing the app on misconfiguration is worse than
+                // leaving the plugin uninitialized. Log and return; JS calls surface the error.
                 print("Frontegg Error: Missing regions configurations")
-                exit(1)
+                return
             }
             fronteggApp.manualInitRegions(regions: regions,
                                           handleLoginWithSocialLogin: handleLoginWithSocialLogin,
@@ -76,8 +78,9 @@ public class FronteggNativePlugin: CAPPlugin {
                                        handleLoginWithSocialLogin: handleLoginWithSocialLogin,
                                        handleLoginWithSSO: handleLoginWithSSO)
             }else {
+                // FR-25948: don't exit(1) — log and return instead of terminating the process.
                 print("Frontegg Error: Missing baseUrl or clientId in project configurations")
-                exit(1)
+                return
             }
         }
 
