@@ -261,8 +261,8 @@ export class FronteggService {
     return FronteggNative.directLoginAction({ type, data, ephemeralSession });
   }
 
-  public logout(): void {
-    FronteggNative.logout();
+  public logout(): Promise<void> {
+    return FronteggNative.logout();
   }
 
   public getConstants(): Promise<FronteggConstants> {

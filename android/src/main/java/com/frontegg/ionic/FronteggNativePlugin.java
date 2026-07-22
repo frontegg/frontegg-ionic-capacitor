@@ -220,7 +220,13 @@ public class FronteggNativePlugin extends Plugin {
     public void login(PluginCall call) {
         String loginHint = call.getString("loginHint");
         FronteggAppKt.getFronteggAuth(this.getContext()).login(this.getActivity(), loginHint != null ? loginHint : "", null, (Exception e) -> {
-            call.resolve();
+            // FR-25947: previously ignored the Exception and always resolved, so a cancelled/failed
+            // login looked like success. Reject on error.
+            if (e != null) {
+                call.reject(e.getMessage() != null ? e.getMessage() : "Login failed", e);
+            } else {
+                call.resolve();
+            }
             return Unit.INSTANCE;
         });
     }
@@ -235,7 +241,12 @@ public class FronteggNativePlugin extends Plugin {
             return;
         }
         FronteggAppKt.getFronteggAuth(this.getContext()).directLoginAction(this.getActivity(), type, data, (Exception e) -> {
-            call.resolve();
+            // FR-25947: reject on error instead of always resolving.
+            if (e != null) {
+                call.reject(e.getMessage() != null ? e.getMessage() : "Direct login failed", e);
+            } else {
+                call.resolve();
+            }
             return Unit.INSTANCE;
         });
     }

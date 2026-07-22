@@ -166,10 +166,10 @@ export interface FronteggNativePlugin {
   }): Promise<boolean>;
 
   /**
-   * Logs out the current user.
-   * This method does not return a promise, and the logout process is performed asynchronously.
+   * Logs out the current user. Resolves once the native logout completes, so callers can
+   * `await logout()` before navigating.
    */
-  logout(): void;
+  logout(): Promise<void>;
 
   /**
    * Switches the current tenant in the application.
