@@ -286,14 +286,13 @@ public class FronteggNativePlugin extends Plugin {
         executor.submit(() -> {
             Handler handler = new Handler(Looper.getMainLooper());
             FronteggAuth fronteggAuth = FronteggAppKt.getFronteggAuth(this.getContext());
-            if (!fronteggAuth.refreshTokenIfNeeded()) {
-                fronteggAuth.logout(() -> {
-                    handler.post(call::resolve);
-                    return null;
-                });
-            } else {
-                handler.post(call::resolve);
-            }
+            // FR-25946: previously a failed refresh (e.g. a transient network blip during an
+            // app-initiated refreshToken()) logged the user out — destructive and divergent from
+            // iOS. Resolve { success } instead and leave the session intact, matching iOS.
+            boolean success = fronteggAuth.refreshTokenIfNeeded();
+            JSObject result = new JSObject();
+            result.put("success", success);
+            handler.post(() -> call.resolve(result));
         });
     }
 
