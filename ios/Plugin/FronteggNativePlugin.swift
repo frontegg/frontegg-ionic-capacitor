@@ -185,11 +185,18 @@ public class FronteggNativePlugin: CAPPlugin {
     @objc func login(_ call: CAPPluginCall) {
         let loginHint = call.options["loginHint"] as? String
         DispatchQueue.main.sync {
-            fronteggApp.auth.login({ _ in
-                call.resolve()
+            // FR-25947: previously `{ _ in call.resolve() }` swallowed the result, so a
+            // cancelled/failed login resolved as success. Reject on failure.
+            fronteggApp.auth.login({ result in
+                switch result {
+                case .success(_):
+                    call.resolve()
+                case .failure(let error):
+                    call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+                }
             }, loginHint: loginHint)
         }
-        
+
     }
 
 
@@ -206,18 +213,27 @@ public class FronteggNativePlugin: CAPPlugin {
         let ephemeralSession = call.getBool("ephemeralSession", true)
 
         DispatchQueue.main.sync {
-            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data, ephemeralSession: ephemeralSession) { _ in
-                call.resolve()
+            // FR-25947: reject on failure instead of always resolving.
+            fronteggApp.auth.directLoginAction(window: nil, type: type, data: data, ephemeralSession: ephemeralSession) { result in
+                switch result {
+                case .success(_):
+                    call.resolve()
+                case .failure(let error):
+                    call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+                }
             }
         }
 
     }
 
     @objc func logout(_ call: CAPPluginCall) {
+        // FR-25947: logout previously resolved immediately without waiting for the SDK. Pass the
+        // completion and resolve when it finishes, so JS callers can await logout before navigating.
         DispatchQueue.main.sync {
-            fronteggApp.auth.logout()
+            fronteggApp.auth.logout { _ in
+                call.resolve()
+            }
         }
-        call.resolve()
     }
 
     @objc func switchTenant(_ call: CAPPluginCall) {
@@ -226,8 +242,14 @@ public class FronteggNativePlugin: CAPPlugin {
             return
         }
 
-        fronteggApp.auth.switchTenant(tenantId: tenantId) { _ in
-            call.resolve()
+        // FR-25947: reject on failure instead of always resolving.
+        fronteggApp.auth.switchTenant(tenantId: tenantId) { result in
+            switch result {
+            case .success(_):
+                call.resolve()
+            case .failure(let error):
+                call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+            }
         }
     }
 
