@@ -1,55 +1,130 @@
-# Frontegg Ionic SDK
-![Frontegg_Ionic_SDK](/images/frontegg-ionic.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/frontegg/frontegg-ionic-capacitor/master/images/frontegg-ionic.png" alt="Frontegg Ionic Capacitor SDK" width="640" />
+</p>
 
-Welcome to the official **Frontegg Ionic SDK** — your all-in-one solution for
-integrating authentication and user management into your Ionic mobile
-app. [Frontegg](https://frontegg.com/) is a self-served user management platform, built for modern
-SaaS applications. Easily implement authentication, SSO, RBAC, multi-tenancy, and more — all from a
-single SDK.
+<h1 align="center">Frontegg Ionic Capacitor SDK</h1>
 
-## 📚 Documentation
+<p align="center">
+  <strong>Authentication and user management for your Ionic app — one package, both platforms.</strong>
+</p>
 
-This repository includes:
-
-- A [Get Started](https://ionic-capacitor-guide.frontegg.com/#/getting-started) guide for quick integration
-- A [Setup Guide](https://ionic-capacitor-guide.frontegg.com/#/setup) with detailed setup instructions
-- [Usage Examples](https://ionic-capacitor-guide.frontegg.com/#/usage) with common implementation patterns
-- [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) for complex integration scenarios
-- A [Embedded](https://github.com/frontegg/frontegg-ionic-capacitor/tree/master/example) example projects to help you get started quickly
-
-For full documentation, visit the Frontegg Developer Portal:  
-🔗 [https://developers.frontegg.com](https://developers.frontegg.com)
+<p align="center">
+  <a href="https://www.npmjs.com/package/@frontegg/ionic-capacitor"><img src="https://img.shields.io/npm/v/@frontegg/ionic-capacitor?label=npm&color=6c47ff" alt="npm version" /></a>
+  <img src="https://img.shields.io/badge/iOS-14%2B-lightgrey" alt="iOS 14+" />
+  <img src="https://img.shields.io/badge/Android-API%2026%2B-3ddc84" alt="Android API 26+" />
+  <img src="https://img.shields.io/badge/Capacitor-ready-119eff" alt="Capacitor" />
+  <a href="https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/LICENSE"><img src="https://img.shields.io/github/license/frontegg/frontegg-ionic-capacitor?color=blue" alt="Licence" /></a>
+</p>
 
 ---
 
-## 🧩 Entitlements & Admin Portal
+[Frontegg](https://frontegg.com/) is a self-served user management platform for modern SaaS
+applications. Drop this SDK in and your app gets a production login screen, a live session, and a
+user object — without you writing an auth flow or touching a token.
 
-The wrapper bridges two native capabilities into your Ionic app:
-
-- **Entitlements** — gate features and permissions on-device with `loadEntitlements()`, `getFeatureEntitlement({ key })`, and `getPermissionEntitlement({ key })` (each resolves to `{ isEntitled, justification }`). See the [Entitlements guide](https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/docs/usage.md#entitlements).
-- **Admin Portal** — open the embedded Frontegg Admin Portal for authenticated users with `openAdminPortal()`. It opens through the native iOS/Android token bridge, so users aren't prompted to log in again. See the [Admin Portal guide](https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/docs/advanced.md#admin-portal-beta).
-
----
-
-## 🔐 Native SDK versions
-
-The Ionic Capacitor wrapper depends on the underlying native SDKs:
-
-- On **Android**, the plugin and example app use `com.frontegg.sdk:android:1.3.35`.
-- On **iOS**, the plugin depends on `FronteggSwift` **1.3.11** via CocoaPods.
-
-After upgrading, run `pod install` in your iOS project and rebuild both platforms.
+| | |
+| --- | --- |
+| **Native login on both platforms** | Frontegg's login box through Capacitor, backed by the native iOS and Android SDKs |
+| **Every method your tenants need** | Email, social, SSO, magic link, passkeys, MFA and step-up |
+| **Sessions that stay alive** | Tokens refresh in the background |
+| **Built for multi-tenant SaaS** | Multi-tenancy, RBAC, entitlements and multi-region support |
 
 ---
 
-## 🧑‍💻 Getting Started with Frontegg
+## Install
 
-Don't have a Frontegg account yet?  
-Sign up here → [https://portal.us.frontegg.com/signup](https://portal.us.frontegg.com/signup)
+If your Ionic project does not use Capacitor yet:
 
----
+```bash
+ionic integrations enable capacitor
+```
 
-## 💬 Support
+Then add the SDK:
 
-Need help? Our team is here for you:  
-[https://support.frontegg.com/frontegg/directories](https://support.frontegg.com/frontegg/directories)
+```bash
+npm install @frontegg/ionic-capacitor
+```
+
+> Requires **iOS 14+** and **Android API 26+**.
+
+## Quick start
+
+**1 · Allow the redirect URLs.** In the Frontegg Portal, under **[ENVIRONMENT] → Authentication →
+Login method**, turn hosted login on and add one set per platform:
+
+```
+# iOS
+{{IOS_BUNDLE_IDENTIFIER}}://{{FRONTEGG_BASE_URL}}/ios/oauth/callback
+
+# Android
+{{ANDROID_PACKAGE_NAME}}://{{FRONTEGG_BASE_URL}}/android/oauth/callback
+https://{{FRONTEGG_BASE_URL}}/oauth/account/redirect/android/{{ANDROID_PACKAGE_NAME}}
+```
+
+**2 · Configure the native projects.** iOS reads a `Frontegg.plist`; Android takes its domain and
+client ID from `build.gradle`. Both are covered step by step in the
+[Get Started guide](https://ionic-capacitor-guide.frontegg.com/#/getting-started) — this is the one
+part that is not TypeScript, and it differs per platform.
+
+**3 · Provide the service** in `src/app/app.module.ts`.
+
+```typescript
+import { FronteggService } from '@frontegg/ionic-capacitor';
+
+@NgModule({
+  // ...
+  providers: [{
+    provide: 'Frontegg',
+    useValue: new FronteggService(),
+  }],
+})
+export class AppModule {}
+```
+
+**4 · Use it** — read state, or start a login.
+
+```typescript
+import { Inject, Injectable } from '@angular/core';
+import { FronteggService } from '@frontegg/ionic-capacitor';
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  constructor(@Inject('Frontegg') private frontegg: FronteggService) {}
+
+  async loginIfNeeded(): Promise<void> {
+    const { isAuthenticated } = this.frontegg.getState();
+    if (!isAuthenticated) {
+      await this.frontegg.login();
+    }
+  }
+}
+```
+
+The [Usage guide](https://ionic-capacitor-guide.frontegg.com/#/usage) builds this into a full route
+guard.
+
+## Documentation
+
+| Guide | What it covers |
+| --- | --- |
+| [Get Started](https://ionic-capacitor-guide.frontegg.com/#/getting-started) | Requirements, environment prep, iOS and Android setup |
+| [Setup](https://ionic-capacitor-guide.frontegg.com/#/setup) | Detailed configuration |
+| [Usage Examples](https://ionic-capacitor-guide.frontegg.com/#/usage) | Providing the service, route guards, login flows |
+| [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) | Complex integration scenarios |
+
+Full platform documentation lives at [developers.frontegg.com](https://developers.frontegg.com).
+
+## Example app
+
+A complete integration you can run:
+[example](https://github.com/frontegg/frontegg-ionic-capacitor/tree/master/example).
+
+## Support
+
+No Frontegg account yet? [Sign up free](https://portal.us.frontegg.com/signup).
+
+Questions, or something broken? Reach the team at
+[support.frontegg.com](https://support.frontegg.com/frontegg/directories) or
+[open an issue](https://github.com/frontegg/frontegg-ionic-capacitor/issues).
+
+Licensed under the [LICENSE](https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/LICENSE) in this repository.
