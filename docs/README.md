@@ -110,6 +110,7 @@ guard.
 | [Get Started](https://ionic-capacitor-guide.frontegg.com/#/getting-started) | Requirements, environment prep, iOS and Android setup |
 | [Setup](https://ionic-capacitor-guide.frontegg.com/#/setup) | Detailed configuration |
 | [Usage Examples](https://ionic-capacitor-guide.frontegg.com/#/usage) | Providing the service, route guards, login flows |
+| [API Reference](https://ionic-capacitor-guide.frontegg.com/#/api) | Every method, observable and type the SDK exports |
 | [Advanced Topics](https://ionic-capacitor-guide.frontegg.com/#/advanced) | Complex integration scenarios |
 
 Full platform documentation lives at [developers.frontegg.com](https://developers.frontegg.com).
