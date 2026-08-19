@@ -53,16 +53,16 @@ Add Capacitor to your Ionic project if it doesn't already exist:
 ionic integrations enable capacitor
 ```
 
-Use your preferred package manager to install the Frontegg React Native library:
+Use your preferred package manager to install the Frontegg Ionic Capacitor library:
 
 npm:
 ```
-npm install -s @frontegg/react-native
+npm install -s @frontegg/ionic-capacitor
 ```
 
 yarn:
 ```
-yarn add @frontegg/react-native
+yarn add @frontegg/ionic-capacitor
 ```
 
 ## Configure your application
