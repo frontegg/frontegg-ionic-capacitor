@@ -82,11 +82,13 @@ To enable domain-based authentication flows, like magic link, password reset and
 
 ```json
 {
-  "appId": "{{ASSOCIATED_DOMAIN}}"
+  "appId": "{{TEAM_ID}}.{{BUNDLE_ID}}"
 }
 ```
 
-Replace `{{ASSOCIATED_DOMAIN}}` with the domain you want to use (e.g., `example.com`).
+Replace `{{TEAM_ID}}` with your Apple Team ID and `{{BUNDLE_ID}}` with your app's bundle identifier — for example, `ABCDE12345.com.example.app`. You can find your Team ID in the [Apple Developer portal](https://developer.apple.com/account) under **Membership details**, or in Xcode under **Signing & Capabilities**.
+
+> **Warning:** `appId` is your app's identifier, **not** a domain. The API accepts any string without validation, but a domain registered here produces an `apple-app-site-association` entry that iOS silently ignores — Universal Links and passkeys will not work, with no error anywhere.
 
 
 ## Setup Android project
