@@ -30,6 +30,7 @@ public class FronteggNativePlugin: CAPPlugin {
 
         let handleLoginWithSocialLogin = config.getBoolean("handleLoginWithSocialLogin", true)
         let handleLoginWithSSO = config.getBoolean("handleLoginWithSSO", false)
+        let useAssetLinks = config.getBoolean("useAssetLinks", false)
 
         if let array = config.getArray("regions", []),
         array.count > 0 {
@@ -57,6 +58,8 @@ public class FronteggNativePlugin: CAPPlugin {
             fronteggApp.manualInitRegions(regions: regions,
                                           handleLoginWithSocialLogin: handleLoginWithSocialLogin,
                                           handleLoginWithSSO: handleLoginWithSSO)
+            // manualInitRegions takes no useAssetLinks parameter, so it is applied directly.
+            fronteggApp.useAssetLinks = useAssetLinks
         } else {
             print("standard initialization")
             // E2E test mode: allow overriding baseUrl via environment variable
@@ -76,7 +79,8 @@ public class FronteggNativePlugin: CAPPlugin {
                                        cliendId: clientId,
                                        applicationId: config.getString("applicationId"),
                                        handleLoginWithSocialLogin: handleLoginWithSocialLogin,
-                                       handleLoginWithSSO: handleLoginWithSSO)
+                                       handleLoginWithSSO: handleLoginWithSSO,
+                                       useAssetLinks: useAssetLinks)
             }else {
                 // FR-25948: don't exit(1) — log and return instead of terminating the process.
                 print("Frontegg Error: Missing baseUrl or clientId in project configurations")

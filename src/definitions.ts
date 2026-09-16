@@ -341,11 +341,16 @@ type FronteggNativeOptions = (
    */
   handleLoginWithSSO?: boolean;
   /**
-   * Weather to use the assetlinks to for oauth/callback, this is the default behavior.
-   * disabling this will cause the plugin to use custom url scheme for oauth/callback.
+   * Whether to route the oauth/callback through the associated domain (App Links on Android,
+   * Universal Links on iOS) instead of a custom url scheme.
    *
-   * NOTE: custom url scheme require user interaction to return to the app.
-   * @default true
+   * The callback becomes
+   * `https://{baseUrl}/oauth/account/redirect/{ios|android}/{bundleId|packageName}`, which must be
+   * registered as a redirect URI in your Frontegg environment.
+   *
+   * NOTE: custom url scheme requires user interaction to return to the app.
+   * NOTE: on iOS this requires 17.4 or later; older versions fall back to the custom url scheme.
+   * @default false
    */
   useAssetLinks?: boolean;
 
