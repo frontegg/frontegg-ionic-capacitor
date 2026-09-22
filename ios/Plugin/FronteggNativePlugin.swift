@@ -10,7 +10,25 @@ import UIKit
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(FronteggNativePlugin)
-public class FronteggNativePlugin: CAPPlugin {
+public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "FronteggNativePlugin"
+    public let jsName = "FronteggNative"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "getAuthState", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getConstants", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "login", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logout", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "switchTenant", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "refreshToken", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "initWithRegion", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "directLoginAction", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "loadEntitlements", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getFeatureEntitlement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getPermissionEntitlement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "openAdminPortal", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "stepUp", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isSteppedUp", returnType: CAPPluginReturnPromise),
+    ]
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
 
