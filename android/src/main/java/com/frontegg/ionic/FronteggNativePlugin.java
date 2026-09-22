@@ -136,6 +136,9 @@ public class FronteggNativePlugin extends Plugin {
                     useDiskCacheWebView,
                     false,
                     false,
+                    10,
+                    false,
+                    true,
                     null
             );
         } else {
@@ -148,6 +151,9 @@ public class FronteggNativePlugin extends Plugin {
                     useDiskCacheWebView,
                     false,
                     false,
+                    10,
+                    false,
+                    true,
                     null
             );
         }
@@ -409,11 +415,8 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void isSteppedUp(PluginCall call) {
-        // NOTE: `maxAge` is honored on iOS but not yet forwarded here — the native
-        // isSteppedUp(Duration?) takes a Kotlin Duration (an inline value class) that cannot be
-        // constructed from Java. Passing null checks ACR/AMR without the freshness window until a
-        // native Java-friendly overload is added.
-        boolean result = FronteggAppKt.getFronteggAuth(this.getContext()).isSteppedUp(null);
+        // NOTE: `maxAge` is honored on iOS but not yet forwarded on Android — see StepUpBridge.
+        boolean result = StepUpBridge.isSteppedUp(FronteggAppKt.getFronteggAuth(this.getContext()));
         JSObject ret = new JSObject();
         ret.put("isSteppedUp", result);
         call.resolve(ret);
@@ -426,7 +429,7 @@ public class FronteggNativePlugin extends Plugin {
             return;
         }
         // `maxAge` not forwarded on Android — see isSteppedUp note above.
-        FronteggAppKt.getFronteggAuth(this.getContext()).stepUp(this.getActivity(), null, (error) -> {
+        StepUpBridge.stepUp(FronteggAppKt.getFronteggAuth(this.getContext()), this.getActivity(), (error) -> {
             if (error != null) {
                 call.reject(error.getMessage());
             } else {
