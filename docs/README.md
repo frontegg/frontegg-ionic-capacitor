@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@frontegg/ionic-capacitor"><img src="https://img.shields.io/npm/v/@frontegg/ionic-capacitor?label=npm&color=6c47ff" alt="npm version" /></a>
-  <img src="https://img.shields.io/badge/iOS-14%2B-lightgrey" alt="iOS 14+" />
+  <img src="https://img.shields.io/badge/iOS-15%2B-lightgrey" alt="iOS 15+" />
   <img src="https://img.shields.io/badge/Android-API%2026%2B-3ddc84" alt="Android API 26+" />
   <img src="https://img.shields.io/badge/Capacitor-ready-119eff" alt="Capacitor" />
   <a href="https://github.com/frontegg/frontegg-ionic-capacitor/blob/master/LICENSE"><img src="https://img.shields.io/github/license/frontegg/frontegg-ionic-capacitor?color=blue" alt="Licence" /></a>
@@ -45,7 +45,7 @@ Then add the SDK:
 npm install @frontegg/ionic-capacitor
 ```
 
-> Requires **iOS 14+** and **Android API 26+**.
+> Requires **Capacitor 8+**, **iOS 15+** and **Android API 26+**.
 
 ## Quick start
 

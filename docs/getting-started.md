@@ -11,7 +11,8 @@ The SDK automatically handles token refresh in the background, ensuring your use
 
 ## Project Requirements
 
-- Minimum iOS deployment version **=> 14**
+- Capacitor **8+**
+- Minimum iOS deployment version **=> 15**
 - Min Android SDK **=> 26**
 
 ## Prepare your Frontegg environment
