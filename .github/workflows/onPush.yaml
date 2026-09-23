@@ -48,11 +48,8 @@ jobs:
         working-directory: example
         run: npx ng lint
 
-  # E2E mock suites. Non-blocking on purpose: they cannot pass until #114 is
-  # fixed, because the example configures regions and the plugin only reads
-  # FRONTEGG_E2E_BASE_URL on the non-region init path, so the app stops on the
-  # native region picker and never renders the Login button. Once #114 lands,
-  # drop continue-on-error so these gate the build.
+  # E2E mock suites. Non-blocking until they have run green on CI; then drop
+  # continue-on-error so these gate the build.
   e2e-ios-mock:
     name: 'E2E | iOS mock suites'
     runs-on: macos-15
@@ -125,5 +122,5 @@ jobs:
           target: google_apis
           arch: x86_64
           working-directory: example/android
-          script: ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.frontegg.demo.MockConnectivityTest,com.frontegg.demo.MockTokenExpiryTest
+          script: ./gradlew :app:connectedDebugAndroidTest -PfronteggEmbeddedLogin -Pandroid.testInstrumentationRunnerArguments.class=com.frontegg.demo.MockConnectivityTest,com.frontegg.demo.MockTokenExpiryTest
   

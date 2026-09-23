@@ -3,6 +3,7 @@ apply plugin: 'org.jetbrains.kotlin.android'
 
 def fronteggDomain = "autheu.davidantoon.me"
 def fronteggClientId = "b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca"
+def useEmbeddedLogin = project.hasProperty("fronteggEmbeddedLogin")
 
 android {
   namespace "com.frontegg.demo"
@@ -23,7 +24,9 @@ android {
     manifestPlaceholders = [
       "package_name"       : applicationId,
       "frontegg_domain"    : fronteggDomain,
-      "frontegg_client_id" : fronteggClientId
+      "frontegg_client_id" : fronteggClientId,
+      "embeddedLoginEnabled": useEmbeddedLogin.toString(),
+      "hostedLoginEnabled"  : (!useEmbeddedLogin).toString()
     ]
   }
 
@@ -73,6 +76,7 @@ dependencies {
   androidTestImplementation "androidx.test:runner:1.5.2"
   androidTestImplementation "androidx.test:rules:1.5.0"
   androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.12.0"
+  androidTestImplementation "com.google.code.gson:gson:2.10.1"
 }
 
 apply from: 'capacitor.build.gradle'

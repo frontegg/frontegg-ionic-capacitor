@@ -36,11 +36,15 @@ class UiTestInstrumentation {
      */
     fun openApp(
         activityName: String = "com.frontegg.demo.MainActivity",
-        applicationPackage: String = "com.frontegg.demo"
+        applicationPackage: String = "com.frontegg.demo",
+        clearTask: Boolean = false
     ) {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.setClassName(targetContext, activityName)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (clearTask) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
         targetContext.startActivity(intent)
 
         uiDevice.wait(Until.hasObject(By.pkg(applicationPackage).depth(0)), 3000)
