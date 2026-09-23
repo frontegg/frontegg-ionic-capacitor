@@ -102,19 +102,33 @@ public class FronteggNativePlugin extends Plugin {
         }
         boolean useDiskCacheWebView = this.getConfig().getBoolean("useDiskCacheWebView", false);
 
-        if (regions.isEmpty()) {
+        // Instrumented tests run in the app process and point the SDK at a local mock server this way.
+        String e2eBaseUrl = System.getProperty("FRONTEGG_E2E_BASE_URL");
+        String e2eClientId = System.getProperty("FRONTEGG_E2E_CLIENT_ID");
+
+        if (e2eBaseUrl != null && e2eClientId != null) {
+            Log.i("FronteggNative", "E2E override: using mock server at " + e2eBaseUrl);
+            FronteggApp.Companion.initializeEmbeddedForLocalE2E(
+                    this.getContext(),
+                    e2eBaseUrl,
+                    e2eClientId,
+                    null,
+                    false,
+                    false,
+                    mainActivityClass,
+                    null,
+                    useDiskCacheWebView,
+                    false,
+                    false,
+                    false,
+                    true,
+                    null
+            );
+        } else if (regions.isEmpty()) {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
             String applicationId = config.getString("applicationId");
-
-            // Allow E2E tests to override the base URL via system property.
-            // Tests set this via: System.setProperty("FRONTEGG_E2E_BASE_URL", url)
-            String e2eBaseUrl = System.getProperty("FRONTEGG_E2E_BASE_URL");
-            if (e2eBaseUrl != null && !e2eBaseUrl.isEmpty()) {
-                Log.i("FronteggNative", "E2E override: using base URL " + e2eBaseUrl);
-                baseUrl = e2eBaseUrl;
-            }
 
             if (baseUrl == null || clientId == null) {
                 // FR-25948: don't throw — log and abort initialization instead of crashing the app.
