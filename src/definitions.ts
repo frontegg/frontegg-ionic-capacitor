@@ -333,16 +333,17 @@ type FronteggNativeOptions = (FronteggNativeStandardOptions | FronteggNativeRegi
    * disabling this will cause the plugin to use custom url scheme for oauth/callback.
    *
    * NOTE: custom url scheme require user interaction to return to the app.
-   * @default true
+   * @default false
    */
   useAssetLinks?: boolean;
 
   /**
-   * Weather to To enable social login via Chrome Custom Tabs, set the useChromeCustomTabs flag to true.
+   * Android only. Weather to To enable social login via Chrome Custom Tabs, set the
+   * useChromeCustomTabs flag to true.
    * By default, the SDK uses the Chrome browser for social login.
    *
    * NOTE: custom url scheme require user interaction to return to the app.
-   * @default true
+   * @default false
    */
   useChromeCustomTabs?: boolean;
 
