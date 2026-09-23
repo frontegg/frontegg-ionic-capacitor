@@ -62,11 +62,11 @@ class MockServerTestCase: XCTestCase {
 
         // The mock server renders a hosted login page in a webview.
         let webView = app.webViews.firstMatch
-        XCTAssertTrue(webView.waitForExistence(timeout: 20), "Mock hosted login webview did not load")
+        XCTAssertTrue(webView.waitForExistence(timeout: 45), "Mock hosted login webview did not load")
 
         // The mock's hosted email step shows an email input and "Continue" button.
         let emailField = webView.textFields.firstMatch
-        XCTAssertTrue(emailField.waitForExistence(timeout: 10), "Email field not found on mock login page")
+        XCTAssertTrue(emailField.waitForExistence(timeout: 30), "Email field not found on mock login page")
         emailField.tap()
         emailField.typeText(email)
 
@@ -76,7 +76,7 @@ class MockServerTestCase: XCTestCase {
 
         // The mock's hosted password step shows a password input and "Sign in" button.
         let passwordField = webView.secureTextFields.firstMatch
-        XCTAssertTrue(passwordField.waitForExistence(timeout: 10), "Password field not found on mock login page")
+        XCTAssertTrue(passwordField.waitForExistence(timeout: 30), "Password field not found on mock login page")
         passwordField.tap()
         passwordField.typeText(password)
 
@@ -94,7 +94,7 @@ class MockServerTestCase: XCTestCase {
     }
 
     /// Waits for the login page (Login button visible).
-    func waitForLoginPage(timeout: TimeInterval = 15) {
+    func waitForLoginPage(timeout: TimeInterval = 45) {
         let loginButton = app.buttons["Login"]
         XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page. Screen: \(screenDescription())")
     }

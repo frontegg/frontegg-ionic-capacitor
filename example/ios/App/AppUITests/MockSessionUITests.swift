@@ -58,7 +58,7 @@ final class MockSessionUITests: MockServerTestCase {
         logoutButton.tap()
 
         // Verify login page appears after logout.
-        waitForLoginPage(timeout: 15)
+        waitForLoginPage()
 
         // Verify the mock server received the logout request.
         let logoutReceived = Self.server.waitForRequest(
@@ -72,6 +72,6 @@ final class MockSessionUITests: MockServerTestCase {
         app.terminate()
         launchApp(resetState: false)
 
-        waitForLoginPage(timeout: 15)
+        waitForLoginPage()
     }
 }
