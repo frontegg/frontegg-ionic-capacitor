@@ -76,9 +76,10 @@ jobs:
           # pinning a model that a future image may drop.
           DEVICE=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9][^(]*' | sed 's/ *$//')
           echo "Using simulator: $DEVICE"
+          # Sign ad hoc: an unsigned app has no entitlements, so Keychain writes fail and sessions do not survive a relaunch.
           xcodebuild -project ios/App/App.xcodeproj -scheme App \
             -destination "platform=iOS Simulator,name=$DEVICE" \
-            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER= \
             -only-testing:AppUITests/MockSessionUITests \
             -only-testing:AppUITests/MockTokenExpiryUITests \
             -only-testing:AppUITests/MockConnectivityUITests \
