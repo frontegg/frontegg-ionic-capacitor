@@ -47,7 +47,7 @@ class MockServerTestCase: XCTestCase {
     func loginViaHostedMock(email: String = "test@example.com", password: String = "Testpassword1!") {
         // Tap the local Login button.
         let loginButton = app.buttons["Login"]
-        XCTAssertTrue(loginButton.waitForExistence(timeout: 15), "Login button did not appear")
+        XCTAssertTrue(loginButton.waitForExistence(timeout: 30), "Login button did not appear. Screen: \(app.debugDescription)")
         loginButton.tap()
 
         // Handle ASWebAuthenticationSession consent alert.
@@ -90,13 +90,13 @@ class MockServerTestCase: XCTestCase {
     /// Waits for the authenticated state (Logout button visible).
     func waitForAuthenticated(timeout: TimeInterval = 30) {
         let logoutButton = findLogoutButton()
-        XCTAssertTrue(logoutButton.waitForExistence(timeout: timeout), "Did not reach authenticated state")
+        XCTAssertTrue(logoutButton.waitForExistence(timeout: timeout), "Did not reach authenticated state. Screen: \(app.debugDescription)")
     }
 
     /// Waits for the login page (Login button visible).
     func waitForLoginPage(timeout: TimeInterval = 15) {
         let loginButton = app.buttons["Login"]
-        XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page")
+        XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page. Screen: \(app.debugDescription)")
     }
 
     /// Finds the Logout button using a case-insensitive label match.
