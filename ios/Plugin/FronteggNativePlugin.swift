@@ -51,7 +51,13 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
         // Defaults to the native SDK default, matching the Android side of this plugin.
         let useAssetLinks = config.getBoolean("useAssetLinks", false)
 
-        if let array = config.getArray("regions", []),
+        // E2E test mode: allow overriding baseUrl via environment variable
+        // so UI tests can point the SDK at a local mock server.
+        let e2eBaseUrl = ProcessInfo.processInfo.environment["FRONTEGG_E2E_BASE_URL"]
+        let e2eClientId = ProcessInfo.processInfo.environment["FRONTEGG_E2E_CLIENT_ID"]
+
+        if e2eBaseUrl == nil,
+        let array = config.getArray("regions", []),
         array.count > 0 {
             print("region initialization")
             var regions:[RegionConfig] = []
@@ -85,11 +91,6 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
             fronteggApp.useAssetLinks = useAssetLinks
         } else {
             print("standard initialization")
-            // E2E test mode: allow overriding baseUrl via environment variable
-            // so UI tests can point the SDK at a local mock server.
-            let e2eBaseUrl = ProcessInfo.processInfo.environment["FRONTEGG_E2E_BASE_URL"]
-            let e2eClientId = ProcessInfo.processInfo.environment["FRONTEGG_E2E_CLIENT_ID"]
-
             let resolvedBaseUrl = e2eBaseUrl ?? config.getString("baseUrl")
             let resolvedClientId = e2eClientId ?? config.getString("clientId")
 
