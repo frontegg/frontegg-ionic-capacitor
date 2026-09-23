@@ -48,25 +48,22 @@ import FronteggSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    private var launchURLObserver: NSObjectProtocol?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = scene as? UIWindowScene else { return }
 
-        window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = CAPBridgeViewController()
-        window?.makeKeyAndVisible()
-
-        /*
-         * When a link launches a terminated app, the URL arrives here instead of through the
-         * callbacks below, so it has to be handled in both places.
-         */
-        for context in connectionOptions.urlContexts where handleFronteggURL(context.url) {
-            break
+        // With UISceneStoryboardFile set, UIKit has already created the window and its bridge.
+        if window == nil {
+            window = UIWindow(windowScene: windowScene)
+            window?.rootViewController = CAPBridgeViewController()
+            window?.makeKeyAndVisible()
         }
-        for userActivity in connectionOptions.userActivities {
-            if let url = userActivity.webpageURL, handleFronteggURL(url) {
-                break
-            }
+
+        // A link that launches the app arrives here, before the plugin has initialized Frontegg.
+        let launchURLs = connectionOptions.urlContexts.map(\.url) + connectionOptions.userActivities.compactMap(\.webpageURL)
+        if !launchURLs.isEmpty {
+            handleFronteggURLsOnceCapacitorLoads(launchURLs)
         }
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
@@ -91,6 +88,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
+    }
+
+    /// Waits for the first bridge appearance, by which time the plugin has initialized Frontegg.
+    private func handleFronteggURLsOnceCapacitorLoads(_ urls: [URL]) {
+        launchURLObserver = NotificationCenter.default.addObserver(forName: .capacitorViewDidAppear, object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
+            if let observer = self.launchURLObserver {
+                NotificationCenter.default.removeObserver(observer)
+                self.launchURLObserver = nil
+            }
+            for url in urls where self.handleFronteggURL(url) {
+                break
+            }
+        }
     }
 
     /// Passes the URL to the SDK, which also recognizes its custom-scheme callback. Returns true when it was a Frontegg one.

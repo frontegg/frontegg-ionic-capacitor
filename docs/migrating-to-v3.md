@@ -71,7 +71,13 @@ Move that code into `SceneDelegate.swift` as shown in
 handlers from `AppDelegate.swift`.
 
 Make sure you also handle the launch URL in `scene(_:willConnectTo:)`. When a link starts a
-terminated app, the URL arrives there rather than through the other callbacks.
+terminated app, the URL arrives there rather than through the other callbacks, and before the
+plugin has initialized Frontegg, so hold it until the first `capacitorViewDidAppear` as the setup
+snippet does.
+
+If your `Info.plist` scene configuration sets `UISceneStoryboardFile`, UIKit already creates the
+window and its `CAPBridgeViewController`. Only create one in `SceneDelegate` when `window` is still
+`nil`, or the app starts a second Capacitor bridge.
 
 ## 4. Check two configuration defaults
 
