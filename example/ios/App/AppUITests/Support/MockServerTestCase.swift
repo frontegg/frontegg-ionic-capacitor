@@ -101,8 +101,11 @@ class MockServerTestCase: XCTestCase {
 
     /// Flattens the current accessibility tree into one line per element, for failure messages.
     func screenDescription() -> String {
-        guard let snapshot = try? app.snapshot() else {
-            return "unavailable"
+        let snapshot: XCUIElementSnapshot
+        do {
+            snapshot = try app.snapshot()
+        } catch {
+            return "unavailable (app state \(app.state.rawValue)): \(error.localizedDescription)"
         }
         var lines: [String] = []
         var pending: [XCUIElementSnapshot] = [snapshot]
