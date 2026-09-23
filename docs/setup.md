@@ -93,11 +93,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
     }
 
-    /// Passes Frontegg callback URLs to the SDK. Returns true when the URL was a Frontegg one.
+    /// Passes the URL to the SDK, which also recognizes its custom-scheme callback. Returns true when it was a Frontegg one.
     private func handleFronteggURL(_ url: URL) -> Bool {
-        guard url.absoluteString.hasPrefix(FronteggAuth.shared.baseUrl) else {
-            return false
-        }
         return FronteggAuth.shared.handleOpenUrl(url)
     }
 }
