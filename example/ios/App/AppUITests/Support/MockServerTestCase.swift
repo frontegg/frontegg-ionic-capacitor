@@ -47,7 +47,7 @@ class MockServerTestCase: XCTestCase {
     func loginViaHostedMock(email: String = "test@example.com", password: String = "Testpassword1!") {
         // Tap the local Login button.
         let loginButton = app.buttons["Login"]
-        XCTAssertTrue(loginButton.waitForExistence(timeout: 30), "Login button did not appear. Screen: \(app.debugDescription)")
+        XCTAssertTrue(loginButton.waitForExistence(timeout: 30), "Login button did not appear. Screen: \(screenDescription())")
         loginButton.tap()
 
         // Handle ASWebAuthenticationSession consent alert.
@@ -90,13 +90,29 @@ class MockServerTestCase: XCTestCase {
     /// Waits for the authenticated state (Logout button visible).
     func waitForAuthenticated(timeout: TimeInterval = 30) {
         let logoutButton = findLogoutButton()
-        XCTAssertTrue(logoutButton.waitForExistence(timeout: timeout), "Did not reach authenticated state. Screen: \(app.debugDescription)")
+        XCTAssertTrue(logoutButton.waitForExistence(timeout: timeout), "Did not reach authenticated state. Screen: \(screenDescription())")
     }
 
     /// Waits for the login page (Login button visible).
     func waitForLoginPage(timeout: TimeInterval = 15) {
         let loginButton = app.buttons["Login"]
-        XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page. Screen: \(app.debugDescription)")
+        XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page. Screen: \(screenDescription())")
+    }
+
+    /// Flattens the current accessibility tree into one line per element, for failure messages.
+    func screenDescription() -> String {
+        guard let snapshot = try? app.snapshot() else {
+            return "unavailable"
+        }
+        var lines: [String] = []
+        var pending: [XCUIElementSnapshot] = [snapshot]
+        while let element = pending.popLast() {
+            if !element.label.isEmpty || !element.identifier.isEmpty {
+                lines.append("\(element.elementType.rawValue) id=\(element.identifier) label=\(element.label)")
+            }
+            pending.append(contentsOf: element.children.reversed())
+        }
+        return lines.isEmpty ? "no labeled elements" : lines.joined(separator: " | ")
     }
 
     /// Finds the Logout button using a case-insensitive label match.
