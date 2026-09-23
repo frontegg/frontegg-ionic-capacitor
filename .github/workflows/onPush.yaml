@@ -122,5 +122,6 @@ jobs:
           target: google_apis
           arch: x86_64
           working-directory: example/android
-          script: ./gradlew :app:connectedDebugAndroidTest -PfronteggEmbeddedLogin -Pandroid.testInstrumentationRunnerArguments.class=com.frontegg.demo.MockConnectivityTest,com.frontegg.demo.MockTokenExpiryTest
+          # On failure, print the plugin and SDK log lines that show which server each init and page load used.
+          script: ./gradlew :app:connectedDebugAndroidTest -PfronteggEmbeddedLogin -Pandroid.testInstrumentationRunnerArguments.class=com.frontegg.demo.MockConnectivityTest,com.frontegg.demo.MockTokenExpiryTest || (adb logcat -d | grep -E "FronteggNative|FronteggWebClient|FronteggAuth|RefreshToken|Capacitor" | tail -n 400; exit 1)
   
