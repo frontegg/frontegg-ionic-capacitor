@@ -5,23 +5,23 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Refresh resilience against transient network failures, using connection drops on the mock server.
+ * Refresh resilience against transient failures injected by the mock server.
  */
 class MockConnectivityTest : MockServerTestCase() {
 
     @Test
-    fun refresh_recovers_from_a_dropped_connection() {
+    fun refresh_recovers_from_a_transient_server_error() {
         launchApp()
         loginViaHostedMock()
         waitForAuthenticated()
         val requestsBeforeRefresh = tokenRequestCount()
 
-        mock.queueConnectionDrops("POST", TOKEN_PATH, count = 1)
+        mock.enqueue("POST", TOKEN_PATH, listOf(mapOf("status" to 503, "body" to "unavailable")))
         tapButton("Refresh Token")
 
         val retried = mock.waitForRequestCount("POST", TOKEN_PATH, requestsBeforeRefresh + 2, timeoutMs = 30_000)
 
-        assertTrue("Expected the SDK to retry the refresh after the dropped connection", retried)
+        assertTrue("Expected the SDK to retry the refresh after a 503", retried)
         waitForAuthenticated()
     }
 }

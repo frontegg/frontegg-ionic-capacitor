@@ -33,6 +33,8 @@ open class MockServerTestCase {
         check(isEmbeddedLoginEnabled()) {
             "The mock suites need embedded login; build with -PfronteggEmbeddedLogin"
         }
+        // The mock answers HEAD with a body, which breaks the SDK's reused probe connections.
+        System.setProperty(KEEP_ALIVE_PROPERTY, "false")
         mock = LocalMockAuthServer()
         mock.start()
         System.setProperty(E2E_BASE_URL_PROPERTY, mock.urlRoot())
@@ -44,6 +46,7 @@ open class MockServerTestCase {
     fun stopMockServer() {
         System.clearProperty(E2E_BASE_URL_PROPERTY)
         System.clearProperty(E2E_CLIENT_ID_PROPERTY)
+        System.clearProperty(KEEP_ALIVE_PROPERTY)
         mock.shutdown()
     }
 
@@ -130,6 +133,7 @@ open class MockServerTestCase {
 
         private const val E2E_BASE_URL_PROPERTY = "FRONTEGG_E2E_BASE_URL"
         private const val E2E_CLIENT_ID_PROPERTY = "FRONTEGG_E2E_CLIENT_ID"
+        private const val KEEP_ALIVE_PROPERTY = "http.keepAlive"
         private const val EMBEDDED_AUTH_ACTIVITY = "com.frontegg.android.EmbeddedAuthActivity"
 
         const val TOKEN_PATH = "/oauth/token"
