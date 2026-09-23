@@ -21,7 +21,6 @@ let package = Package(
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
                 .product(name: "FronteggSwift", package: "frontegg-ios-swift")
             ],
-            path: "ios/Plugin",
-            exclude: ["FronteggNativePlugin.h", "Info.plist"])
+            path: "ios/Plugin")
     ]
 )
