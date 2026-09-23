@@ -48,12 +48,9 @@ jobs:
         working-directory: example
         run: npx ng lint
 
-  # E2E mock suites. Non-blocking until they have run green on CI; then drop
-  # continue-on-error so these gate the build.
   e2e-ios-mock:
     name: 'E2E | iOS mock suites'
     runs-on: macos-15
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -88,7 +85,6 @@ jobs:
   e2e-android-mock:
     name: 'E2E | Android mock suites'
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
