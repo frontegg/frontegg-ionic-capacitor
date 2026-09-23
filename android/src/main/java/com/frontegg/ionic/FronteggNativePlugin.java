@@ -16,8 +16,6 @@ import com.frontegg.android.FronteggAuth;
 import com.frontegg.android.models.Entitlement;
 import com.frontegg.android.models.User;
 import com.frontegg.android.regions.RegionConfig;
-import com.frontegg.android.services.FronteggInnerStorage;
-import com.frontegg.android.utils.NetworkGate;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -44,7 +42,6 @@ import io.reactivex.rxjava3.disposables.Disposable;
 public class FronteggNativePlugin extends Plugin {
     private Disposable disposable = null;
     private final Debouncer debouncer = new Debouncer(50);  // 200ms delay
-    private static final int E2E_INIT_ATTEMPTS = 3;
 
 
     @Override
@@ -111,7 +108,22 @@ public class FronteggNativePlugin extends Plugin {
 
         if (e2eBaseUrl != null && e2eClientId != null) {
             Log.i("FronteggNative", "E2E override: using mock server at " + e2eBaseUrl);
-            initializeForE2E(e2eBaseUrl, e2eClientId, mainActivityClass, useDiskCacheWebView);
+            FronteggApp.Companion.initializeEmbeddedForLocalE2E(
+                    this.getContext(),
+                    e2eBaseUrl,
+                    e2eClientId,
+                    null,
+                    false,
+                    false,
+                    mainActivityClass,
+                    null,
+                    useDiskCacheWebView,
+                    false,
+                    false,
+                    false,
+                    true,
+                    null
+            );
         } else if (regions.isEmpty()) {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
@@ -179,35 +191,6 @@ public class FronteggNativePlugin extends Plugin {
         });
 
         sendEvent();
-    }
-
-    // A background SDK read during re-init can trigger a default init that overwrites this config.
-    private void initializeForE2E(String baseUrl, String clientId, Class<?> mainActivityClass, boolean useDiskCacheWebView) {
-        FronteggInnerStorage storage = new FronteggInnerStorage();
-        for (int attempt = 1; attempt <= E2E_INIT_ATTEMPTS; attempt++) {
-            FronteggApp.Companion.initializeEmbeddedForLocalE2E(
-                    this.getContext(),
-                    baseUrl,
-                    clientId,
-                    null,
-                    false,
-                    false,
-                    mainActivityClass,
-                    null,
-                    useDiskCacheWebView,
-                    false,
-                    false,
-                    false,
-                    true,
-                    null
-            );
-            if (baseUrl.equals(storage.getBaseUrl())) {
-                NetworkGate.INSTANCE.setFronteggBaseUrl(baseUrl);
-                return;
-            }
-            Log.w("FronteggNative", "E2E init was overwritten by a default SDK initialization, retrying");
-        }
-        Log.e("FronteggNative", "E2E init did not take effect after " + E2E_INIT_ATTEMPTS + " attempts");
     }
 
     @Override
