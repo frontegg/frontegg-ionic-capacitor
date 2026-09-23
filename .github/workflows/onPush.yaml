@@ -29,4 +29,22 @@ jobs:
       - name: Build Package
         run: |
           npm run build
+
+  lint-example:
+    name: 'Lint example app'
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install example dependencies
+        working-directory: example
+        run: npm ci
+
+      - name: Lint example app
+        working-directory: example
+        run: npx ng lint
   

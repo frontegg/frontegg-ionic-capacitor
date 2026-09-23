@@ -6,13 +6,17 @@ ext {
 }
 
 buildscript {
+    // Follow the Kotlin version the host app sets, so the app and this library do not load two
+    // different Kotlin Gradle plugins into the same build.
+    ext.kotlinVersion = project.hasProperty('kotlin_version') ? rootProject.ext.kotlin_version : '2.2.20'
+
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.13.0'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.20'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
@@ -51,7 +55,9 @@ android {
     }
 }
 
-kotlin {
+// Configured on the tasks rather than through the kotlin { } extension, which only grew a
+// compilerOptions block in Kotlin 2.0 and would break apps still on a 1.x Kotlin plugin.
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
     compilerOptions {
         jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
     }

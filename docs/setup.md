@@ -28,47 +28,97 @@ To setup your SwiftUI application to communicate with Frontegg.
 
    This file provides configuration values used by the Frontegg SDK.
 
-3. In the `/ios/App` directory, make sure `CODE_SIGNING_ALLOWED` is enabled in the `Podfile`.
+3. If your app uses CocoaPods, make sure `CODE_SIGNING_ALLOWED` is enabled in the `Podfile` in
+   the `/ios/App` directory. Capacitor 8 apps use Swift Package Manager by default and have no
+   `Podfile`, in which case there is nothing to do here.
 
 ### Handle open app with URL for iOS
 
-To support login via magic link and other authentication methods that require your app to handle incoming URLs, add the following code to your `AppDelegate.swift` file.
+To support login via magic link and other authentication methods that require your app to handle
+incoming URLs, add the following code to your `SceneDelegate.swift` file.
+
+> Since Capacitor 8 the iOS app declares a `UIScene` manifest, and UIKit no longer calls
+> `application(_:open:)` or `application(_:continue:)` on the app delegate. If you are upgrading
+> from an older Capacitor version, move this handling out of `AppDelegate.swift` — left there it
+> silently stops running, and logins that come back through a link never complete.
 
 ```swift
 import UIKit
 import Capacitor
 import FronteggSwift
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
 
-    /*
-     * Called when the app was launched with a url. Feel free to add additional processing here,
-     * but if you want the App API to support tracking app url opens, make sure to keep this call
-     */
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        
-        if(FronteggAuth.shared.handleOpenUrl(url)){
-            return true
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        window = UIWindow(windowScene: windowScene)
+        window?.rootViewController = CAPBridgeViewController()
+        window?.makeKeyAndVisible()
+
+        /*
+         * When a link launches a terminated app, the URL arrives here instead of through the
+         * callbacks below, so it has to be handled in both places.
+         */
+        for context in connectionOptions.urlContexts where handleFronteggURL(context.url) {
+            break
         }
-        
-        return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
-    }
-    
-    /*
-     * Called when the app was launched with an activity, including Universal Links.
-     * Feel free to add additional processing here, but if you want the App API to support
-     * tracking app url opens, make sure to keep this call
-     */
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        
-        if let url = userActivity.webpageURL {
-            if(FronteggAuth.shared.handleOpenUrl(url)){
-                return true
+        for userActivity in connectionOptions.userActivities {
+            if let url = userActivity.webpageURL, handleFronteggURL(url) {
+                break
             }
         }
-        return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
+
+        SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
     }
+
+    /*
+     * Called when the running app is opened with a url. Feel free to add additional processing
+     * here, but if you want the App API to support tracking app url opens, keep the proxy call.
+     */
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for context in URLContexts where handleFronteggURL(context.url) {
+            return
+        }
+        SceneDelegateProxy.shared.scene(scene, openURLContexts: URLContexts)
+    }
+
+    /*
+     * Called when the running app is opened with an activity, including Universal Links.
+     */
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        if let url = userActivity.webpageURL, handleFronteggURL(url) {
+            return
+        }
+        SceneDelegateProxy.shared.scene(scene, continue: userActivity)
+    }
+
+    /// Passes Frontegg callback URLs to the SDK. Returns true when the URL was a Frontegg one.
+    private func handleFronteggURL(_ url: URL) -> Bool {
+        guard url.absoluteString.hasPrefix(FronteggAuth.shared.baseUrl) else {
+            return false
+        }
+        return FronteggAuth.shared.handleOpenUrl(url)
+    }
+}
+```
+
+Your `AppDelegate.swift` still initializes the SDK and points the scene at this delegate:
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    FronteggApp.shared.didFinishLaunchingWithOptions()
+    return true
+}
+
+func application(_ application: UIApplication,
+                 configurationForConnecting connectingSceneSession: UISceneSession,
+                 options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+
+    let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    config.delegateClass = SceneDelegate.self
+    return config
 }
 ```
 
