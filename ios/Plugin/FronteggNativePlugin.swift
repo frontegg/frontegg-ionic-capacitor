@@ -10,7 +10,25 @@ import UIKit
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(FronteggNativePlugin)
-public class FronteggNativePlugin: CAPPlugin {
+public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "FronteggNativePlugin"
+    public let jsName = "FronteggNative"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "getAuthState", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getConstants", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "login", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logout", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "switchTenant", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "refreshToken", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "initWithRegion", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "directLoginAction", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "loadEntitlements", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getFeatureEntitlement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getPermissionEntitlement", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "openAdminPortal", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "stepUp", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "isSteppedUp", returnType: CAPPluginReturnPromise),
+    ]
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
 
@@ -30,8 +48,16 @@ public class FronteggNativePlugin: CAPPlugin {
 
         let handleLoginWithSocialLogin = config.getBoolean("handleLoginWithSocialLogin", true)
         let handleLoginWithSSO = config.getBoolean("handleLoginWithSSO", false)
+        // Defaults to the native SDK default, matching the Android side of this plugin.
+        let useAssetLinks = config.getBoolean("useAssetLinks", false)
 
-        if let array = config.getArray("regions", []),
+        // E2E test mode: allow overriding baseUrl via environment variable
+        // so UI tests can point the SDK at a local mock server.
+        let e2eBaseUrl = ProcessInfo.processInfo.environment["FRONTEGG_E2E_BASE_URL"]
+        let e2eClientId = ProcessInfo.processInfo.environment["FRONTEGG_E2E_CLIENT_ID"]
+
+        if e2eBaseUrl == nil,
+        let array = config.getArray("regions", []),
         array.count > 0 {
             print("region initialization")
             var regions:[RegionConfig] = []
@@ -54,16 +80,17 @@ public class FronteggNativePlugin: CAPPlugin {
                 print("Frontegg Error: Missing regions configurations")
                 return
             }
+            // entitlementsEnabled defaults to false in the native SDK, which makes
+            // loadEntitlements and the entitlement checks this plugin exposes resolve to nothing.
             fronteggApp.manualInitRegions(regions: regions,
                                           handleLoginWithSocialLogin: handleLoginWithSocialLogin,
-                                          handleLoginWithSSO: handleLoginWithSSO)
+                                          handleLoginWithSSO: handleLoginWithSSO,
+                                          entitlementsEnabled: true)
+            // manualInitRegions takes no useAssetLinks argument; the SDK reads this property when
+            // it builds the authorize URL, so setting it after init is enough.
+            fronteggApp.useAssetLinks = useAssetLinks
         } else {
             print("standard initialization")
-            // E2E test mode: allow overriding baseUrl via environment variable
-            // so UI tests can point the SDK at a local mock server.
-            let e2eBaseUrl = ProcessInfo.processInfo.environment["FRONTEGG_E2E_BASE_URL"]
-            let e2eClientId = ProcessInfo.processInfo.environment["FRONTEGG_E2E_CLIENT_ID"]
-
             let resolvedBaseUrl = e2eBaseUrl ?? config.getString("baseUrl")
             let resolvedClientId = e2eClientId ?? config.getString("clientId")
 
@@ -76,7 +103,9 @@ public class FronteggNativePlugin: CAPPlugin {
                                        cliendId: clientId,
                                        applicationId: config.getString("applicationId"),
                                        handleLoginWithSocialLogin: handleLoginWithSocialLogin,
-                                       handleLoginWithSSO: handleLoginWithSSO)
+                                       handleLoginWithSSO: handleLoginWithSSO,
+                                       entitlementsEnabled: true,
+                                       useAssetLinks: useAssetLinks)
             }else {
                 // FR-25948: don't exit(1) — log and return instead of terminating the process.
                 print("Frontegg Error: Missing baseUrl or clientId in project configurations")

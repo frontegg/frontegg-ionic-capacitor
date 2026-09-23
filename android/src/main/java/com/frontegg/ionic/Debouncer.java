@@ -24,4 +24,11 @@ public class Debouncer {
         };
         timer.schedule(task, delayMillis);
     }
+
+    public void cancel() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
+    }
 }

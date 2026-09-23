@@ -3,6 +3,7 @@ apply plugin: 'org.jetbrains.kotlin.android'
 
 def fronteggDomain = "autheu.davidantoon.me"
 def fronteggClientId = "b6adfe4c-d695-4c04-b95f-3ec9fd0c6cca"
+def useEmbeddedLogin = project.hasProperty("fronteggEmbeddedLogin")
 
 android {
   namespace "com.frontegg.demo"
@@ -15,6 +16,8 @@ android {
     versionCode 1
     versionName "1.0"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    // The Frontegg SDK keeps process-wide singletons, so each test gets a fresh process and app data.
+    testInstrumentationRunnerArguments clearPackageData: "true"
 
     aaptOptions {
       ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
@@ -23,7 +26,9 @@ android {
     manifestPlaceholders = [
       "package_name"       : applicationId,
       "frontegg_domain"    : fronteggDomain,
-      "frontegg_client_id" : fronteggClientId
+      "frontegg_client_id" : fronteggClientId,
+      "embeddedLoginEnabled": useEmbeddedLogin.toString(),
+      "hostedLoginEnabled"  : (!useEmbeddedLogin).toString()
     ]
   }
 
@@ -38,13 +43,19 @@ android {
     buildConfig = true
   }
 
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
+  testOptions {
+    execution "ANDROIDX_TEST_ORCHESTRATOR"
   }
 
-  kotlinOptions {
-    jvmTarget = "17"
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_21
+    targetCompatibility JavaVersion.VERSION_21
+  }
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
   }
 }
 
@@ -71,6 +82,8 @@ dependencies {
   androidTestImplementation "androidx.test:runner:1.5.2"
   androidTestImplementation "androidx.test:rules:1.5.0"
   androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.12.0"
+  androidTestImplementation "com.google.code.gson:gson:2.10.1"
+  androidTestUtil "androidx.test:orchestrator:1.5.1"
 }
 
 apply from: 'capacitor.build.gradle'

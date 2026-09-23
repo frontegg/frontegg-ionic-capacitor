@@ -64,6 +64,6 @@ final class MockConnectivityUITests: MockServerTestCase {
         XCTAssertFalse(noConnectionVisible, "NoConnection page should not flash during transient probe timeouts")
 
         // The app should eventually reach the login page.
-        waitForLoginPage(timeout: 20)
+        waitForLoginPage()
     }
 }

@@ -1,16 +1,8 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type {
-  Entitlement,
-  FronteggConstants,
-  FronteggNativePlugin,
-  FronteggState,
-} from './definitions';
+import type { Entitlement, FronteggConstants, FronteggNativePlugin, FronteggState } from './definitions';
 
-export class FronteggNativeWeb
-  extends WebPlugin
-  implements FronteggNativePlugin
-{
+export class FronteggNativeWeb extends WebPlugin implements FronteggNativePlugin {
   async getConstants(): Promise<FronteggConstants> {
     throw Error('FronteggNative.getConstants not implemented in web');
   }
@@ -23,14 +15,8 @@ export class FronteggNativeWeb
     throw Error(`FronteggNative.login(${payload}) not implemented in web`);
   }
 
-  async directLoginAction(payload: {
-    type: string;
-    data: string;
-    ephemeralSession?: boolean;
-  }): Promise<boolean> {
-    throw Error(
-      `FronteggNative.directLoginAction ${payload} not implemented in web`,
-    );
+  async directLoginAction(payload: { type: string; data: string; ephemeralSession?: boolean }): Promise<boolean> {
+    throw Error(`FronteggNative.directLoginAction ${payload} not implemented in web`);
   }
 
   async logout(): Promise<void> {
@@ -38,9 +24,7 @@ export class FronteggNativeWeb
   }
 
   async switchTenant(payload: { tenantId: string }): Promise<void> {
-    throw Error(
-      `FronteggNative.switchTenant ${payload} not implemented in web`,
-    );
+    throw Error(`FronteggNative.switchTenant ${payload} not implemented in web`);
   }
 
   /**
@@ -50,37 +34,23 @@ export class FronteggNativeWeb
    * Android: https://github.com/frontegg/frontegg-android-kotlin#multi-region-support
    */
   async initWithRegion(payload: { regionKey: string }): Promise<void> {
-    throw Error(
-      `FronteggNative.initWithRegion ${payload} not implemented in web`,
-    );
+    throw Error(`FronteggNative.initWithRegion ${payload} not implemented in web`);
   }
 
   async refreshToken(): Promise<void> {
     throw Error(`FronteggNative.refreshToken not implemented in web`);
   }
 
-  async loadEntitlements(payload?: {
-    forceRefresh?: boolean;
-  }): Promise<{ success: boolean }> {
-    throw Error(
-      `FronteggNative.loadEntitlements ${JSON.stringify(
-        payload,
-      )} not implemented in web`,
-    );
+  async loadEntitlements(payload?: { forceRefresh?: boolean }): Promise<{ success: boolean }> {
+    throw Error(`FronteggNative.loadEntitlements ${JSON.stringify(payload)} not implemented in web`);
   }
 
   async getFeatureEntitlement(payload: { key: string }): Promise<Entitlement> {
-    throw Error(
-      `FronteggNative.getFeatureEntitlement ${payload} not implemented in web`,
-    );
+    throw Error(`FronteggNative.getFeatureEntitlement ${payload} not implemented in web`);
   }
 
-  async getPermissionEntitlement(payload: {
-    key: string;
-  }): Promise<Entitlement> {
-    throw Error(
-      `FronteggNative.getPermissionEntitlement ${payload} not implemented in web`,
-    );
+  async getPermissionEntitlement(payload: { key: string }): Promise<Entitlement> {
+    throw Error(`FronteggNative.getPermissionEntitlement ${payload} not implemented in web`);
   }
 
   async openAdminPortal(): Promise<void> {
@@ -88,18 +58,10 @@ export class FronteggNativeWeb
   }
 
   async stepUp(payload?: { maxAge?: number }): Promise<void> {
-    throw Error(
-      `FronteggNative.stepUp ${JSON.stringify(payload)} not implemented in web`,
-    );
+    throw Error(`FronteggNative.stepUp ${JSON.stringify(payload)} not implemented in web`);
   }
 
-  async isSteppedUp(payload?: {
-    maxAge?: number;
-  }): Promise<{ isSteppedUp: boolean }> {
-    throw Error(
-      `FronteggNative.isSteppedUp ${JSON.stringify(
-        payload,
-      )} not implemented in web`,
-    );
+  async isSteppedUp(payload?: { maxAge?: number }): Promise<{ isSteppedUp: boolean }> {
+    throw Error(`FronteggNative.isSteppedUp ${JSON.stringify(payload)} not implemented in web`);
   }
 }

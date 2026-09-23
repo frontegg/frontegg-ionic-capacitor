@@ -128,10 +128,7 @@ export interface FronteggNativePlugin {
    * @param listenerFunc - The callback function that will be called when the event is triggered.
    * @returns A promise that resolves to a PluginListenerHandle, which can be used to manage the listener.
    */
-  addListener(
-    eventName: string,
-    listenerFunc: ListenerCallback,
-  ): Promise<PluginListenerHandle>;
+  addListener(eventName: string, listenerFunc: ListenerCallback): Promise<PluginListenerHandle>;
 
   /**
    * Retrieves the constant configuration values used by the Frontegg authentication module.
@@ -159,11 +156,7 @@ export interface FronteggNativePlugin {
    * @param payload.ephemeralSession - If true, the session will be ephemeral and will not be saved in the browser.
    * @returns A promise that resolves when the direct login action is completed.
    */
-  directLoginAction(payload: {
-    type: string;
-    data: string;
-    ephemeralSession: boolean;
-  }): Promise<boolean>;
+  directLoginAction(payload: { type: string; data: string; ephemeralSession: boolean }): Promise<boolean>;
 
   /**
    * Logs out the current user. Resolves once the native logout completes, so callers can
@@ -199,9 +192,7 @@ export interface FronteggNativePlugin {
    * @param payload.forceRefresh - If true, bypasses any cached state and re-fetches from the server.
    * @returns A promise resolving to `{ success: true }` if entitlements were loaded.
    */
-  loadEntitlements(payload?: {
-    forceRefresh?: boolean;
-  }): Promise<{ success: boolean }>;
+  loadEntitlements(payload?: { forceRefresh?: boolean }): Promise<{ success: boolean }>;
 
   /**
    * Checks whether the current user is entitled to a specific feature.
@@ -320,10 +311,7 @@ type FronteggNativeRegionOptions = {
    */
   regions: RegionConfig[];
 };
-type FronteggNativeOptions = (
-  | FronteggNativeStandardOptions
-  | FronteggNativeRegionOptions
-) & {
+type FronteggNativeOptions = (FronteggNativeStandardOptions | FronteggNativeRegionOptions) & {
   /**
    * Weather to handle login with social login in external browser.
    * If set to false, the plugin will navigate to the social login page with application webview.
@@ -345,16 +333,17 @@ type FronteggNativeOptions = (
    * disabling this will cause the plugin to use custom url scheme for oauth/callback.
    *
    * NOTE: custom url scheme require user interaction to return to the app.
-   * @default true
+   * @default false
    */
   useAssetLinks?: boolean;
 
   /**
-   * Weather to To enable social login via Chrome Custom Tabs, set the useChromeCustomTabs flag to true.
+   * Android only. Weather to To enable social login via Chrome Custom Tabs, set the
+   * useChromeCustomTabs flag to true.
    * By default, the SDK uses the Chrome browser for social login.
    *
    * NOTE: custom url scheme require user interaction to return to the app.
-   * @default true
+   * @default false
    */
   useChromeCustomTabs?: boolean;
 

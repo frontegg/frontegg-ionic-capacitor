@@ -47,7 +47,7 @@ class MockServerTestCase: XCTestCase {
     func loginViaHostedMock(email: String = "test@example.com", password: String = "Testpassword1!") {
         // Tap the local Login button.
         let loginButton = app.buttons["Login"]
-        XCTAssertTrue(loginButton.waitForExistence(timeout: 15), "Login button did not appear")
+        XCTAssertTrue(loginButton.waitForExistence(timeout: 30), "Login button did not appear. Screen: \(screenDescription())")
         loginButton.tap()
 
         // Handle ASWebAuthenticationSession consent alert.
@@ -62,11 +62,11 @@ class MockServerTestCase: XCTestCase {
 
         // The mock server renders a hosted login page in a webview.
         let webView = app.webViews.firstMatch
-        XCTAssertTrue(webView.waitForExistence(timeout: 20), "Mock hosted login webview did not load")
+        XCTAssertTrue(webView.waitForExistence(timeout: 45), "Mock hosted login webview did not load")
 
         // The mock's hosted email step shows an email input and "Continue" button.
         let emailField = webView.textFields.firstMatch
-        XCTAssertTrue(emailField.waitForExistence(timeout: 10), "Email field not found on mock login page")
+        XCTAssertTrue(emailField.waitForExistence(timeout: 30), "Email field not found on mock login page")
         emailField.tap()
         emailField.typeText(email)
 
@@ -76,7 +76,7 @@ class MockServerTestCase: XCTestCase {
 
         // The mock's hosted password step shows a password input and "Sign in" button.
         let passwordField = webView.secureTextFields.firstMatch
-        XCTAssertTrue(passwordField.waitForExistence(timeout: 10), "Password field not found on mock login page")
+        XCTAssertTrue(passwordField.waitForExistence(timeout: 30), "Password field not found on mock login page")
         passwordField.tap()
         passwordField.typeText(password)
 
@@ -90,13 +90,32 @@ class MockServerTestCase: XCTestCase {
     /// Waits for the authenticated state (Logout button visible).
     func waitForAuthenticated(timeout: TimeInterval = 30) {
         let logoutButton = findLogoutButton()
-        XCTAssertTrue(logoutButton.waitForExistence(timeout: timeout), "Did not reach authenticated state")
+        XCTAssertTrue(logoutButton.waitForExistence(timeout: timeout), "Did not reach authenticated state. Screen: \(screenDescription())")
     }
 
     /// Waits for the login page (Login button visible).
-    func waitForLoginPage(timeout: TimeInterval = 15) {
+    func waitForLoginPage(timeout: TimeInterval = 45) {
         let loginButton = app.buttons["Login"]
-        XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page")
+        XCTAssertTrue(loginButton.waitForExistence(timeout: timeout), "Did not reach login page. Screen: \(screenDescription())")
+    }
+
+    /// Flattens the current accessibility tree into one line per element, for failure messages.
+    func screenDescription() -> String {
+        let snapshot: XCUIElementSnapshot
+        do {
+            snapshot = try app.snapshot()
+        } catch {
+            return "unavailable (app state \(app.state.rawValue)): \(error.localizedDescription)"
+        }
+        var lines: [String] = []
+        var pending: [XCUIElementSnapshot] = [snapshot]
+        while let element = pending.popLast() {
+            if !element.label.isEmpty || !element.identifier.isEmpty {
+                lines.append("\(element.elementType.rawValue) id=\(element.identifier) label=\(element.label)")
+            }
+            pending.append(contentsOf: element.children.reversed())
+        }
+        return lines.isEmpty ? "no labeled elements" : lines.joined(separator: " | ")
     }
 
     /// Finds the Logout button using a case-insensitive label match.

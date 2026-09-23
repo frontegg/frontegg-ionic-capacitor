@@ -11,7 +11,7 @@
             android:theme="@style/AppTheme">
 
         <activity
-                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+                android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
                 android:name="com.frontegg.demo.MainActivity"
                 android:label="@string/title_activity_main"
                 android:theme="@style/AppTheme.NoActionBarLaunch"
@@ -26,8 +26,9 @@
         </activity>
 
         <!-- Use Hosted Auth (Chrome Custom Tabs) to avoid WebView MFA autofill NPE and to try working around auth_time crash. See docs/troubleshooting.md -->
-        <activity android:name="com.frontegg.android.EmbeddedAuthActivity" tools:replace="android:enabled" android:enabled="false"/>
-        <activity android:name="com.frontegg.android.HostedAuthActivity" tools:replace="android:enabled" android:enabled="true"/>
+        <!-- Building with -PfronteggEmbeddedLogin swaps to embedded login, which the mock e2e suites need. -->
+        <activity android:name="com.frontegg.android.EmbeddedAuthActivity" tools:replace="android:enabled" android:enabled="${embeddedLoginEnabled}"/>
+        <activity android:name="com.frontegg.android.HostedAuthActivity" tools:replace="android:enabled" android:enabled="${hostedLoginEnabled}"/>
 
         <provider
                 android:name="androidx.core.content.FileProvider"

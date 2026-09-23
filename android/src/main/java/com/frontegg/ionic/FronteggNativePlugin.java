@@ -102,19 +102,33 @@ public class FronteggNativePlugin extends Plugin {
         }
         boolean useDiskCacheWebView = this.getConfig().getBoolean("useDiskCacheWebView", false);
 
-        if (regions.isEmpty()) {
+        // Instrumented tests run in the app process and point the SDK at a local mock server this way.
+        String e2eBaseUrl = System.getProperty("FRONTEGG_E2E_BASE_URL");
+        String e2eClientId = System.getProperty("FRONTEGG_E2E_CLIENT_ID");
+
+        if (e2eBaseUrl != null && e2eClientId != null) {
+            Log.i("FronteggNative", "E2E override: using mock server at " + e2eBaseUrl);
+            FronteggApp.Companion.initializeEmbeddedForLocalE2E(
+                    this.getContext(),
+                    e2eBaseUrl,
+                    e2eClientId,
+                    null,
+                    false,
+                    false,
+                    mainActivityClass,
+                    null,
+                    useDiskCacheWebView,
+                    false,
+                    false,
+                    false,
+                    true,
+                    null
+            );
+        } else if (regions.isEmpty()) {
             PluginConfig config = this.getConfig();
             String baseUrl = config.getString("baseUrl");
             String clientId = config.getString("clientId");
             String applicationId = config.getString("applicationId");
-
-            // Allow E2E tests to override the base URL via system property.
-            // Tests set this via: System.setProperty("FRONTEGG_E2E_BASE_URL", url)
-            String e2eBaseUrl = System.getProperty("FRONTEGG_E2E_BASE_URL");
-            if (e2eBaseUrl != null && !e2eBaseUrl.isEmpty()) {
-                Log.i("FronteggNative", "E2E override: using base URL " + e2eBaseUrl);
-                baseUrl = e2eBaseUrl;
-            }
 
             if (baseUrl == null || clientId == null) {
                 // FR-25948: don't throw — log and abort initialization instead of crashing the app.
@@ -136,6 +150,9 @@ public class FronteggNativePlugin extends Plugin {
                     useDiskCacheWebView,
                     false,
                     false,
+                    10,
+                    false,
+                    true,
                     null
             );
         } else {
@@ -148,6 +165,9 @@ public class FronteggNativePlugin extends Plugin {
                     useDiskCacheWebView,
                     false,
                     false,
+                    10,
+                    false,
+                    true,
                     null
             );
         }
@@ -171,6 +191,16 @@ public class FronteggNativePlugin extends Plugin {
         });
 
         sendEvent();
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        // A destroyed bridge must stop reading the SDK, or it can race a later re-initialization.
+        if (this.disposable != null) {
+            this.disposable.dispose();
+            this.disposable = null;
+        }
+        debouncer.cancel();
     }
 
     private Class<?> resolveMainActivityClass() {
@@ -409,11 +439,8 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void isSteppedUp(PluginCall call) {
-        // NOTE: `maxAge` is honored on iOS but not yet forwarded here — the native
-        // isSteppedUp(Duration?) takes a Kotlin Duration (an inline value class) that cannot be
-        // constructed from Java. Passing null checks ACR/AMR without the freshness window until a
-        // native Java-friendly overload is added.
-        boolean result = FronteggAppKt.getFronteggAuth(this.getContext()).isSteppedUp(null);
+        // NOTE: `maxAge` is honored on iOS but not yet forwarded on Android — see StepUpBridge.
+        boolean result = StepUpBridge.isSteppedUp(FronteggAppKt.getFronteggAuth(this.getContext()));
         JSObject ret = new JSObject();
         ret.put("isSteppedUp", result);
         call.resolve(ret);
@@ -426,7 +453,7 @@ public class FronteggNativePlugin extends Plugin {
             return;
         }
         // `maxAge` not forwarded on Android — see isSteppedUp note above.
-        FronteggAppKt.getFronteggAuth(this.getContext()).stepUp(this.getActivity(), null, (error) -> {
+        StepUpBridge.stepUp(FronteggAppKt.getFronteggAuth(this.getContext()), this.getActivity(), (error) -> {
             if (error != null) {
                 call.reject(error.getMessage());
             } else {

@@ -11,8 +11,16 @@ The SDK automatically handles token refresh in the background, ensuring your use
 
 ## Project Requirements
 
-- Minimum iOS deployment version **=> 14**
+- Capacitor **8+**
+- Minimum iOS deployment version **=> 15**
 - Min Android SDK **=> 26**
+- iOS apps integrate the SDK through **Swift Package Manager**; CocoaPods is not supported
+- Node **22+** and **JDK 21** to build
+
+> [!WARNING]
+> v3 is a breaking release: it requires Capacitor 8, moves iOS to Swift Package Manager, and moves
+> iOS URL handling from `AppDelegate` to `SceneDelegate`. Upgrading from v2? Follow
+> [Migrating to v3](migrating-to-v3.md). Staying on Capacitor 5 or 7? Stay on `2.x`.
 
 ## Prepare your Frontegg environment
 
@@ -64,6 +72,14 @@ yarn:
 ```
 yarn add @frontegg/ionic-capacitor
 ```
+
+### iOS: Swift Package Manager
+
+The iOS SDK is consumed through Swift Package Manager. Capacitor 8 uses SPM by default for new
+apps, so `npx cap add ios` followed by `npx cap sync ios` wires the plugin up for you — the CLI
+keeps `ios/App/CapApp-SPM/Package.swift` in step with your installed plugins.
+
+An existing CocoaPods app has to be converted first; see [Migrating to v3](migrating-to-v3.md).
 
 ## Configure your application
 

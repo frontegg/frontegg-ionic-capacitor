@@ -28,47 +28,104 @@ To setup your SwiftUI application to communicate with Frontegg.
 
    This file provides configuration values used by the Frontegg SDK.
 
-3. In the `/ios/App` directory, make sure `CODE_SIGNING_ALLOWED` is enabled in the `Podfile`.
+3. The iOS SDK is integrated through Swift Package Manager; there is no `Podfile` to configure.
+   See [Migrating to v3](migrating-to-v3.md) if your app still uses CocoaPods.
 
 ### Handle open app with URL for iOS
 
-To support login via magic link and other authentication methods that require your app to handle incoming URLs, add the following code to your `AppDelegate.swift` file.
+To support login via magic link and other authentication methods that require your app to handle
+incoming URLs, add the following code to your `SceneDelegate.swift` file.
+
+> Since Capacitor 8 the iOS app declares a `UIScene` manifest, and UIKit no longer calls
+> `application(_:open:)` or `application(_:continue:)` on the app delegate. If you are upgrading
+> from an older Capacitor version, move this handling out of `AppDelegate.swift` — left there it
+> silently stops running, and logins that come back through a link never complete.
 
 ```swift
 import UIKit
 import Capacitor
 import FronteggSwift
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+    private var launchURLObserver: NSObjectProtocol?
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+
+        // With UISceneStoryboardFile set, UIKit has already created the window and its bridge.
+        if window == nil {
+            window = UIWindow(windowScene: windowScene)
+            window?.rootViewController = CAPBridgeViewController()
+            window?.makeKeyAndVisible()
+        }
+
+        // A link that launches the app arrives here, before the plugin has initialized Frontegg.
+        let launchURLs = connectionOptions.urlContexts.map(\.url) + connectionOptions.userActivities.compactMap(\.webpageURL)
+        if !launchURLs.isEmpty {
+            handleFronteggURLsOnceCapacitorLoads(launchURLs)
+        }
+
+        SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
+    }
 
     /*
-     * Called when the app was launched with a url. Feel free to add additional processing here,
-     * but if you want the App API to support tracking app url opens, make sure to keep this call
+     * Called when the running app is opened with a url. Feel free to add additional processing
+     * here, but if you want the App API to support tracking app url opens, keep the proxy call.
      */
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
-        
-        if(FronteggAuth.shared.handleOpenUrl(url)){
-            return true
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for context in URLContexts where handleFronteggURL(context.url) {
+            return
         }
-        
-        return ApplicationDelegateProxy.shared.application(app, open: url, options: options)
+        SceneDelegateProxy.shared.scene(scene, openURLContexts: URLContexts)
     }
-    
+
     /*
-     * Called when the app was launched with an activity, including Universal Links.
-     * Feel free to add additional processing here, but if you want the App API to support
-     * tracking app url opens, make sure to keep this call
+     * Called when the running app is opened with an activity, including Universal Links.
      */
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        
-        if let url = userActivity.webpageURL {
-            if(FronteggAuth.shared.handleOpenUrl(url)){
-                return true
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        if let url = userActivity.webpageURL, handleFronteggURL(url) {
+            return
+        }
+        SceneDelegateProxy.shared.scene(scene, continue: userActivity)
+    }
+
+    /// Waits for the first bridge appearance, by which time the plugin has initialized Frontegg.
+    private func handleFronteggURLsOnceCapacitorLoads(_ urls: [URL]) {
+        launchURLObserver = NotificationCenter.default.addObserver(forName: .capacitorViewDidAppear, object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
+            if let observer = self.launchURLObserver {
+                NotificationCenter.default.removeObserver(observer)
+                self.launchURLObserver = nil
+            }
+            for url in urls where self.handleFronteggURL(url) {
+                break
             }
         }
-        return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
+
+    /// Passes the URL to the SDK, which also recognizes its custom-scheme callback. Returns true when it was a Frontegg one.
+    private func handleFronteggURL(_ url: URL) -> Bool {
+        return FronteggAuth.shared.handleOpenUrl(url)
+    }
+}
+```
+
+Your `AppDelegate.swift` still initializes the SDK and points the scene at this delegate:
+
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    FronteggApp.shared.didFinishLaunchingWithOptions()
+    return true
+}
+
+func application(_ application: UIApplication,
+                 configurationForConnecting connectingSceneSession: UISceneSession,
+                 options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+
+    let config = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    config.delegateClass = SceneDelegate.self
+    return config
 }
 ```
 

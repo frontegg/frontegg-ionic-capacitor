@@ -13,7 +13,7 @@ import type { FronteggObservable } from './observables';
 import { createObservable } from './observables';
 
 const FronteggNative = registerPlugin<FronteggNativePlugin>('FronteggNative', {
-  web: () => import('./web').then(m => new m.FronteggNativeWeb()),
+  web: () => import('./web').then((m) => new m.FronteggNativeWeb()),
 });
 
 export class FronteggService {
@@ -60,43 +60,38 @@ export class FronteggService {
       initializing: new Set(),
     };
 
-    FronteggNative.addListener(
-      'onFronteggAuthEvent',
-      (state: FronteggState) => {
-        this.logger.info(
-          'onFronteggAuthEvent',
-          JSON.stringify({
-            isAuthenticated: state.isAuthenticated,
-            showLoader: state.isLoading,
-            isLoading: state.isLoading,
-            user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
-            accessToken: state.accessToken ? '****' : null,
-            refreshToken: state.refreshToken,
-            selectedRegion: state.selectedRegion,
-            refreshingToken: state.refreshingToken,
-            initializing: state.initializing,
-          }),
-        );
+    FronteggNative.addListener('onFronteggAuthEvent', (state: FronteggState) => {
+      this.logger.info(
+        'onFronteggAuthEvent',
+        JSON.stringify({
+          isAuthenticated: state.isAuthenticated,
+          showLoader: state.isLoading,
+          isLoading: state.isLoading,
+          user: `${state.user}`, // prevent log full user object // null | undefined | [object Object]
+          accessToken: state.accessToken ? '****' : null,
+          refreshToken: state.refreshToken,
+          selectedRegion: state.selectedRegion,
+          refreshingToken: state.refreshingToken,
+          initializing: state.initializing,
+        }),
+      );
 
-        const keys = this.orderedListenerKeys;
-        keys.forEach(key => {
-          if (this.isChanged(this.state[key], state[key])) {
-            this.logger.info('onFronteggAuthEvent', key, state[key]);
-            (this.state as any)[key] = state[key];
-            this.mapListeners[key].forEach((listener: any) =>
-              listener(state[key]),
-            );
-          }
-        });
-        this.state = state;
-      },
-    );
+      const keys = this.orderedListenerKeys;
+      keys.forEach((key) => {
+        if (this.isChanged(this.state[key], state[key])) {
+          this.logger.info('onFronteggAuthEvent', key, state[key]);
+          (this.state as any)[key] = state[key];
+          this.mapListeners[key].forEach((listener: any) => listener(state[key]));
+        }
+      });
+      this.state = state;
+    });
 
     FronteggNative.getAuthState().then((state: FronteggState) => {
       this.logger.info(`getAuthState(): \n ${JSON.stringify(state)} DONE`);
 
       const keys = Object.keys(this.mapListeners);
-      for (const item of keys.filter(key => key !== 'initializing')) {
+      for (const item of keys.filter((key) => key !== 'initializing')) {
         const key = item as keyof FronteggState;
 
         (this.state as any)[key] = state[key];
@@ -104,9 +99,7 @@ export class FronteggService {
       }
 
       this.state.initializing = false;
-      this.mapListeners.initializing.forEach((listener: any) =>
-        listener(false),
-      );
+      this.mapListeners.initializing.forEach((listener: any) => listener(false));
     });
   }
 
@@ -117,12 +110,7 @@ export class FronteggService {
     }
 
     // Check for null and undefined
-    if (
-      obj1 === null ||
-      obj1 === undefined ||
-      obj2 === null ||
-      obj2 === undefined
-    ) {
+    if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) {
       return obj1 !== obj2;
     }
 
@@ -215,7 +203,7 @@ export class FronteggService {
    */
   public async waitForLoader(): Promise<boolean> {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise<boolean>(async resolve => {
+    return new Promise<boolean>(async (resolve) => {
       console.log('checking is loading');
       const state = await this.getNativeState();
       let isLoading = state.isLoading;
@@ -233,7 +221,7 @@ export class FronteggService {
           return;
         }
         isLoading = newIsLoading;
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 100));
       }
     });
   }
@@ -244,11 +232,7 @@ export class FronteggService {
    * @param data - the direct login data (for direct it's saml url request, for social-login it's the provider name, for custom-social-login it's the provider entity id)
    * @param ephemeralSession - if true, the session will be ephemeral and will not be saved in the browser
    */
-  public async directLoginAction(
-    type: string,
-    data: string,
-    ephemeralSession = true,
-  ): Promise<boolean> {
+  public async directLoginAction(type: string, data: string, ephemeralSession = true): Promise<boolean> {
     const state = await this.getNativeState();
     console.log('direct login action', state);
     await this.waitForLoader();
