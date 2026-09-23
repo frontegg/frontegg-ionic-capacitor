@@ -16,6 +16,8 @@ android {
     versionCode 1
     versionName "1.0"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    // The Frontegg SDK keeps process-wide singletons, so each test gets a fresh process and app data.
+    testInstrumentationRunnerArguments clearPackageData: "true"
 
     aaptOptions {
       ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
@@ -39,6 +41,10 @@ android {
 
   buildFeatures {
     buildConfig = true
+  }
+
+  testOptions {
+    execution "ANDROIDX_TEST_ORCHESTRATOR"
   }
 
   compileOptions {
@@ -77,6 +83,7 @@ dependencies {
   androidTestImplementation "androidx.test:rules:1.5.0"
   androidTestImplementation "com.squareup.okhttp3:mockwebserver:4.12.0"
   androidTestImplementation "com.google.code.gson:gson:2.10.1"
+  androidTestUtil "androidx.test:orchestrator:1.5.1"
 }
 
 apply from: 'capacitor.build.gradle'
