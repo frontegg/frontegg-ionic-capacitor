@@ -123,5 +123,5 @@ jobs:
           arch: x86_64
           working-directory: example/android
           # On failure, print the plugin and SDK log lines that show which server each init and page load used.
-          script: ./gradlew :app:connectedDebugAndroidTest -PfronteggEmbeddedLogin -Pandroid.testInstrumentationRunnerArguments.class=com.frontegg.demo.MockConnectivityTest,com.frontegg.demo.MockTokenExpiryTest || (adb logcat -d | grep -E "FronteggNative|FronteggWebClient|FronteggAuth|RefreshToken|Capacitor" | tail -n 400; exit 1)
+          script: adb logcat -G 16M; ./gradlew :app:connectedDebugAndroidTest -PfronteggEmbeddedLogin -Pandroid.testInstrumentationRunnerArguments.class=com.frontegg.demo.MockConnectivityTest,com.frontegg.demo.MockTokenExpiryTest || (adb logcat -d | grep -iE "FronteggNative|FronteggWebClient|FronteggAuth|refresh token|TestRunner" | grep -v "istener" | tail -n 500; exit 1)
   

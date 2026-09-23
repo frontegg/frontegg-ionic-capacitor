@@ -1,10 +1,13 @@
 package com.frontegg.demo.utils
 
+import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import com.frontegg.android.services.CredentialManager
 import org.junit.After
@@ -45,6 +48,7 @@ open class MockServerTestCase {
     }
 
     protected fun launchApp(resetState: Boolean = true) {
+        closeRunningActivities()
         if (resetState) {
             CredentialManager(targetContext).wipeAllStoredCredentials()
         }
@@ -88,6 +92,31 @@ open class MockServerTestCase {
     private fun labelPattern(label: String): Pattern =
         Pattern.compile("\\s*${Pattern.quote(label)}\\s*", Pattern.CASE_INSENSITIVE)
 
+    // A live previous bridge can read the SDK mid-reset and trigger a default initialization.
+    private fun closeRunningActivities() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        instrumentation.runOnMainSync {
+            runningActivities().forEach { activity -> activity.finish() }
+        }
+        val deadline = System.currentTimeMillis() + ACTIVITY_CLOSE_TIMEOUT_MS
+        while (System.currentTimeMillis() < deadline) {
+            var remaining = 0
+            instrumentation.runOnMainSync { remaining = runningActivities().size }
+            if (remaining == 0) {
+                return
+            }
+            delay(200)
+        }
+        throw AssertionError("Previous activities were not destroyed before relaunch")
+    }
+
+    private fun runningActivities(): List<Activity> {
+        val lifecycleMonitor = ActivityLifecycleMonitorRegistry.getInstance()
+        return Stage.values()
+            .filter { stage -> stage != Stage.DESTROYED }
+            .flatMap { stage -> lifecycleMonitor.getActivitiesInStage(stage) }
+    }
+
     private fun isEmbeddedLoginEnabled(): Boolean {
         val embeddedAuthActivity = ComponentName(targetContext, EMBEDDED_AUTH_ACTIVITY)
         return targetContext.packageManager
@@ -104,5 +133,7 @@ open class MockServerTestCase {
         private const val EMBEDDED_AUTH_ACTIVITY = "com.frontegg.android.EmbeddedAuthActivity"
 
         const val TOKEN_PATH = "/oauth/token"
+
+        private const val ACTIVITY_CLOSE_TIMEOUT_MS = 10_000L
     }
 }
