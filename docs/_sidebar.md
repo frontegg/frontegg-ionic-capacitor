@@ -1,6 +1,7 @@
 - [Ionic SDK](README.md)
 - [Getting Started](getting-started.md)
 - [Setup Guide](setup.md)
+- [Migrating to v3](migrating-to-v3.md)
 - [Usage Examples](usage.md)
 - [Advanced Topics](advanced.md)
 - [API Reference](api.md)

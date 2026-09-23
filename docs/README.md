@@ -45,7 +45,11 @@ Then add the SDK:
 npm install @frontegg/ionic-capacitor
 ```
 
-> Requires **Capacitor 8+**, **iOS 15+** and **Android API 26+**.
+> Requires **Capacitor 8+**, **iOS 15+** and **Android API 26+**. On iOS the SDK is consumed
+> through **Swift Package Manager**; CocoaPods is not supported.
+
+> Upgrading from 2.x? v3 is a breaking release — see
+> [Migrating to v3](https://ionic-capacitor-guide.frontegg.com/#/migrating-to-v3).
 
 ## Quick start
 
