@@ -10,6 +10,9 @@ import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import com.frontegg.android.services.CredentialManager
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Before
 import java.util.regex.Pattern
@@ -33,9 +36,8 @@ open class MockServerTestCase {
         check(isEmbeddedLoginEnabled()) {
             "The mock suites need embedded login; build with -PfronteggEmbeddedLogin"
         }
-        // The mock answers HEAD with a body, which breaks the SDK's reused probe connections.
-        System.setProperty(KEEP_ALIVE_PROPERTY, "false")
         mock = LocalMockAuthServer()
+        stripBodiesFromHeadResponses()
         mock.start()
         System.setProperty(E2E_BASE_URL_PROPERTY, mock.urlRoot())
         System.setProperty(E2E_CLIENT_ID_PROPERTY, mock.clientId)
@@ -46,7 +48,6 @@ open class MockServerTestCase {
     fun stopMockServer() {
         System.clearProperty(E2E_BASE_URL_PROPERTY)
         System.clearProperty(E2E_CLIENT_ID_PROPERTY)
-        System.clearProperty(KEEP_ALIVE_PROPERTY)
         mock.shutdown()
     }
 
@@ -92,6 +93,17 @@ open class MockServerTestCase {
 
     protected fun tokenRequestCount(): Int = mock.requestCount("POST", TOKEN_PATH)
 
+    // The mock answers HEAD with a body, which desyncs the SDK's kept-alive network probe connection.
+    private fun stripBodiesFromHeadResponses() {
+        val mockDispatcher = mock.server.dispatcher
+        mock.server.dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                val response = mockDispatcher.dispatch(request)
+                return if (request.method == "HEAD") response.setBody("") else response
+            }
+        }
+    }
+
     private fun labelPattern(label: String): Pattern =
         Pattern.compile("\\s*${Pattern.quote(label)}\\s*", Pattern.CASE_INSENSITIVE)
 
@@ -133,7 +145,6 @@ open class MockServerTestCase {
 
         private const val E2E_BASE_URL_PROPERTY = "FRONTEGG_E2E_BASE_URL"
         private const val E2E_CLIENT_ID_PROPERTY = "FRONTEGG_E2E_CLIENT_ID"
-        private const val KEEP_ALIVE_PROPERTY = "http.keepAlive"
         private const val EMBEDDED_AUTH_ACTIVITY = "com.frontegg.android.EmbeddedAuthActivity"
 
         const val TOKEN_PATH = "/oauth/token"
