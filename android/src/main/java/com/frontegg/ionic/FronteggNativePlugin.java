@@ -193,6 +193,16 @@ public class FronteggNativePlugin extends Plugin {
         sendEvent();
     }
 
+    @Override
+    protected void handleOnDestroy() {
+        // A destroyed bridge must stop reading the SDK, or it can race a later re-initialization.
+        if (this.disposable != null) {
+            this.disposable.dispose();
+            this.disposable = null;
+        }
+        debouncer.cancel();
+    }
+
     private Class<?> resolveMainActivityClass() {
         String className = this.getConfig().getString("mainActivityClass");
         if (className == null || className.isEmpty()) {
