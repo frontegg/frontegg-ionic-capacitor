@@ -28,9 +28,8 @@ To setup your SwiftUI application to communicate with Frontegg.
 
    This file provides configuration values used by the Frontegg SDK.
 
-3. If your app uses CocoaPods, make sure `CODE_SIGNING_ALLOWED` is enabled in the `Podfile` in
-   the `/ios/App` directory. Capacitor 8 apps use Swift Package Manager by default and have no
-   `Podfile`, in which case there is nothing to do here.
+3. The iOS SDK is integrated through Swift Package Manager; there is no `Podfile` to configure.
+   See [Migrating to v3](migrating-to-v3.md) if your app still uses CocoaPods.
 
 ### Handle open app with URL for iOS
 
