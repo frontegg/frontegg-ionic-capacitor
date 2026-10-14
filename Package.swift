@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0"),
-        .package(url: "https://github.com/frontegg/frontegg-ios-swift.git", .upToNextMinor(from: "1.3.21"))
+        .package(url: "https://github.com/frontegg/frontegg-ios-swift.git", .upToNextMinor(from: "1.3.24"))
     ],
     targets: [
         .target(
