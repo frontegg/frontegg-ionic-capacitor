@@ -1,5 +1,25 @@
 # Changelog
 
+## v3.0.1
+
+Native SDKs:
+
+- iOS: FronteggSwift 1.3.24 or later within 1.3.x.
+- Android: Frontegg Android SDK 1.3.43.
+
+Bug fixes:
+
+- Embedded step-up now completes after MFA. The login box went on to the application's App URL instead of returning to the app, so no stepped-up token was issued and `stepUp` never resolved. Step-up now finishes through the hosted login and returns a stepped-up token. No app changes are needed.
+- Embedded step-up no longer signs the user out before the MFA challenge appears. The step-up page now opens only once the login box has loaded the user's session.
+- iOS: the embedded step-up window no longer closes by itself before the MFA challenge appears.
+- iOS: users are no longer signed out when a token refresh response arrives late or is lost on a slow network.
+- iOS: embedded sign-in no longer flashes a white frame over the app during the OAuth redirect, and a hex `backgroundColor` in `Frontegg.plist` is now applied.
+
+Changes:
+
+- iOS: when `backgroundColor` is not set, the embedded login web view is now transparent instead of white while it loads, so the system background shows through (white in light mode, black in dark mode). Set `backgroundColor` to `#FFFFFF` in `Frontegg.plist` to keep white.
+- iOS: FronteggSwift now ships the Apple privacy manifest that App Store Connect requires from third-party SDKs.
+
 ## v3.0.0
 
 Breaking release: `@frontegg/ionic-capacitor` now targets **Capacitor 8**, and on iOS it is consumed through **Swift Package Manager** instead of CocoaPods. Apps staying on Capacitor 5 or 7 should stay on `2.x`. Upgrade steps are in [docs/migrating-to-v3.md](docs/migrating-to-v3.md). ([#113](https://github.com/frontegg/frontegg-ionic-capacitor/pull/113))
