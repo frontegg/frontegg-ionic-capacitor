@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { Entitlement, FronteggConstants, FronteggNativePlugin, FronteggState } from './definitions';
+import type { Entitlement, FronteggConstants, FronteggNativePlugin, FronteggState, User } from './definitions';
 
 export class FronteggNativeWeb extends WebPlugin implements FronteggNativePlugin {
   async getConstants(): Promise<FronteggConstants> {
@@ -63,5 +63,21 @@ export class FronteggNativeWeb extends WebPlugin implements FronteggNativePlugin
 
   async isSteppedUp(payload?: { maxAge?: number }): Promise<{ isSteppedUp: boolean }> {
     throw Error(`FronteggNative.isSteppedUp ${JSON.stringify(payload)} not implemented in web`);
+  }
+
+  async loginWithPasskeys(): Promise<void> {
+    throw Error('FronteggNative.loginWithPasskeys not implemented in web');
+  }
+
+  async registerPasskeys(): Promise<void> {
+    throw Error('FronteggNative.registerPasskeys not implemented in web');
+  }
+
+  async requestAuthorize(): Promise<User> {
+    throw Error('FronteggNative.requestAuthorize not implemented in web');
+  }
+
+  async getOrRefreshAccessToken(): Promise<{ accessToken: string | null }> {
+    throw Error('FronteggNative.getOrRefreshAccessToken not implemented in web');
   }
 }

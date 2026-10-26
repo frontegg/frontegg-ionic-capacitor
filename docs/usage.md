@@ -329,6 +329,29 @@ export class MyPage {
 | `MISSING_FEATURE` / `MISSING_PERMISSION` | The user does not hold this key. |
 | `NOT_AUTHENTICATED` (iOS) | No user is currently signed in. |
 
+### Get a valid access token after app resume
+
+When the app returns to the foreground the cached access token may have expired. Call
+`getOrRefreshAccessToken()` before calling your API instead of reading `accessToken` from the state:
+
+```typescript
+import { App } from '@capacitor/app';
+
+App.addListener('resume', async () => {
+  const accessToken = await this.fronteggService.getOrRefreshAccessToken();
+  if (accessToken === null) {
+    // No session, or the refresh token was rejected: sign the user in again.
+    await this.fronteggService.login();
+    return;
+  }
+  // Use accessToken for your API calls.
+});
+```
+
+The method waits for any in-flight initialization or refresh, returns the current token when it is valid for more
+than 15 seconds, and refreshes it otherwise. It rejects when the refresh fails for another reason, such as no
+network, so you can retry later without signing the user out.
+
 ## Admin Portal (Beta)
 
 Open the embedded Frontegg Admin Portal for authenticated users:
