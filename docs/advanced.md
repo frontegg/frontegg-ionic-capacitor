@@ -244,6 +244,34 @@ export default config;
 
 If your app supports multiple environments or regions, define `applicationId` inside each region object:
 
+```typescript
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+/*...*/
+plugins: {
+
+    /*...*/
+
+    FronteggNative: {
+        regions: [{
+            key: "{{REGION_1_KEY}}",
+            baseUrl: "https://{{REGION_1_FRONTEGG_DOMAIN}}",
+            clientId: "{{REGION_1_CLIENT_ID}}",
+            applicationId: "{{REGION_1_APPLICATION_ID}}",
+        }, {
+            key: "{{REGION_2_KEY}}",
+            baseUrl: "https://{{REGION_2_FRONTEGG_DOMAIN}}",
+            clientId: "{{REGION_2_CLIENT_ID}}",
+            applicationId: "{{REGION_2_APPLICATION_ID}}",
+        }]
+    }
+}
+};
+
+export default config;
+```
+
 ## Passkeys
 
 Passkeys let users sign in with the device's biometrics or screen lock instead of a password.

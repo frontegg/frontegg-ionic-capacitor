@@ -230,7 +230,7 @@ offline mode, which includes the same `getOrRefreshAccessToken()` fallback.
 
 ### Enable Android AssetLinks
 
-Configure Android AssetLinks for צagic ךink authentication, password resets, login with passkeys, and IdP SSO login.
+Configure Android AssetLinks for magic link authentication, password resets, login with passkeys, and IdP SSO login.
 
 1. Get your SHA-256 certificate fingerprint:
 ```bash
