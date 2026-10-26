@@ -519,7 +519,7 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void getOrRefreshAccessToken(PluginCall call) {
-        SessionBridge.getOrRefreshAccessToken(FronteggAppKt.getFronteggAuth(this.getContext()), (accessToken, error) -> {
+        SessionBridge.getOrRefreshAccessToken(FronteggAppKt.getFronteggAuth(this.getContext()), this.getContext(), (accessToken, error) -> {
             if (error != null) {
                 call.reject(error.getMessage() != null ? error.getMessage() : "Failed to get access token", error);
             } else {

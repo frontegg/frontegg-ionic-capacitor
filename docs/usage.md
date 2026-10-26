@@ -348,9 +348,14 @@ App.addListener('resume', async () => {
 });
 ```
 
-The method waits for any in-flight initialization or refresh, returns the current token when it is valid for more
-than 15 seconds, and refreshes it otherwise. It rejects when the refresh fails for another reason, such as no
-network, so you can retry later without signing the user out.
+The method waits up to 20 seconds for any in-flight initialization or refresh, and rejects if one is still running
+after that. It then returns the current token when it is valid for more than 15 seconds, and refreshes it otherwise:
+
+- No session, or the server rejected the refresh token: resolves `null`.
+- The device is offline and offline mode is enabled (`enableOfflineMode` in `Frontegg.plist` on iOS, the
+  `FRONTEGG_ENABLE_OFFLINE_MODE` build config field on Android): resolves the cached access token, which may be expired.
+- Any other refresh failure, such as no network with offline mode disabled: rejects, so you can retry later without
+  signing the user out.
 
 ## Admin Portal (Beta)
 

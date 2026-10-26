@@ -1,8 +1,11 @@
 package com.frontegg.ionic
 
+import android.content.Context
 import com.frontegg.android.FronteggAuth
 import com.frontegg.android.models.User
+import com.frontegg.android.utils.FronteggConstantsProvider
 import com.frontegg.android.utils.JWTHelper
+import com.frontegg.android.utils.NetworkGate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -28,10 +31,10 @@ internal object SessionBridge {
     }
 
     @JvmStatic
-    fun getOrRefreshAccessToken(auth: FronteggAuth, callback: (String?, Exception?) -> Unit) {
+    fun getOrRefreshAccessToken(auth: FronteggAuth, context: Context, callback: (String?, Exception?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             val accessToken = try {
-                resolveValidAccessToken(auth)
+                resolveValidAccessToken(auth, context)
             } catch (exception: Exception) {
                 callback(null, exception)
                 return@launch
@@ -40,11 +43,15 @@ internal object SessionBridge {
         }
     }
 
-    private suspend fun resolveValidAccessToken(auth: FronteggAuth): String? {
-        withTimeoutOrNull(SETTLE_TIMEOUT_MILLIS) {
+    private suspend fun resolveValidAccessToken(auth: FronteggAuth, context: Context): String? {
+        val settled = withTimeoutOrNull(SETTLE_TIMEOUT_MILLIS) {
             while (auth.initializing.value || auth.refreshingToken.value) {
                 delay(SETTLE_POLL_INTERVAL_MILLIS)
             }
+            true
+        }
+        if (settled == null) {
+            throw IllegalStateException("Timed out after 20 seconds waiting for initialization or token refresh to finish")
         }
         if (auth.refreshToken.value == null) {
             return null
@@ -54,6 +61,9 @@ internal object SessionBridge {
         if (currentAccessToken != null && secondsUntilExpiry(currentAccessToken) > MIN_ACCESS_TOKEN_VALIDITY_SECONDS) {
             return currentAccessToken
         }
+        if (isOfflineWithOfflineModeEnabled(context)) {
+            return currentAccessToken
+        }
 
         if (auth.refreshTokenAndWait(force = false)) {
             return auth.accessToken.value
@@ -61,7 +71,17 @@ internal object SessionBridge {
         if (auth.refreshToken.value == null) {
             return null
         }
+        if (isOfflineWithOfflineModeEnabled(context)) {
+            return auth.accessToken.value
+        }
         throw IllegalStateException("Failed to refresh the access token")
+    }
+
+    private fun isOfflineWithOfflineModeEnabled(context: Context): Boolean {
+        val offlineModeEnabled = runCatching {
+            FronteggConstantsProvider.fronteggConstants(context).enableOfflineMode
+        }.getOrDefault(false)
+        return offlineModeEnabled && !NetworkGate.isNetworkLikelyGood(context)
     }
 
     private fun secondsUntilExpiry(accessToken: String): Long {

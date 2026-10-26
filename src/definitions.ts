@@ -259,10 +259,11 @@ export interface FronteggNativePlugin {
 
   /**
    * Returns a valid access token, refreshing it first when it expires within 15 seconds.
-   * Waits for an in-flight initialization or refresh to settle before reading the token.
+   * Waits up to 20 seconds for an in-flight initialization or refresh to settle, and rejects on timeout.
    * @returns A promise resolving to `{ accessToken }`, where `accessToken` is `null` when there is
-   * no session or the server rejected the refresh token. Rejects when the refresh fails for another
-   * reason, such as no network.
+   * no session or the server rejected the refresh token. When the device is offline and offline mode
+   * is enabled, it resolves the cached access token, which may be expired. Rejects on any other
+   * refresh failure, such as no network with offline mode disabled.
    */
   getOrRefreshAccessToken(): Promise<{ accessToken: string | null }>;
 }
