@@ -329,6 +329,38 @@ export class MyPage {
 | `MISSING_FEATURE` / `MISSING_PERMISSION` | The user does not hold this key. |
 | `NOT_AUTHENTICATED` (iOS) | No user is currently signed in. |
 
+### Get a valid access token after app resume
+
+When the app returns to the foreground the cached access token may have expired. Call
+`getOrRefreshAccessToken()` before calling your API instead of reading `accessToken` from the state:
+
+```typescript
+import { App } from '@capacitor/app';
+
+App.addListener('resume', async () => {
+  const accessToken = await this.fronteggService.getOrRefreshAccessToken();
+  if (accessToken === null) {
+    // No session, or the refresh token was rejected: sign the user in again.
+    await this.fronteggService.login();
+    return;
+  }
+  // Use accessToken for your API calls.
+});
+```
+
+The method waits up to 20 seconds for any in-flight initialization or refresh, and rejects if one is still running
+after that. It then returns the current token when it is valid for more than 15 seconds, and refreshes it otherwise:
+
+- No session, or the server rejected the refresh token: resolves `null`.
+- Android, multi-region app with no region selected yet: resolves `null` right away.
+- The device is offline and offline mode is enabled (`enableOfflineMode` in `Frontegg.plist` on iOS, the
+  `FRONTEGG_ENABLE_OFFLINE_MODE` build config field on Android; see
+  [Offline token fallback](setup.md#offline-token-fallback)): resolves the cached access token, which may be expired.
+  Android returns it without trying to refresh; iOS tries one refresh first.
+- The device is offline and offline mode is disabled: rejects. Android rejects right away; iOS retries the refresh a few
+  times first.
+- Any other refresh failure: rejects, so you can retry later without signing the user out.
+
 ## Admin Portal (Beta)
 
 Open the embedded Frontegg Admin Portal for authenticated users:

@@ -429,7 +429,7 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void openAdminPortal(PluginCall call) {
         if (this.getActivity() == null) {
-            call.reject("NO_ACTIVITY", "Cannot open Admin Portal without an active Activity");
+            call.reject("Cannot open Admin Portal without an active Activity", "NO_ACTIVITY");
             return;
         }
 
@@ -449,7 +449,7 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void stepUp(PluginCall call) {
         if (this.getActivity() == null) {
-            call.reject("NO_ACTIVITY", "Cannot start step-up without an active Activity");
+            call.reject("Cannot start step-up without an active Activity", "NO_ACTIVITY");
             return;
         }
         // `maxAge` not forwarded on Android — see isSteppedUp note above.
@@ -463,4 +463,71 @@ public class FronteggNativePlugin extends Plugin {
         });
     }
 
+    @PluginMethod
+    public void loginWithPasskeys(PluginCall call) {
+        if (this.getActivity() == null) {
+            call.reject("Cannot log in with passkeys without an active Activity", "NO_ACTIVITY");
+            return;
+        }
+        FronteggAppKt.getFronteggAuth(this.getContext()).loginWithPasskeys(this.getActivity(), (error) -> {
+            if (error != null) {
+                call.reject(error.getMessage() != null ? error.getMessage() : "Passkeys login failed", error);
+            } else {
+                call.resolve();
+            }
+            return Unit.INSTANCE;
+        });
+    }
+
+    @PluginMethod
+    public void registerPasskeys(PluginCall call) {
+        if (this.getActivity() == null) {
+            call.reject("Cannot register passkeys without an active Activity", "NO_ACTIVITY");
+            return;
+        }
+        FronteggAppKt.getFronteggAuth(this.getContext()).registerPasskeys(this.getActivity(), (error) -> {
+            if (error != null) {
+                call.reject(error.getMessage() != null ? error.getMessage() : "Passkeys registration failed", error);
+            } else {
+                call.resolve();
+            }
+            return Unit.INSTANCE;
+        });
+    }
+
+    @PluginMethod
+    public void requestAuthorize(PluginCall call) {
+        String refreshToken = call.getString("refreshToken");
+        if (refreshToken == null) {
+            call.reject("No refreshToken provided");
+            return;
+        }
+        String deviceTokenCookie = call.getString("deviceTokenCookie");
+        SessionBridge.requestAuthorize(FronteggAppKt.getFronteggAuth(this.getContext()), refreshToken, deviceTokenCookie, (user, error) -> {
+            if (user == null) {
+                call.reject(error != null && error.getMessage() != null ? error.getMessage() : "Authorization failed", error);
+                return Unit.INSTANCE;
+            }
+            try {
+                call.resolve(JSObject.fromJSONObject(Parser.userToJSONObject(user)));
+            } catch (JSONException e) {
+                call.reject("Failed to parse the authorized user", e);
+            }
+            return Unit.INSTANCE;
+        });
+    }
+
+    @PluginMethod
+    public void getOrRefreshAccessToken(PluginCall call) {
+        SessionBridge.getOrRefreshAccessToken(FronteggAppKt.getFronteggAuth(this.getContext()), this.getContext(), (accessToken, error) -> {
+            if (error != null) {
+                call.reject(error.getMessage() != null ? error.getMessage() : "Failed to get access token", error);
+            } else {
+                JSObject result = new JSObject();
+                result.put("accessToken", accessToken != null ? accessToken : JSONObject.NULL);
+                call.resolve(result);
+            }
+            return Unit.INSTANCE;
+        });
+    }
 }

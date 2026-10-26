@@ -234,6 +234,39 @@ export interface FronteggNativePlugin {
    * Android `maxAge` caveat).
    */
   isSteppedUp(payload?: { maxAge?: number }): Promise<{ isSteppedUp: boolean }>;
+
+  /**
+   * Signs the user in with a passkey stored on the device. If the account requires MFA,
+   * the MFA screen opens and the promise resolves once it completes.
+   * @returns A promise that resolves when the user is signed in, and rejects on failure or cancellation.
+   */
+  loginWithPasskeys(): Promise<void>;
+
+  /**
+   * Registers a new passkey on this device for the signed-in user.
+   * @returns A promise that resolves once the passkey is registered, and rejects on failure or cancellation.
+   */
+  registerPasskeys(): Promise<void>;
+
+  /**
+   * Signs the user in silently, without showing the login box, using a refresh token obtained from
+   * Frontegg identity-server APIs (for example the sign-up response).
+   * @param payload.refreshToken - The refresh token to authorize with.
+   * @param payload.deviceTokenCookie - Optional device token cookie returned alongside the refresh token.
+   * @returns A promise resolving to the signed-in user.
+   */
+  requestAuthorize(payload: { refreshToken: string; deviceTokenCookie?: string }): Promise<User>;
+
+  /**
+   * Returns a valid access token, refreshing it first when it expires within 15 seconds.
+   * Waits up to 20 seconds for an in-flight initialization or refresh to settle, and rejects on timeout.
+   * @returns A promise resolving to `{ accessToken }`, where `accessToken` is `null` when there is
+   * no session, the server rejected the refresh token, or (Android) a multi-region app has no region
+   * selected yet. When the device is offline it resolves the cached access token, which may be expired,
+   * if offline mode is enabled (iOS tries one refresh first), and rejects if it is disabled (Android
+   * right away, iOS after a few retries). Rejects on any other refresh failure.
+   */
+  getOrRefreshAccessToken(): Promise<{ accessToken: string | null }>;
 }
 
 /**

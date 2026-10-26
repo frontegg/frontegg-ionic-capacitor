@@ -28,6 +28,10 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "openAdminPortal", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stepUp", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "isSteppedUp", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "loginWithPasskeys", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "registerPasskeys", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "requestAuthorize", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getOrRefreshAccessToken", returnType: CAPPluginReturnPromise),
     ]
     public let fronteggApp = FronteggApp.shared
     var cancellables = Set<AnyCancellable>()
@@ -366,7 +370,7 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func openAdminPortal(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             guard let viewController = Self.topViewController() else {
-                call.reject("NO_VIEW_CONTROLLER", "Cannot open Admin Portal without an active view controller")
+                call.reject("Cannot open Admin Portal without an active view controller", "NO_VIEW_CONTROLLER")
                 return
             }
 
@@ -376,7 +380,7 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
                 viewController.present(host, animated: true)
                 call.resolve()
             } else {
-                call.reject("UNSUPPORTED", "Admin Portal requires iOS 14+")
+                call.reject("Admin Portal requires iOS 14+", "UNSUPPORTED")
             }
         }
     }
@@ -399,6 +403,61 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
         }
         Task {
             await self.fronteggApp.auth.stepUp(maxAge: maxAge, completion)
+        }
+    }
+
+    @objc func loginWithPasskeys(_ call: CAPPluginCall) {
+        fronteggApp.auth.loginWithPasskeys { result in
+            switch result {
+            case .success:
+                call.resolve()
+            case .failure(let error):
+                call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+            }
+        }
+    }
+
+    @objc func registerPasskeys(_ call: CAPPluginCall) {
+        fronteggApp.auth.registerPasskeys { error in
+            if let error = error {
+                call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+            } else {
+                call.resolve()
+            }
+        }
+    }
+
+    @objc func requestAuthorize(_ call: CAPPluginCall) {
+        guard let refreshToken = call.getString("refreshToken") else {
+            call.reject("No refreshToken provided")
+            return
+        }
+        let deviceTokenCookie = call.getString("deviceTokenCookie")
+
+        fronteggApp.auth.requestAuthorize(refreshToken: refreshToken, deviceTokenCookie: deviceTokenCookie) { result in
+            switch result {
+            case .success(let user):
+                var jsonUser: [String: Any] = [:]
+                if let userData = try? JSONEncoder().encode(user),
+                   let decodedUser = try? JSONSerialization.jsonObject(with: userData, options: .allowFragments) as? [String: Any] {
+                    jsonUser = decodedUser
+                }
+                call.resolve(jsonUser)
+            case .failure(let error):
+                call.reject(error.failureReason ?? error.localizedDescription, nil, error)
+            }
+        }
+    }
+
+    @objc func getOrRefreshAccessToken(_ call: CAPPluginCall) {
+        fronteggApp.auth.getOrRefreshAccessToken { result in
+            switch result {
+            case .success(let accessToken):
+                let accessTokenValue: Any = accessToken ?? NSNull()
+                call.resolve(["accessToken": accessTokenValue])
+            case .failure(let error):
+                call.reject(error.localizedDescription, nil, error)
+            }
         }
     }
 

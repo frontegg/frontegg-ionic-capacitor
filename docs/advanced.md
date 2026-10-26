@@ -244,6 +244,78 @@ export default config;
 
 If your app supports multiple environments or regions, define `applicationId` inside each region object:
 
+```typescript
+import { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+/*...*/
+plugins: {
+
+    /*...*/
+
+    FronteggNative: {
+        regions: [{
+            key: "{{REGION_1_KEY}}",
+            baseUrl: "https://{{REGION_1_FRONTEGG_DOMAIN}}",
+            clientId: "{{REGION_1_CLIENT_ID}}",
+            applicationId: "{{REGION_1_APPLICATION_ID}}",
+        }, {
+            key: "{{REGION_2_KEY}}",
+            baseUrl: "https://{{REGION_2_FRONTEGG_DOMAIN}}",
+            clientId: "{{REGION_2_CLIENT_ID}}",
+            applicationId: "{{REGION_2_APPLICATION_ID}}",
+        }]
+    }
+}
+};
+
+export default config;
+```
+
+## Passkeys
+
+Passkeys let users sign in with the device's biometrics or screen lock instead of a password.
+
+### Platform setup
+
+- **iOS** (15+): register your app's associated domain as described in
+  [Configure iOS associated domain](https://ionic-capacitor-guide.frontegg.com/#/setup?id=configure-ios-associated-domain),
+  then in Xcode add the **Associated Domains** capability with `webcredentials:{{FRONTEGG_BASE_URL}}`.
+- **Android**: enable AssetLinks for your package and signing certificate as described in
+  [Enable Android AssetLinks](https://ionic-capacitor-guide.frontegg.com/#/setup?id=enable-android-assetlinks).
+
+### Register a passkey
+
+The user must be signed in. Registration adds a passkey for the current device.
+
+```typescript
+await this.fronteggService.registerPasskeys();
+```
+
+### Sign in with a passkey
+
+```typescript
+try {
+  await this.fronteggService.loginWithPasskeys();
+} catch (error) {
+  // The user cancelled, or no passkey is available on this device.
+}
+```
+
+If the account requires MFA, the MFA screen opens and the promise resolves once it completes.
+
+## Silent authorization with a refresh token
+
+When your backend signs a user up or in through Frontegg identity-server APIs (for example
+`POST /frontegg/identity/resources/users/v1/signUp`), pass the returned refresh token, and the device token
+cookie if you have one, to `requestAuthorize`. The SDK exchanges it for a session without showing the login box.
+
+```typescript
+const user = await this.fronteggService.requestAuthorize(refreshToken, deviceTokenCookie);
+```
+
+Treat the refresh token as a secret: do not log it or persist it yourself; the SDK stores the resulting session.
+
 ## Admin Portal (Beta)
 
 The Admin Portal is a hosted page that lets end users manage their account, profile, sessions, and tenant settings. The Ionic Capacitor SDK exposes `openAdminPortal()` on `FronteggService`, which delegates to the native SDKs:

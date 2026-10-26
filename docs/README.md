@@ -22,12 +22,17 @@
 applications. Drop this SDK in and your app gets a production login screen, a live session, and a
 user object — without you writing an auth flow or touching a token.
 
+## Highlights
+
 | | |
 | --- | --- |
-| **Native login on both platforms** | Frontegg's login box through Capacitor, backed by the native iOS and Android SDKs |
-| **Every method your tenants need** | Email, social, SSO, magic link, passkeys, MFA and step-up |
-| **Sessions that stay alive** | Tokens refresh in the background |
-| **Built for multi-tenant SaaS** | Multi-tenancy, RBAC, entitlements and multi-region support |
+| **Official Frontegg SDK** | Built and maintained by Frontegg, and backed by Frontegg's native iOS and Android SDKs |
+| **Built for B2B multi-tenancy** | Users can belong to several tenants; `switchTenant` changes the active tenant, and the user object carries the tenant list |
+| **Multi-region** | Configure several regions and pick one at runtime with `initWithRegion` |
+| **Every method your tenants need** | Email, social, SSO, magic link and MFA through the login box, plus direct social and SSO login, passkeys and step-up |
+| **Authorization** | Feature and permission entitlement checks for the active tenant |
+| **Sessions that stay alive** | Tokens refresh in the background; `getOrRefreshAccessToken` returns a valid token on demand and `requestAuthorize` signs in silently with a refresh token |
+| **Self-service admin portal** | Open Frontegg's admin portal inside the app (Beta) |
 
 ---
 

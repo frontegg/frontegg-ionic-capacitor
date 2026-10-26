@@ -7,6 +7,7 @@ import type {
   FronteggServiceOptions,
   FronteggState,
   SubscribeMap,
+  User,
 } from './definitions';
 import { Logger } from './logger';
 import type { FronteggObservable } from './observables';
@@ -317,5 +318,36 @@ export class FronteggService {
   public async isSteppedUp(maxAge?: number): Promise<boolean> {
     const { isSteppedUp } = await FronteggNative.isSteppedUp({ maxAge });
     return isSteppedUp;
+  }
+
+  /**
+   * Sign in with a passkey stored on the device.
+   */
+  public loginWithPasskeys(): Promise<void> {
+    return FronteggNative.loginWithPasskeys();
+  }
+
+  /**
+   * Register a passkey on this device for the signed-in user.
+   */
+  public registerPasskeys(): Promise<void> {
+    return FronteggNative.registerPasskeys();
+  }
+
+  /**
+   * Sign in silently with a refresh token from Frontegg identity-server APIs (e.g. sign-up).
+   */
+  public requestAuthorize(refreshToken: string, deviceTokenCookie?: string): Promise<User> {
+    return FronteggNative.requestAuthorize({ refreshToken, deviceTokenCookie });
+  }
+
+  /**
+   * Get a valid access token, refreshing it first when it is about to expire.
+   * Recommended way to read the token after the app resumes.
+   * @returns The access token, or `null` when there is no session or the refresh token was rejected.
+   */
+  public async getOrRefreshAccessToken(): Promise<string | null> {
+    const { accessToken } = await FronteggNative.getOrRefreshAccessToken();
+    return accessToken;
   }
 }

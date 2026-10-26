@@ -4,7 +4,7 @@ Everything below is exported from `@frontegg/ionic-capacitor`.
 
 ```typescript
 import { FronteggService, LogLevel } from '@frontegg/ionic-capacitor';
-import type { Entitlement, FronteggState } from '@frontegg/ionic-capacitor';
+import type { Entitlement, FronteggState, User } from '@frontegg/ionic-capacitor';
 ```
 
 `FronteggService` is the single entry point. Provide one instance to your app — see
@@ -40,6 +40,8 @@ Each getter returns an observable of one state field, so you can react to change
 | `login` | `loginHint?: string` | `Promise<void>` | Opens the login flow. `loginHint` pre-fills the identifier field. |
 | `logout` | None | `Promise<void>` | Signs the user out and clears stored credentials. |
 | `refreshToken` | None | `Promise<void>` | Forces a token refresh. The SDK also refreshes on its own in the background. |
+| `getOrRefreshAccessToken` | None | `Promise<string \| null>` | Returns a valid access token, refreshing it first when it expires within 15 seconds. Waits up to 20 seconds for an in-flight initialization or refresh and rejects on timeout. Resolves `null` when there is no session, the refresh token was rejected, or (Android) a multi-region app has no region selected yet. When the device is offline it resolves the cached token if offline mode is enabled (iOS tries one refresh first) and rejects if it is disabled (Android right away, iOS after a few retries). Rejects on any other refresh failure. See [Get a valid access token after app resume](usage.md#get-a-valid-access-token-after-app-resume). **Recommended way to get a token after the app resumes.** |
+| `requestAuthorize` | `refreshToken: string`<br>`deviceTokenCookie?: string` | `Promise<User>` | Signs the user in silently, without the login box, using a refresh token from Frontegg identity-server APIs (for example the sign-up response). |
 
 ### Direct login
 
@@ -54,6 +56,15 @@ Each getter returns an observable of one state field, so you can react to change
 | `direct` | A SAML URL request |
 | `social-login` | The provider name |
 | `custom-social-login` | The provider entity ID |
+
+## Passkeys
+
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `loginWithPasskeys` | None | `Promise<void>` | Signs in with a passkey stored on the device. Rejects on failure or cancellation. |
+| `registerPasskeys` | None | `Promise<void>` | Registers a passkey on this device for the signed-in user. |
+
+See [Passkeys](https://ionic-capacitor-guide.frontegg.com/#/advanced?id=passkeys) for the platform setup.
 
 ## Step-up authentication
 
