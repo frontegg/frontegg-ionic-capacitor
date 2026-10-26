@@ -352,11 +352,14 @@ The method waits up to 20 seconds for any in-flight initialization or refresh, a
 after that. It then returns the current token when it is valid for more than 15 seconds, and refreshes it otherwise:
 
 - No session, or the server rejected the refresh token: resolves `null`.
+- Android, multi-region app with no region selected yet: resolves `null` right away.
 - The device is offline and offline mode is enabled (`enableOfflineMode` in `Frontegg.plist` on iOS, the
   `FRONTEGG_ENABLE_OFFLINE_MODE` build config field on Android; see
   [Offline token fallback](setup.md#offline-token-fallback)): resolves the cached access token, which may be expired.
-- Any other refresh failure, such as no network with offline mode disabled: rejects, so you can retry later without
-  signing the user out.
+  Android returns it without trying to refresh; iOS tries one refresh first.
+- The device is offline and offline mode is disabled: rejects. Android rejects right away; iOS retries the refresh a few
+  times first.
+- Any other refresh failure: rejects, so you can retry later without signing the user out.
 
 ## Admin Portal (Beta)
 

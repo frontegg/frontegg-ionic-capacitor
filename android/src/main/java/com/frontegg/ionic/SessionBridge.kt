@@ -16,6 +16,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 internal object SessionBridge {
     private const val MIN_ACCESS_TOKEN_VALIDITY_SECONDS = 15
     private const val SETTLE_TIMEOUT_MILLIS = 20_000L
+    private const val REFRESH_SETTLE_TIMEOUT_MILLIS = 10_000L
     private const val SETTLE_POLL_INTERVAL_MILLIS = 200L
 
     @JvmStatic
@@ -32,9 +33,10 @@ internal object SessionBridge {
 
     @JvmStatic
     fun getOrRefreshAccessToken(auth: FronteggAuth, context: Context, callback: (String?, Exception?) -> Unit) {
+        val applicationContext = context.applicationContext
         CoroutineScope(Dispatchers.IO).launch {
             val accessToken = try {
-                resolveValidAccessToken(auth, context)
+                resolveValidAccessToken(auth, applicationContext)
             } catch (exception: Exception) {
                 callback(null, exception)
                 return@launch
@@ -44,13 +46,11 @@ internal object SessionBridge {
     }
 
     private suspend fun resolveValidAccessToken(auth: FronteggAuth, context: Context): String? {
-        val settled = withTimeoutOrNull(SETTLE_TIMEOUT_MILLIS) {
-            while (auth.initializing.value || auth.refreshingToken.value) {
-                delay(SETTLE_POLL_INTERVAL_MILLIS)
-            }
-            true
+        if (auth.isMultiRegion && auth.selectedRegion == null) {
+            return null
         }
-        if (settled == null) {
+        val settled = waitWhile(SETTLE_TIMEOUT_MILLIS) { auth.initializing.value || auth.refreshingToken.value }
+        if (!settled) {
             throw IllegalStateException("Timed out after 20 seconds waiting for initialization or token refresh to finish")
         }
         if (auth.refreshToken.value == null) {
@@ -58,34 +58,64 @@ internal object SessionBridge {
         }
 
         val currentAccessToken = auth.accessToken.value
-        if (currentAccessToken != null && secondsUntilExpiry(currentAccessToken) > MIN_ACCESS_TOKEN_VALIDITY_SECONDS) {
-            return currentAccessToken
-        }
-        if (isOfflineWithOfflineModeEnabled(context)) {
+        if (isValidLongEnough(currentAccessToken)) {
             return currentAccessToken
         }
 
-        if (auth.refreshTokenAndWait(force = false)) {
+        val offlineModeEnabled = isOfflineModeEnabled(context)
+        if (!NetworkGate.isNetworkLikelyGood(context)) {
+            if (offlineModeEnabled) {
+                return currentAccessToken
+            }
+            throw IllegalStateException("No network connection to refresh the access token")
+        }
+
+        if (refreshUntilValid(auth)) {
             return auth.accessToken.value
         }
         if (auth.refreshToken.value == null) {
             return null
         }
-        if (isOfflineWithOfflineModeEnabled(context)) {
+        if (offlineModeEnabled && !NetworkGate.isNetworkLikelyGood(context)) {
             return auth.accessToken.value
         }
         throw IllegalStateException("Failed to refresh the access token")
     }
 
-    private fun isOfflineWithOfflineModeEnabled(context: Context): Boolean {
-        val offlineModeEnabled = runCatching {
-            FronteggConstantsProvider.fronteggConstants(context).enableOfflineMode
-        }.getOrDefault(false)
-        return offlineModeEnabled && !NetworkGate.isNetworkLikelyGood(context)
+    // A refresh started by the SDK's background job makes refreshTokenAndWait return true before the new token is set.
+    private suspend fun refreshUntilValid(auth: FronteggAuth): Boolean {
+        if (!auth.refreshTokenAndWait(force = false)) {
+            return false
+        }
+        if (isValidLongEnough(auth.accessToken.value)) {
+            return true
+        }
+        waitWhile(REFRESH_SETTLE_TIMEOUT_MILLIS) { auth.refreshingToken.value }
+        if (isValidLongEnough(auth.accessToken.value)) {
+            return true
+        }
+        return auth.refreshTokenAndWait(force = false) && isValidLongEnough(auth.accessToken.value)
     }
 
-    private fun secondsUntilExpiry(accessToken: String): Long {
+    private suspend fun waitWhile(timeoutMillis: Long, condition: () -> Boolean): Boolean {
+        val finished = withTimeoutOrNull(timeoutMillis) {
+            while (condition()) {
+                delay(SETTLE_POLL_INTERVAL_MILLIS)
+            }
+            true
+        }
+        return finished != null
+    }
+
+    private fun isOfflineModeEnabled(context: Context): Boolean = runCatching {
+        FronteggConstantsProvider.fronteggConstants(context).enableOfflineMode
+    }.getOrDefault(false)
+
+    private fun isValidLongEnough(accessToken: String?): Boolean {
+        if (accessToken == null) {
+            return false
+        }
         val expiresAtSeconds = runCatching { JWTHelper.decode(accessToken).exp }.getOrDefault(0L)
-        return expiresAtSeconds - System.currentTimeMillis() / 1000
+        return expiresAtSeconds - System.currentTimeMillis() / 1000 > MIN_ACCESS_TOKEN_VALIDITY_SECONDS
     }
 }

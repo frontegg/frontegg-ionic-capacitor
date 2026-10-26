@@ -219,7 +219,7 @@ android {
 With the field set:
 
 - `getOrRefreshAccessToken()` resolves the cached access token, which may be expired or `null`, when the token needs a
-  refresh and the device has no usable network.
+  refresh and the device has no usable network, without trying the refresh. Without the field it rejects right away.
 - The native SDK's network listener refreshes the token when a network connection becomes available.
 
 It does **not** turn on the Android SDK's offline mode. The plugin still starts the SDK with offline mode off, so failed
