@@ -370,7 +370,7 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func openAdminPortal(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
             guard let viewController = Self.topViewController() else {
-                call.reject("NO_VIEW_CONTROLLER", "Cannot open Admin Portal without an active view controller")
+                call.reject("Cannot open Admin Portal without an active view controller", "NO_VIEW_CONTROLLER")
                 return
             }
 
@@ -380,7 +380,7 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
                 viewController.present(host, animated: true)
                 call.resolve()
             } else {
-                call.reject("UNSUPPORTED", "Admin Portal requires iOS 14+")
+                call.reject("Admin Portal requires iOS 14+", "UNSUPPORTED")
             }
         }
     }

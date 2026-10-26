@@ -429,7 +429,7 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void openAdminPortal(PluginCall call) {
         if (this.getActivity() == null) {
-            call.reject("NO_ACTIVITY", "Cannot open Admin Portal without an active Activity");
+            call.reject("Cannot open Admin Portal without an active Activity", "NO_ACTIVITY");
             return;
         }
 
@@ -449,7 +449,7 @@ public class FronteggNativePlugin extends Plugin {
     @PluginMethod
     public void stepUp(PluginCall call) {
         if (this.getActivity() == null) {
-            call.reject("NO_ACTIVITY", "Cannot start step-up without an active Activity");
+            call.reject("Cannot start step-up without an active Activity", "NO_ACTIVITY");
             return;
         }
         // `maxAge` not forwarded on Android — see isSteppedUp note above.
