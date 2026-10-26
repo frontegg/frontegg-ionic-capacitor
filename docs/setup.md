@@ -203,6 +203,31 @@ android {
 }
 ```
 
+### Offline token fallback
+
+Optional. Lets `getOrRefreshAccessToken()` resolve the cached access token instead of rejecting when the device is
+offline. Add the field to `android/app/build.gradle` (it needs `buildConfig = true` from the previous step):
+
+```groovy
+android {
+    defaultConfig {
+        buildConfigField "boolean", "FRONTEGG_ENABLE_OFFLINE_MODE", "true"
+    }
+}
+```
+
+With the field set:
+
+- `getOrRefreshAccessToken()` resolves the cached access token, which may be expired or `null`, when the token needs a
+  refresh and the device has no usable network.
+- The native SDK's network listener refreshes the token when a network connection becomes available.
+
+It does **not** turn on the Android SDK's offline mode. The plugin still starts the SDK with offline mode off, so failed
+refreshes are not queued for retry and every other method behaves as it does without the field.
+
+On iOS, the counterpart is `enableOfflineMode` set to `true` in `Frontegg.plist`. There it turns on the native SDK's
+offline mode, which includes the same `getOrRefreshAccessToken()` fallback.
+
 ### Enable Android AssetLinks
 
 Configure Android AssetLinks for צagic ךink authentication, password resets, login with passkeys, and IdP SSO login.

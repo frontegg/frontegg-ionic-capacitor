@@ -353,7 +353,8 @@ after that. It then returns the current token when it is valid for more than 15 
 
 - No session, or the server rejected the refresh token: resolves `null`.
 - The device is offline and offline mode is enabled (`enableOfflineMode` in `Frontegg.plist` on iOS, the
-  `FRONTEGG_ENABLE_OFFLINE_MODE` build config field on Android): resolves the cached access token, which may be expired.
+  `FRONTEGG_ENABLE_OFFLINE_MODE` build config field on Android; see
+  [Offline token fallback](setup.md#offline-token-fallback)): resolves the cached access token, which may be expired.
 - Any other refresh failure, such as no network with offline mode disabled: rejects, so you can retry later without
   signing the user out.
 
