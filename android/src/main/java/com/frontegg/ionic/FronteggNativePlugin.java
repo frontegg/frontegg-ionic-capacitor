@@ -302,9 +302,11 @@ public class FronteggNativePlugin extends Plugin {
             return;
         }
         FronteggAppKt.getFronteggAuth(this.getContext()).switchTenant(tenantId, (success) -> {
-            JSObject result = new JSObject();
-            result.put("success", success);
-            call.resolve((JSObject) result);
+            if (success) {
+                call.resolve();
+            } else {
+                call.reject("Failed to switch tenant");
+            }
             return null;
         });
     }
@@ -315,6 +317,12 @@ public class FronteggNativePlugin extends Plugin {
         String regionKey = call.getString("regionKey");
         if (regionKey == null) {
             call.reject("No regionKey provided");
+            return;
+        }
+        boolean isKnownRegion = FronteggAppKt.getFronteggAuth(this.getContext()).getRegions().stream()
+                .anyMatch(region -> region.getKey().equals(regionKey));
+        if (!isKnownRegion) {
+            call.reject("Unknown region key: " + regionKey, "INVALID_REGION");
             return;
         }
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -328,17 +336,12 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void refreshToken(PluginCall call) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
-            Handler handler = new Handler(Looper.getMainLooper());
-            FronteggAuth fronteggAuth = FronteggAppKt.getFronteggAuth(this.getContext());
-            // FR-25946: previously a failed refresh (e.g. a transient network blip during an
-            // app-initiated refreshToken()) logged the user out — destructive and divergent from
-            // iOS. Resolve { success } instead and leave the session intact, matching iOS.
-            boolean success = fronteggAuth.refreshTokenIfNeeded();
+        // FR-25946: a failed refresh resolves { success: false } and keeps the session, matching iOS.
+        SessionBridge.refreshTokenAndWait(FronteggAppKt.getFronteggAuth(this.getContext()), success -> {
             JSObject result = new JSObject();
             result.put("success", success);
-            handler.post(() -> call.resolve(result));
+            call.resolve(result);
+            return Unit.INSTANCE;
         });
     }
 

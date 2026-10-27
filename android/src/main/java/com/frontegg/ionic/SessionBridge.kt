@@ -32,6 +32,18 @@ internal object SessionBridge {
     }
 
     @JvmStatic
+    fun refreshTokenAndWait(auth: FronteggAuth, callback: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val success = try {
+                auth.refreshTokenAndWait()
+            } catch (exception: Exception) {
+                false
+            }
+            callback(success)
+        }
+    }
+
+    @JvmStatic
     fun getOrRefreshAccessToken(auth: FronteggAuth, context: Context, callback: (String?, Exception?) -> Unit) {
         val applicationContext = context.applicationContext
         CoroutineScope(Dispatchers.IO).launch {

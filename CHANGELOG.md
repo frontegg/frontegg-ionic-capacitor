@@ -13,6 +13,11 @@ Features:
 Bug fixes:
 
 - `openAdminPortal` (iOS and Android) and `stepUp` (Android) reject with the error code and message in the right order, so JavaScript no longer sees the code as the message. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+- `selectedRegion` is typed as the `RegionConfig` object the native side sends, instead of `string`. `FronteggService.initWithRegion` now skips the native call when that region is already selected; before, its check never matched. `RegionConfig` is exported. (FR-25950)
+- `initWithRegion` rejects with `INVALID_REGION` for a key that is not configured, as React Native and Flutter do. Before, iOS passed it to the SDK and Android resolved without switching. (FR-25950)
+- Android: `refreshToken()` waits for the refresh to finish and resolves `{ success }` with its result. Before, it resolved as soon as the refresh started, so the token read right after it could still be the old one. (FR-25950)
+- `refreshToken()` is typed `Promise<{ success: boolean }>`, the value it already resolved. (FR-25950)
+- Android: `switchTenant` rejects when the switch fails, as on iOS. Before, it resolved `{ success: false }`. (FR-25950)
 
 Changes:
 

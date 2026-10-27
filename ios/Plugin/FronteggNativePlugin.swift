@@ -295,6 +295,11 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
 
+        guard fronteggApp.auth.regionData.contains(where: { $0.key == regionKey }) else {
+            call.reject("Unknown region key: \(regionKey)", "INVALID_REGION")
+            return
+        }
+
         fronteggApp.initWithRegion(regionKey: regionKey)
         // FR-25945: the JS promise from initWithRegion hung forever on iOS because we never
         // resolved the call (Android already resolves). Resolve so await-based region flows proceed.

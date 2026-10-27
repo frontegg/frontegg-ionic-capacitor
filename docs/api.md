@@ -30,7 +30,7 @@ Each getter returns an observable of one state field, so you can react to change
 | `$accessToken` | `string \| null` — the current access token |
 | `$isLoading` | `boolean` — an auth operation is in progress |
 | `$refreshingToken` | `boolean` — a token refresh is in flight |
-| `$selectedRegion` | `string \| null` — the active region key |
+| `$selectedRegion` | `RegionConfig \| null` — the active region (`key`, `baseUrl`, `clientId`, `applicationId`) |
 | `$showLoader` | `boolean` — **deprecated**, use `$isLoading` |
 
 ## Authentication
@@ -39,7 +39,7 @@ Each getter returns an observable of one state field, so you can react to change
 |--------|------------|---------|-------------|
 | `login` | `loginHint?: string` | `Promise<void>` | Opens the login flow. `loginHint` pre-fills the identifier field. |
 | `logout` | None | `Promise<void>` | Signs the user out and clears stored credentials. |
-| `refreshToken` | None | `Promise<void>` | Forces a token refresh. The SDK also refreshes on its own in the background. |
+| `refreshToken` | None | `Promise<{ success: boolean }>` | Forces a token refresh and resolves once it has finished. A failed refresh resolves `{ success: false }` and keeps the session. The SDK also refreshes on its own in the background. |
 | `getOrRefreshAccessToken` | None | `Promise<string \| null>` | Returns a valid access token, refreshing it first when it expires within 15 seconds. Waits up to 20 seconds for an in-flight initialization or refresh and rejects on timeout. Resolves `null` when there is no session, the refresh token was rejected, or (Android) a multi-region app has no region selected yet. When the device is offline it resolves the cached token if offline mode is enabled (iOS tries one refresh first) and rejects if it is disabled (Android right away, iOS after a few retries). Rejects on any other refresh failure. See [Get a valid access token after app resume](usage.md#get-a-valid-access-token-after-app-resume). **Recommended way to get a token after the app resumes.** |
 | `requestAuthorize` | `refreshToken: string`<br>`deviceTokenCookie?: string` | `Promise<User>` | Signs the user in silently, without the login box, using a refresh token from Frontegg identity-server APIs (for example the sign-up response). |
 
@@ -77,8 +77,8 @@ See [Passkeys](https://ionic-capacitor-guide.frontegg.com/#/advanced?id=passkeys
 
 | Method | Parameters | Returns | Description |
 |--------|------------|---------|-------------|
-| `switchTenant` | `tenantId: string` | `Promise<void>` | Switches the active tenant. IDs come from the user's tenant list. |
-| `initWithRegion` | `regionKey: string` | `Promise<void>` | Initialises the SDK against a specific region, for multi-region setups. |
+| `switchTenant` | `tenantId: string` | `Promise<void>` | Switches the active tenant and rejects if the switch fails. IDs come from the user's tenant list. |
+| `initWithRegion` | `regionKey: string` | `Promise<void>` | Initialises the SDK against a specific region, for multi-region setups. Rejects with `INVALID_REGION` for a key that is not configured. |
 
 ## Entitlements
 
@@ -117,7 +117,7 @@ Both getters read the on-device cache, so call `loadEntitlements` first.
 | `initializing` | `boolean` | The SDK has not finished starting up. |
 | `showLoader` | `boolean` | Convenience flag for rendering a loading state. |
 | `isRegional` | `boolean` | Whether the app is configured for multi-region. |
-| `selectedRegion` | `string \| null` | The active region key, when regional. |
+| `selectedRegion` | `RegionConfig \| null` | The active region, when regional. |
 
 ### `Entitlement`
 
