@@ -40,6 +40,7 @@
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api FronteggNativePlugin --output-readme README.md --output-json dist/docs.json",
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",
+    "test": "node --test test/*.test.mjs",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",

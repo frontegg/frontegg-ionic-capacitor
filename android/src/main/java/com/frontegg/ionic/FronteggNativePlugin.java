@@ -442,8 +442,7 @@ public class FronteggNativePlugin extends Plugin {
 
     @PluginMethod
     public void isSteppedUp(PluginCall call) {
-        // NOTE: `maxAge` is honored on iOS but not yet forwarded on Android — see StepUpBridge.
-        boolean result = StepUpBridge.isSteppedUp(FronteggAppKt.getFronteggAuth(this.getContext()));
+        boolean result = StepUpBridge.isSteppedUp(FronteggAppKt.getFronteggAuth(this.getContext()), call.getDouble("maxAge"));
         JSObject ret = new JSObject();
         ret.put("isSteppedUp", result);
         call.resolve(ret);
@@ -455,8 +454,7 @@ public class FronteggNativePlugin extends Plugin {
             call.reject("Cannot start step-up without an active Activity", "NO_ACTIVITY");
             return;
         }
-        // `maxAge` not forwarded on Android — see isSteppedUp note above.
-        StepUpBridge.stepUp(FronteggAppKt.getFronteggAuth(this.getContext()), this.getActivity(), (error) -> {
+        StepUpBridge.stepUp(FronteggAppKt.getFronteggAuth(this.getContext()), this.getActivity(), call.getDouble("maxAge"), (error) -> {
             if (error != null) {
                 call.reject(error.getMessage());
             } else {
