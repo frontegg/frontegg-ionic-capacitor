@@ -56,7 +56,7 @@ export interface FronteggState {
    * This is typically used in multi-regional setups where different regions have different configurations.
    * It is `null` if no region is selected or if the application is not configured for multiple regions.
    */
-  selectedRegion: string | null;
+  selectedRegion: RegionConfig | null;
 
   /**
    * Indicates whether a token refresh operation is currently in progress.
@@ -115,7 +115,7 @@ export interface FronteggConstants {
    * This is an optional array containing configuration details for each region, including the region key, base URL, and client ID.
    * It is present only if `isRegional` is `true`.
    */
-  regionData?: { key: string; baseUrl: string; clientId: string }[];
+  regionData?: RegionConfig[];
 }
 
 /**
@@ -181,10 +181,10 @@ export interface FronteggNativePlugin {
   initWithRegion(payload: { regionKey: string }): Promise<void>;
 
   /**
-   * Refreshes the authentication token.
-   * @returns A promise that resolves when the token refresh is completed.
+   * Refreshes the authentication token and waits for the refresh to finish.
+   * @returns A promise resolving to `{ success: true }` if the token was refreshed.
    */
-  refreshToken(): Promise<void>;
+  refreshToken(): Promise<{ success: boolean }>;
 
   /**
    * Loads (or reloads) the current user's entitlements for the active tenant.

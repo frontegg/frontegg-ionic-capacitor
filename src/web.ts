@@ -37,7 +37,7 @@ export class FronteggNativeWeb extends WebPlugin implements FronteggNativePlugin
     throw Error(`FronteggNative.initWithRegion ${payload} not implemented in web`);
   }
 
-  async refreshToken(): Promise<void> {
+  async refreshToken(): Promise<{ success: boolean }> {
     throw Error(`FronteggNative.refreshToken not implemented in web`);
   }
 

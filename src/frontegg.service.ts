@@ -266,13 +266,13 @@ export class FronteggService {
    */
   public initWithRegion(regionKey: string): Promise<void> {
     // check if current region is the same as the new region
-    if (this.getState().selectedRegion === regionKey) {
+    if (this.getState().selectedRegion?.key === regionKey) {
       return Promise.resolve();
     }
     return FronteggNative.initWithRegion({ regionKey });
   }
 
-  public refreshToken(): Promise<void> {
+  public refreshToken(): Promise<{ success: boolean }> {
     return FronteggNative.refreshToken();
   }
 
