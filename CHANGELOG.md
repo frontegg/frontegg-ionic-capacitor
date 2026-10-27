@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+Native SDKs are unchanged: iOS FronteggSwift 1.3.24, Android 1.3.43.
+
+Features:
+
+- Passkeys: `loginWithPasskeys()` and `registerPasskeys()`. (FR-25960 — [#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+- Silent re-authorization: `requestAuthorize({ refreshToken, deviceTokenCookie? })` resolves the signed-in `User`. (FR-25960 — [#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+- `getOrRefreshAccessToken()` returns an access token valid for more than 15 seconds and refreshes it first when needed. Use it before API calls after the app resumes. `FronteggService` resolves `string | null`; the plugin method resolves `{ accessToken }`. On Android, offline mode for this method is read from the `FRONTEGG_ENABLE_OFFLINE_MODE` BuildConfig field. (FR-25952 — [#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+
+Bug fixes:
+
+- `openAdminPortal` (iOS and Android) and `stepUp` (Android) reject with the error code and message in the right order, so JavaScript no longer sees the code as the message. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+
+Changes:
+
+- Android: new dependency `org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3`, the version the Android SDK uses. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+
 ## v3.0.1
 
 Native SDKs:
