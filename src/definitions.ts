@@ -220,18 +220,13 @@ export interface FronteggNativePlugin {
    *
    * @param payload.maxAge - Optional freshness window, in **seconds**. If the user
    * authenticated more recently than this, step-up may be skipped.
-   *
-   * Note: `maxAge` is honored on **iOS**. On **Android** it is not yet forwarded (the native
-   * API takes a Kotlin `Duration` that cannot be constructed from the Java plugin); Android
-   * uses the server default freshness window until a native Java-friendly overload lands.
    */
   stepUp(payload?: { maxAge?: number }): Promise<void>;
 
   /**
    * Returns whether the current session is already "stepped up" (has a recent MFA/ACR).
    *
-   * @param payload.maxAge - Optional freshness window, in **seconds** (see `stepUp` for the
-   * Android `maxAge` caveat).
+   * @param payload.maxAge - Optional freshness window, in **seconds**.
    */
   isSteppedUp(payload?: { maxAge?: number }): Promise<{ isSteppedUp: boolean }>;
 

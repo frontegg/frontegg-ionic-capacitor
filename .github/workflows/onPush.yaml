@@ -21,6 +21,9 @@ jobs:
       - name: Lint files
         run: npm run lint
 
+      - name: Bridge contract tests
+        run: npm test
+
       - name: Check licenses
         id: check_licenses
         run: |

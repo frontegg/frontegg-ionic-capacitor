@@ -35,6 +35,10 @@ Build and validate the web and native projects.
 
 This is useful to run in CI to verify that the plugin builds for all platforms.
 
+#### `npm test`
+
+Run the bridge contract tests in `test/`. They check that the Android and iOS plugins implement every method declared in `FronteggNativePlugin`, read the declared arguments, and resolve the declared result fields. When you add or change a plugin method, update `src/definitions.ts` and both native plugins together.
+
 #### `npm run lint` / `npm run fmt`
 
 Check formatting and code quality, autoformat/autofix if possible.

@@ -18,6 +18,7 @@ Bug fixes:
 - Android: `refreshToken()` waits for the refresh to finish and resolves `{ success }` with its result. Before, it resolved as soon as the refresh started, so the token read right after it could still be the old one. (FR-25950)
 - `refreshToken()` is typed `Promise<{ success: boolean }>`, the value it already resolved. (FR-25950)
 - Android: `switchTenant` rejects when the switch fails, as on iOS. Before, it resolved `{ success: false }`. (FR-25950)
+- Android: `stepUp` and `isSteppedUp` honor `maxAge`, as on iOS. Before, Android ignored it and used the server's default freshness window. (FR-25951)
 
 Changes:
 
