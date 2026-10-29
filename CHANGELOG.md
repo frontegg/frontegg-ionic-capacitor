@@ -6,13 +6,13 @@ Native SDKs are unchanged: iOS FronteggSwift 1.3.24, Android 1.3.43.
 
 Features:
 
-- Passkeys: `loginWithPasskeys()` and `registerPasskeys()`. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
-- Silent re-authorization: `requestAuthorize({ refreshToken, deviceTokenCookie? })` resolves the signed-in `User`. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
-- `getOrRefreshAccessToken()` returns an access token valid for more than 15 seconds and refreshes it first when needed. Use it before API calls after the app resumes. `FronteggService` resolves `string | null`; the plugin method resolves `{ accessToken }`. On Android, offline mode for this method is read from the `FRONTEGG_ENABLE_OFFLINE_MODE` BuildConfig field. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+- Passkeys: `loginWithPasskeys()` and `registerPasskeys()`.
+- Silent re-authorization: `requestAuthorize({ refreshToken, deviceTokenCookie? })` resolves the signed-in `User`.
+- `getOrRefreshAccessToken()` returns an access token valid for more than 15 seconds and refreshes it first when needed. Use it before API calls after the app resumes. `FronteggService` resolves `string | null`; the plugin method resolves `{ accessToken }`. On Android, offline mode for this method is read from the `FRONTEGG_ENABLE_OFFLINE_MODE` BuildConfig field.
 
 Bug fixes:
 
-- `openAdminPortal` (iOS and Android) and `stepUp` (Android) reject with the error code and message in the right order, so JavaScript no longer sees the code as the message. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+- `openAdminPortal` (iOS and Android) and `stepUp` (Android) reject with the error code and message in the right order, so JavaScript no longer sees the code as the message.
 - `selectedRegion` is typed as the `RegionConfig` object the native side sends, instead of `string`. `FronteggService.initWithRegion` now skips the native call when that region is already selected; before, its check never matched. `RegionConfig` is exported.
 - `initWithRegion` rejects with `INVALID_REGION` for a key that is not configured, as React Native and Flutter do. Before, iOS passed it to the SDK and Android resolved without switching.
 - Android: `refreshToken()` waits for the refresh to finish and resolves `{ success }` with its result. Before, it resolved as soon as the refresh started, so the token read right after it could still be the old one.
@@ -22,7 +22,7 @@ Bug fixes:
 
 Changes:
 
-- Android: new dependency `org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3`, the version the Android SDK uses. ([#123](https://github.com/frontegg/frontegg-ionic-capacitor/pull/123))
+- Android: new dependency `org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3`, the version the Android SDK uses.
 
 ## v3.0.1
 
