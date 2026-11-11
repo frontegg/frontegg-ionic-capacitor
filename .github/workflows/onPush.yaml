@@ -10,7 +10,7 @@ env:
 jobs:
   lint-build:
     name: 'Lint | Build'
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
 
   lint-example:
     name: 'Lint example app'
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v3
