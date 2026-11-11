@@ -373,6 +373,7 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func openAdminPortal(_ call: CAPPluginCall) {
+        let layout: AdminPortalLayout = call.getString("layout") == "responsive" ? .responsive : .desktop
         DispatchQueue.main.async {
             guard let viewController = Self.topViewController() else {
                 call.reject("Cannot open Admin Portal without an active view controller", "NO_VIEW_CONTROLLER")
@@ -380,7 +381,7 @@ public class FronteggNativePlugin: CAPPlugin, CAPBridgedPlugin {
             }
 
             if #available(iOS 14.0, *) {
-                let host = UIHostingController(rootView: AdminPortalView())
+                let host = UIHostingController(rootView: AdminPortalView(layout: layout))
                 host.modalPresentationStyle = .pageSheet
                 viewController.present(host, animated: true)
                 call.resolve()

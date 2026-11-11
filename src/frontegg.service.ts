@@ -1,6 +1,7 @@
 import { registerPlugin } from '@capacitor/core';
 
 import type {
+  AdminPortalOptions,
   Entitlement,
   FronteggConstants,
   FronteggNativePlugin,
@@ -298,8 +299,11 @@ export class FronteggService {
     return FronteggNative.getPermissionEntitlement({ key });
   }
 
-  public openAdminPortal(): Promise<void> {
-    return FronteggNative.openAdminPortal();
+  /**
+   * Open the embedded Admin Portal. Pass `{ layout: 'responsive' }` to fit it to the device's width.
+   */
+  public openAdminPortal(options?: AdminPortalOptions): Promise<void> {
+    return FronteggNative.openAdminPortal(options);
   }
 
   /**

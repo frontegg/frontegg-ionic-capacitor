@@ -367,6 +367,9 @@ Open the embedded Frontegg Admin Portal for authenticated users:
 
 ```typescript
 await this.fronteggService.openAdminPortal();
+
+// Fit the portal to the device's width, with a collapsible sidebar on phones
+await this.fronteggService.openAdminPortal({ layout: 'responsive' });
 ```
 
 See [Advanced Topics](advanced.md#admin-portal-beta) for prerequisites and platform behavior.
