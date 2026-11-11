@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+Native SDKs: iOS FronteggSwift 1.3.27, Android 1.3.45. The Swift package floor moves to 1.3.27.
+
+Bug fixes:
+
+- Android: users are no longer signed out when a token refresh is rate-limited (HTTP 429) or times out (408). The SDK keeps the session and retries the refresh with backoff.
+
 ## v3.0.2
 
 Native SDKs are unchanged: iOS FronteggSwift 1.3.24, Android 1.3.43.
