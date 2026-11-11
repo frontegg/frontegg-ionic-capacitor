@@ -122,7 +122,10 @@ public class FronteggNativePlugin extends Plugin {
                     false,
                     false,
                     true,
-                    null
+                    null,
+                    false,
+                    0L,
+                    false
             );
         } else if (regions.isEmpty()) {
             PluginConfig config = this.getConfig();
@@ -153,7 +156,10 @@ public class FronteggNativePlugin extends Plugin {
                     10,
                     false,
                     true,
-                    null
+                    null,
+                    false,
+                    0L,
+                    false
             );
         } else {
             FronteggApp.Companion.initWithRegions(
@@ -168,7 +174,10 @@ public class FronteggNativePlugin extends Plugin {
                     10,
                     false,
                     true,
-                    null
+                    null,
+                    false,
+                    0L,
+                    false
             );
         }
 
