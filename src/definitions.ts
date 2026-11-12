@@ -210,9 +210,10 @@ export interface FronteggNativePlugin {
 
   /**
    * Opens the embedded Frontegg Admin Portal in a native WebView.
+   * @param payload.layout - `desktop` (default) or `responsive`.
    * @returns A promise that resolves when the portal is presented.
    */
-  openAdminPortal(): Promise<void>;
+  openAdminPortal(payload?: AdminPortalOptions): Promise<void>;
 
   /**
    * Starts a step-up (re-)authentication: the user re-verifies with a stronger factor
@@ -262,6 +263,20 @@ export interface FronteggNativePlugin {
    * right away, iOS after a few retries). Rejects on any other refresh failure.
    */
   getOrRefreshAccessToken(): Promise<{ accessToken: string | null }>;
+}
+
+/**
+ * How the embedded Admin Portal lays itself out.
+ * - `desktop`: renders at 1024px and is scaled to fit, with the sidebar always visible.
+ * - `responsive`: uses the device's real width, so on phones the sidebar collapses into a menu button.
+ */
+export type AdminPortalLayout = 'desktop' | 'responsive';
+
+export interface AdminPortalOptions {
+  /**
+   * Defaults to `desktop`.
+   */
+  layout?: AdminPortalLayout;
 }
 
 /**

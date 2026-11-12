@@ -10,6 +10,7 @@ import android.util.Log;
 import kotlin.Unit;
 
 import com.frontegg.android.AdminPortalActivity;
+import com.frontegg.android.AdminPortalLayout;
 import com.frontegg.android.FronteggApp;
 import com.frontegg.android.FronteggAppKt;
 import com.frontegg.android.FronteggAuth;
@@ -445,8 +446,12 @@ public class FronteggNativePlugin extends Plugin {
             return;
         }
 
-        AdminPortalActivity.open(this.getActivity());
+        AdminPortalActivity.open(this.getActivity(), adminPortalLayoutFrom(call.getString("layout")));
         call.resolve();
+    }
+
+    static AdminPortalLayout adminPortalLayoutFrom(String value) {
+        return "responsive".equals(value) ? AdminPortalLayout.RESPONSIVE : AdminPortalLayout.DESKTOP;
     }
 
     @PluginMethod
