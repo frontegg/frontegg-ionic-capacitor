@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v3.0.3
 
 Native SDKs: iOS FronteggSwift 1.3.27, Android 1.3.45. The Swift package floor moves to 1.3.27.
 
